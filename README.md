@@ -16,23 +16,22 @@ O projeto foi desenvolvido utilizando o framework Laravel com foco na aplicaçã
 
 - Laravel
 - PHP 8+
-- MySQL
+- MySQL (sqlite -> para desenvolvimento)
 - Blade
 - HTML5
 - CSS3
 - Bootstrap 5
 - Composer
-- Node.js / NPM
 
 ---
 
 ## 👨‍💻 Integrantes
 
-- Nome do Integrante – Backend e Modelagem de Dados  
-- Nome do Integrante – Frontend  
-- Nome do Integrante – Documentação  
-
-*(Substituir pelos nomes reais e respectivas funções.)*
+- Alewesley – Backend e Modelagem de Dados  
+- Maicon – Frontend
+- Nathan – Desenvolver rotas e auxiliar o backend
+- Pâmela – Criar o designer das paginas e Auxiliar o frontend
+- Henrique – Gerente: Gerenciar as demandas e organizar a equipe
 
 ---
 
