@@ -240,6 +240,7 @@ INSERT INTO status_pedido (nome, descricao) VALUES
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
+    cargo ENUM('Consultora', 'Líder', 'Distribuidora') NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     telefone VARCHAR(20),
     senha VARCHAR(255) NOT NULL,
@@ -248,8 +249,8 @@ CREATE TABLE usuarios (
     status_id INT,
     criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
     modificado_em DATETIME ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (status_id) REFERENCES status_consultoras(id),
-    FOREIGN KEY (consultora_id) REFERENCES usuarios(id)
+    FOREIGN KEY (consultora_id) REFERENCES usuarios(id),
+    FOREIGN KEY (status_id) REFERENCES status_consultoras(id)
 );
 
 -- =========================
@@ -329,10 +330,11 @@ CREATE TABLE pedidos (
     cliente_id INT NOT NULL,
     link VARCHAR(255),
     valor_total DECIMAL(10,2),
+    tipo_pagamento ENUM('credito', 'debito', 'pix') NOT NULL,
     criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
     modificado_em DATETIME ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
-    FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+    FOREIGN KEY (cliente_id) REFERENCES clientes(id)    
 );
 
 -- =========================
@@ -344,7 +346,6 @@ CREATE TABLE historico_status_pedido (
     status_id INT NOT NULL,
     data_mudanca DATETIME DEFAULT CURRENT_TIMESTAMP,
     usuario_responsavel INT,
-    observacao TEXT,
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id),
     FOREIGN KEY (status_id) REFERENCES status_pedido(id),
     FOREIGN KEY (usuario_responsavel) REFERENCES usuarios(id)
@@ -415,7 +416,7 @@ CREATE TABLE comissoes (
 CREATE TABLE historico_comissoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     consultora_id INT NOT NULL,
-    pedido_id INT NOT NULL,
+    pedido_id INT,
     tipo_comissao_id INT NOT NULL,
     valor DECIMAL(10,2),
     tipo_movimentacao_id INT NOT NULL,
@@ -463,6 +464,7 @@ CREATE TABLE catalogos (
 CREATE TABLE itens_catalogo (
     id INT AUTO_INCREMENT PRIMARY KEY,
     preco DECIMAL(10,2),
+    pontos_necessarios INT(11),
     status_id INT NOT NULL,
     estoque_disponivel INT,
     catalogo_id INT NOT NULL,
@@ -560,3 +562,30 @@ CREATE TABLE logs (
     ip_origem VARCHAR(45),
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
+
+-- =========================
+-- Qualificação Profissional
+-- =========================
+CREATE TABLE qualificacao_profissional (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    consultora_id INT NOT NULL,
+    data_validacao DATE,
+    data_referencia DATE, --mês e ano
+    total_vendas DECIMAL(10,2),
+    recrutas_ativos_totais INT,
+    status ENUM('promovido', 'rebaixado', 'pendente', 'mantida') NOT NULL,
+    FOREIGN KEY (consultora_id) REFERENCES usuarios(id)
+);
+
+-- =========================
+-- historico_cargo
+-- =========================
+CREATE TABLE historico_cargo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    consultora_id INT NOT NULL,
+    qualificacao_profissional_id INT NOT NULL,
+    cargo_anterior INT NOT NULL,
+    cargo_novo INT,
+    data_mudanca DATETIME DEFAULT CURRENT_TIMESTAMP,
+);
+
