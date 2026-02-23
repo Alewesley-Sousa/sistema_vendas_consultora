@@ -1,3 +1,4 @@
+
 -- =========================
 -- STATUS CONSULTORAS
 -- =========================
@@ -11,6 +12,7 @@ CREATE TABLE status_consultoras (
 INSERT INTO status_consultoras (nome, descricao) VALUES
 ('Ativa', 'Consultora com vendas válidas no més vigente'),
 ('Inativa', 'Consultora que não atingiu o minimo de vendas e foi desativada');
+
 
 -- =========================
 -- STATUS SOLICITAÇÃO SAQUE
@@ -316,7 +318,7 @@ CREATE TABLE clientes (
     telefone VARCHAR(20),
     cep VARCHAR(10),
     consultora_id INT NOT NULL,
-    cpf VARCHAR(11) UNIQUE,
+    cpf CHAR(11) UNIQUE,
     criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (consultora_id) REFERENCES usuarios(id)
 );
@@ -458,6 +460,7 @@ CREATE TABLE catalogos (
     FOREIGN KEY (status_id) REFERENCES status_catalogo(id)
 );
 
+
 -- =========================
 -- ITENS CATÁLOGO
 -- =========================
@@ -570,7 +573,7 @@ CREATE TABLE qualificacao_profissional (
     id INT AUTO_INCREMENT PRIMARY KEY,
     consultora_id INT NOT NULL,
     data_validacao DATE,
-    data_referencia DATE, --mês e ano
+    data_referencia DATE, -- mês e ano
     total_vendas DECIMAL(10,2),
     recrutas_ativos_totais INT,
     status ENUM('promovido', 'rebaixado', 'pendente', 'mantida') NOT NULL,
@@ -586,6 +589,22 @@ CREATE TABLE historico_cargo (
     qualificacao_profissional_id INT NOT NULL,
     cargo_anterior INT NOT NULL,
     cargo_novo INT,
-    data_mudanca DATETIME DEFAULT CURRENT_TIMESTAMP,
+    data_mudanca DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- =========================
+-- pagamentos
+-- =========================
+CREATE TABLE pagamentos (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    pedido_id INT NOT NULL,
+    tipo_pagamento ENUM('credito','debito','pix') NOT NULL,
+    valor DECIMAL(10,2) NOT NULL,
+    status ENUM('pendente','aprovado','recusado','estornado','em_analise') NOT NULL,
+    codigo_transacao VARCHAR(100),
+    data_solicitacao DATETIME NOT NULL,
+    data_confirmacao DATETIME,
+    usuario_responsavel INT,
+    FOREIGN KEY (pedido_id) references pedidos(id),
+    FOREIGN KEY (usuario_responsavel) references usuarios(id)
+);
