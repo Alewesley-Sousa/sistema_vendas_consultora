@@ -242,7 +242,7 @@ INSERT INTO status_pedido (nome, descricao) VALUES
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    cargo ENUM('Consultora', 'Líder', 'Distribuidora') NOT NULL,
+    cargo ENUM('consultora', 'lider', 'distribuidora') NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     telefone VARCHAR(20),
     senha VARCHAR(255) NOT NULL,
@@ -299,7 +299,7 @@ CREATE TABLE movimentacao_estoque (
     id INT AUTO_INCREMENT PRIMARY KEY,
     produto_id INT NOT NULL,
     quantidade INT NOT NULL,
-    origem_tipo VARCHAR(50),
+    origem_tipo VARCHAR(50), -- entidade responsavel
     origem_id INT,
     tipo_movimentacao_id INT NOT NULL,
     usuario_responsavel INT,
@@ -589,7 +589,9 @@ CREATE TABLE historico_cargo (
     qualificacao_profissional_id INT NOT NULL,
     cargo_anterior INT NOT NULL,
     cargo_novo INT,
-    data_mudanca DATETIME DEFAULT CURRENT_TIMESTAMP
+    data_mudanca DATETIME DEFAULT CURRENT_TIMESTAMP,
+    foreign key (consultora_id) references usuarios(id),
+    foreign key (qualificacao_profissional_id) references qualificacao_profissional (id)
 );
 
 -- =========================
