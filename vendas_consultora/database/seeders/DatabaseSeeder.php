@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
             // \Database\Seeders\Producao\ProducaoSeeder::class,
             // \Database\Seeders\Teste\TesteSeeder::class,
             // UsuariosSeeder::class
-            CategoriasSeeder::class
+            // CategoriasSeeder::class
+            ProdutosSeeder::class
         ]);
     }
 }
