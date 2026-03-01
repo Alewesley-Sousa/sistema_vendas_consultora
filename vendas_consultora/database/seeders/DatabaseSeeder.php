@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             // \Database\Seeders\Teste\TesteSeeder::class,
             // UsuariosSeeder::class
             // CategoriasSeeder::class
-            ProdutosSeeder::class
+            // ProdutosSeeder::class
+            EstoquesSeeder::class
         ]);
     }
 }
