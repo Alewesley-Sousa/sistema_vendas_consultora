@@ -1,4 +1,9 @@
 <?php
+/**
+ * Autor: Alewesley-Sousa
+ * Data: 01/03/2026
+ * Descrição: Controler responsavel por controlar entrada e saida de dados
+ */
 
 namespace App\Http\Controllers;
 

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Autor: Alewesley-Sousa
+ * Data: 01/03/2026
+ * Descrição: seeder responsavel por criar dados iniciais da tabela referente.
+ */
 
 namespace Database\Seeders;
 

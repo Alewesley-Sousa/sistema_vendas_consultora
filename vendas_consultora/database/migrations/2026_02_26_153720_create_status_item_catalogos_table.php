@@ -1,5 +1,10 @@
 <?php
-// database/migrations/2024_01_01_000005_create_status_item_catalogo_table.php
+/**
+ * Autor: Natha-Barros
+ * Data: 01/03/2026
+ * Descrição: migration responsavel por criar as características da tabela referente
+ */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

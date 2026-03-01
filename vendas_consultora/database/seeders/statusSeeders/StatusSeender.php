@@ -1,4 +1,9 @@
 <?php
+/**
+ * Autor: Alewesley-Sousa
+ * Data: 01/03/2026
+ * Descrição: seeder lider que agrupa todos os outros que estão na mesma pasta (organização de seeders por status).
+ */
 
 namespace Database\Seeders\statusSeeders;
 
