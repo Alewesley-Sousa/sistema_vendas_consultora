@@ -288,6 +288,7 @@ CREATE TABLE estoque (
     id INT AUTO_INCREMENT PRIMARY KEY,
     produto_id INT NOT NULL,
     quantidade INT,
+    criado_em DATETINE DEFAULT CURRENT_TIMESTAMP,
     modificado_em DATETIME ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (produto_id) REFERENCES produtos(id)
 );
