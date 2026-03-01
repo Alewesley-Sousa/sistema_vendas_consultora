@@ -1,27 +1,31 @@
 <?php
-
+// database/migrations/2024_01_01_000014_create_tipo_promocao_table.php
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
-        Schema::create('tipo_promocaos', function (Blueprint $table) {
+        Schema::create('tipo_promocao', function (Blueprint $table) {
             $table->id();
+            $table->string('nome', 50);
+            $table->text('descricao')->nullable();
             $table->timestamps();
         });
+
+        DB::table('tipo_promocao')->insert([
+            ['nome' => 'desconto percentual', 'descricao' => 'Promoção que oferece um desconto percentual sobre o preço do produto'],
+            ['nome' => 'desconto fixo', 'descricao' => 'Promoção que oferece um desconto fixo em reais sobre o preço do produto'],
+            ['nome' => 'brinde', 'descricao' => 'Promoção que oferece um brinde na compra do produto'],
+            ['nome' => 'frete grátis', 'descricao' => 'Promoção que oferece frete grátis na compra do produto'],
+        ]);
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('tipo_promocaos');
+        Schema::dropIfExists('tipo_promocao');
     }
 };

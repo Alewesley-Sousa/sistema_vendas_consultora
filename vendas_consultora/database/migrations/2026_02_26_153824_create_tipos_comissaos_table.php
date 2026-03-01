@@ -1,27 +1,32 @@
 <?php
-
+// database/migrations/2024_01_01_000009_create_tipos_comissao_table.php
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
-        Schema::create('tipos_comissaos', function (Blueprint $table) {
+        Schema::create('tipos_comissao', function (Blueprint $table) {
             $table->id();
+            $table->string('nome', 50);
+            $table->decimal('taxa', 5, 2)->nullable();
+            $table->text('descricao')->nullable();
             $table->timestamps();
         });
+
+        DB::table('tipos_comissao')->insert([
+            ['nome' => 'Venda Direta', 'descricao' => 'Comissão gerada por venda direta da consultora', 'taxa' => 0.30],
+            ['nome' => 'nivel 1', 'descricao' => 'Comissão gerada por venda da rede direta (1º nível)', 'taxa' => 0.05],
+            ['nome' => 'nivel 2', 'descricao' => 'Comissão gerada por venda da rede da sua rede (2º nível)', 'taxa' => 0.02],
+            ['nome' => 'administrativa', 'descricao' => 'taxa administrativa sobre cada venda', 'taxa' => 0.02],
+        ]);
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('tipos_comissaos');
+        Schema::dropIfExists('tipos_comissao');
     }
 };
