@@ -17,9 +17,9 @@ return new class extends Migration
             $table->enum('cargo', ['consultora', 'lider', 'distribuidora'])->default('consultora');
             $table->string('email',150)->unique();
             $table->string('telefone',20)->nullable();
-            $table->varchar('senha');
+            $table->string('senha');
             $table->string('cep',10);
-            $table->foreignId('consultora_id')->constrained('usuarios')->nullOnDelete();
+            $table->foreignId('consultora_id')->nullable()->constrained('usuarios')->nullOnDelete();
             $table->foreignId('status_id')->constrained('status_consultoras');
             $table->rememberToken();
             $table->timestamps();
