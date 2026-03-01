@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use app\Models\usuarios;
+use App\Models\usuarios;
 
 class UsuariosSeeder extends Seeder
 {
