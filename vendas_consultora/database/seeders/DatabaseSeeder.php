@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
             // UsuariosSeeder::class
             // CategoriasSeeder::class
             // ProdutosSeeder::class
-            EstoquesSeeder::class
+            // EstoquesSeeder::class
+            MovimentacaoEstoqueSeeder::class
         ]);
     }
 }
