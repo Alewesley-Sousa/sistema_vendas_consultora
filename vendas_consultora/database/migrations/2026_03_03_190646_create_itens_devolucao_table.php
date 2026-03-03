@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('itens_devolucaos', function (Blueprint $table) {
+        Schema::create('itens_devolucao', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('item_pedido_id')->constrained('itens_pedido')->onDelete('cascade');
+            $table->foreignId('devolucao_id')->constrained('devolucoes')->onDelete('cascade');
+            $table->integer('quantidade')->default(1);
+            $table->decimal('subtotal', 10, 2);
         });
     }
 
