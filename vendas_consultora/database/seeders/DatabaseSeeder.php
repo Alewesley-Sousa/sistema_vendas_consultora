@@ -16,16 +16,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // \Database\Seeders\Producao\ProducaoSeeder::class,
-            // \Database\Seeders\Teste\TesteSeeder::class,
-            // UsuariosSeeder::class,
-            // CategoriasSeeder::class,
-            // ProdutosSeeder::class,
-            // EstoquesSeeder::class,
-            // MovimentacaoEstoqueSeeder::class,
-            // ClientesSeeder::class,
-            // PedidosSeeder::class,
-            ItensPedidoSeeder::class
+            // \Database\Seeders\StatusSeeders\ProducaoSeeder::class,
+            // \Database\Seeders\tipo\TesteSeeder::class,
+            UsuariosSeeder::class,
+            CategoriasSeeder::class,
+            ProdutosSeeder::class,
+            EstoquesSeeder::class,
+            MovimentacaoEstoqueSeeder::class,
+            ClientesSeeder::class,
+            PedidosSeeder::class,
+            ItensPedidoSeeder::class,
+            DevolucoesSeeder::class
         ]);
     }
 }
