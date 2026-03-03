@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\clientes;
 
 return new class extends Migration
 {
@@ -13,7 +14,13 @@ return new class extends Migration
     {
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('nome', 100);
+            $table->string('email', 150)->nullable();
+            $table->string('telefone', 20)->nullable();
+            $table->char('cep', 8)->nullable();
+            $table->foreignId('consultora_id')->constrained('usuarios')->nullOnDelete();
+            $table->char('cpf', 11)->unique();
+            $table->timestamp('criado_em')->useCurrent();
         });
     }
 
