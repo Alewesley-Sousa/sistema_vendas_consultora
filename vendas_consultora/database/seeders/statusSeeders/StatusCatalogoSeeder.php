@@ -22,5 +22,4 @@ class StatusCatalogoSeeder extends Seeder
             ['nome' => 'Inativo', 'descricao' => 'Catálogo inativo e indisponível'],
         ]);
     }
-    }
 }
