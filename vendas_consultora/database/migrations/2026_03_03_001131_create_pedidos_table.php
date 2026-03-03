@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\pedidos;
 
 return new class extends Migration
 {
@@ -13,6 +14,11 @@ return new class extends Migration
     {
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('usuario_id')->constrained('usuarios');
+            $table->foreignId('cliente_id')->constrained('clientes');
+            $table->string('link')->nullable();
+            $table->decimal('valor_total', 10, 2)->default(0.0);
+            $table->enum('tipo_pagamento', ['credito', 'debito', 'pix']);
             $table->timestamps();
         });
     }
