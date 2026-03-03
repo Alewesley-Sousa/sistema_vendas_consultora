@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
             // ItensDevolucaoSeeder::class,
             ComissoesSeeder::class,
             HistoricoComissoesSeeder::class,
+            SolicitacoesSaqueSeeder::class,
+            
         ]);
     }
 }
