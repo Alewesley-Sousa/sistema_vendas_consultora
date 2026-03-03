@@ -27,7 +27,8 @@ class DatabaseSeeder extends Seeder
             // PedidosSeeder::class,
             // ItensPedidoSeeder::class,
             // DevolucoesSeeder::class,
-            ItensDevolucaoSeeder::class
+            // ItensDevolucaoSeeder::class,
+            ComissoesSeeder::class
         ]);
     }
 }
