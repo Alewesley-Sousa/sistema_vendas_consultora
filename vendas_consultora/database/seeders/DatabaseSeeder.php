@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
             // ProdutosSeeder::class,
             // EstoquesSeeder::class,
             // MovimentacaoEstoqueSeeder::class,
-            ClientesSeeder::class
+            // ClientesSeeder::class,
+            PedidosSeeder::class
         ]);
     }
 }
