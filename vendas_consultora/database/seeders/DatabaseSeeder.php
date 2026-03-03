@@ -24,7 +24,8 @@ class DatabaseSeeder extends Seeder
             // EstoquesSeeder::class,
             // MovimentacaoEstoqueSeeder::class,
             // ClientesSeeder::class,
-            PedidosSeeder::class
+            // PedidosSeeder::class,
+            ItensPedidoSeeder::class
         ]);
     }
 }
