@@ -14,7 +14,7 @@ class pedidos extends Model
         'usuario_id' => 'integer',
         'cliente_id' => 'integer',
         'link' => 'string',
-        'valor_total' => 'decimal',
+        'valor_total' => 'decimal:2',
         'tipo_pagamento' => 'string'
     ];
 }
