@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('comissoes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('consultora_id')->constrained('usuarios');
+            $table->decimal('saldo_liquido', 10, 2)->default(0.0);
             $table->timestamps();
         });
     }
