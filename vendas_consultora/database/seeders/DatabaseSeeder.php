@@ -31,7 +31,8 @@ class DatabaseSeeder extends Seeder
             ComissoesSeeder::class,
             HistoricoComissoesSeeder::class,
             SolicitacoesSaqueSeeder::class,
-            
+            CatalogosSeeder::class
+
         ]);
     }
 }
