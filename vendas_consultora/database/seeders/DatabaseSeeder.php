@@ -18,11 +18,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // \Database\Seeders\Producao\ProducaoSeeder::class,
             // \Database\Seeders\Teste\TesteSeeder::class,
-            // UsuariosSeeder::class
-            // CategoriasSeeder::class
-            // ProdutosSeeder::class
-            // EstoquesSeeder::class
-            MovimentacaoEstoqueSeeder::class
+            // UsuariosSeeder::class,
+            // CategoriasSeeder::class,
+            // ProdutosSeeder::class,
+            // EstoquesSeeder::class,
+            // MovimentacaoEstoqueSeeder::class,
+            ClientesSeeder::class
         ]);
     }
 }
