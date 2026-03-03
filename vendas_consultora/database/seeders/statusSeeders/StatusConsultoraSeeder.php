@@ -2,13 +2,13 @@
 /**
  * Autor: Alewesley-Sousa (criador) && Nathan-Barros (desenvolvedor)
  * Data: 01/03/2026
- * Descrição: seeder responsavel por criar dados iniciais da tabela referente
+ * Descrição: seeder responsavel por criar dados iniciais da tabela status_consultora
  */
 
-namespace Database\Seeders\statusSeeders;
+namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class StatusConsultoraSeeder extends Seeder
 {
@@ -17,6 +17,22 @@ class StatusConsultoraSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        // Verifica se já existem registros para não duplicar
+        if (DB::table('status_consultoras')->count() === 0) {
+            DB::table('status_consultoras')->insert([
+                [
+                    'nome' => 'Ativa', 
+                    'descricao' => 'Consultora com vendas válidas no mês vigente',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+                [
+                    'nome' => 'Inativa', 
+                    'descricao' => 'Consultora que não atingiu o mínimo de vendas e foi desativada',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+            ]);
+        }
     }
 }
