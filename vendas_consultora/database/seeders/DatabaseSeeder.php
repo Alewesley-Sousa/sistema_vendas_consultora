@@ -32,7 +32,8 @@ class DatabaseSeeder extends Seeder
             HistoricoComissoesSeeder::class,
             SolicitacoesSaqueSeeder::class,
             CatalogosSeeder::class,
-            ItensCatalogosSeeder::class
+            ItensCatalogosSeeder::class,
+            ResgatesSeeder::class
 
         ]);
     }
