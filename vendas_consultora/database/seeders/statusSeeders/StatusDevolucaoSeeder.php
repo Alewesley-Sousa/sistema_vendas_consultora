@@ -1,10 +1,10 @@
 <?php
+
 /**
  * Autor: Alewesley-Sousa (criador) && Nathan-Barros (desenvolvedor)
  * Data: 01/03/2026
  * Descrição: seeder responsavel por criar dados iniciais da tabela status_devolucao
  */
-
 
 namespace Database\Seeders;
 
@@ -18,28 +18,25 @@ class StatusDevolucaoSeeder extends Seeder
      */
     public function run(): void
     {
-        // Verifica se já existem registros para não duplicar
-        if (DB::table('status_devolucao')->count() === 0) {
-            DB::table('status_devolucao')->insert([
-                [
-                    'nome' => 'Pendente', 
-                    'descricao' => 'Devolução aguardando análise',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'nome' => 'Aprovada', 
-                    'descricao' => 'Devolução aprovada',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'nome' => 'Rejeitada', 
-                    'descricao' => 'Devolução rejeitada',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]
-            ]);
-        }
+        DB::table('status_devolucao')->insert([
+            [
+                'nome' => 'Pendente', 
+                'descricao' => 'Devolução aguardando análise',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nome' => 'Aprovada', 
+                'descricao' => 'Devolução aprovada',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nome' => 'Rejeitada', 
+                'descricao' => 'Devolução rejeitada',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
+        ]);
     }
 }
