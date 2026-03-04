@@ -24,5 +24,9 @@ class PromocoesSeeder extends Seeder
                 'status_id' => 1
            ]
         ];
+
+        foreach ($promocoes as $promocao) {
+            promocoes::forceCreate($promocao);
+        }
     }
 }
