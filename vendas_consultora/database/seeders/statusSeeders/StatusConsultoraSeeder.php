@@ -17,22 +17,19 @@ class StatusConsultoraSeeder extends Seeder
      */
     public function run(): void
     {
-        // Verifica se já existem registros para não duplicar
-        if (DB::table('status_consultoras')->count() === 0) {
-            DB::table('status_consultoras')->insert([
-                [
-                    'nome' => 'Ativa', 
-                    'descricao' => 'Consultora com vendas válidas no mês vigente',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'nome' => 'Inativa', 
-                    'descricao' => 'Consultora que não atingiu o mínimo de vendas e foi desativada',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-            ]);
-        }
+        DB::table('status_consultoras')->insert([
+            [
+                'nome' => 'Ativa', 
+                'descricao' => 'Consultora com vendas válidas no mês vigente',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nome' => 'Inativa', 
+                'descricao' => 'Consultora que não atingiu o mínimo de vendas e foi desativada',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+        ]);
     }
 }
