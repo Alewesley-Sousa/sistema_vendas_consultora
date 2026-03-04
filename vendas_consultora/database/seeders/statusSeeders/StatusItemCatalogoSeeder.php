@@ -17,22 +17,19 @@ class StatusItemCatalogoSeeder extends Seeder
      */
     public function run(): void
     {
-        // Verifica se já existem registros para não duplicar
-        if (DB::table('status_item_catalogos')->count() === 0) {
-            DB::table('status_item_catalogos')->insert([
-                [
-                    'nome' => 'Disponível', 
-                    'descricao' => 'Item disponível para compra',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ],
-                [
-                    'nome' => 'Indisponível', 
-                    'descricao' => 'Item indisponível para compra',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]
-            ]);
-        }
+        DB::table('status_item_catalogos')->insert([
+            [
+                'nome' => 'Disponível', 
+                'descricao' => 'Item disponível para compra',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nome' => 'Indisponível', 
+                'descricao' => 'Item indisponível para compra',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
+        ]);
     }
 }
