@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
             CatalogosSeeder::class,
             ItensCatalogosSeeder::class,
             ResgatesSeeder::class
-
+            
         ]);
     }
 }
