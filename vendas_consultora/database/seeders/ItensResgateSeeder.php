@@ -21,5 +21,9 @@ class ItensResgateSeeder extends Seeder
                 'subtotal_pontos' => 234134
             ]
         ];
+
+        foreach ($itensR as $itemR) {
+            itens_resgate::forceCreate($itemR);
+        }
     }
 }
