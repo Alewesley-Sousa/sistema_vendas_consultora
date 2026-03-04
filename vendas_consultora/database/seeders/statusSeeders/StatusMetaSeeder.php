@@ -5,7 +5,7 @@
  * Data: 01/03/2026
  * Descrição: seeder responsavel por criar dados iniciais da tabela status_metas
  */
- 
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
