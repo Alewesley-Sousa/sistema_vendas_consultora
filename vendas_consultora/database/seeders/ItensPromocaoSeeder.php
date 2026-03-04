@@ -1,0 +1,24 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class ItensPromocaoSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $itensP = [
+            [
+                'produto_id' => 1,
+                'promocao_id' => 1,
+                'quantidade_min' => 123,
+                'condicao_especial' => 'lafniuanfgiuawfg'
+            ]
+        ];
+    }
+}
