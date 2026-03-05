@@ -38,7 +38,8 @@ class DatabaseSeeder extends Seeder
             PromocoesSeeder::class,
             ItensPromocaoSeeder::class,
             MetasSeeder::class,
-            LogsSeeder::class
+            LogsSeeder::class,
+            QualificacaoProfissionalSeeder::class,
 
         ]);
     }
