@@ -22,5 +22,9 @@ class MetasSeeder extends Seeder
                 'valor_meta' => 1123.0,
             ]
         ];
+
+        foreach ($metas as $meta) {
+            metas::forceCreate($meta);
+        }
     }
 }
