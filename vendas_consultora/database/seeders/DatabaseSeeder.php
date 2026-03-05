@@ -37,7 +37,8 @@ class DatabaseSeeder extends Seeder
             ItensResgateSeeder::class,
             PromocoesSeeder::class,
             ItensPromocaoSeeder::class,
-            MetasSeeder::class
+            MetasSeeder::class,
+            LogsSeeder::class
 
         ]);
     }
