@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
             LogsSeeder::class,
             QualificacaoProfissionalSeeder::class,
             HistoricoCargoSeeder::class,
-            
+            PagamentosSeeder::class
 
         ]);
     }
