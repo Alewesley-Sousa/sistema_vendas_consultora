@@ -40,6 +40,8 @@ class DatabaseSeeder extends Seeder
             MetasSeeder::class,
             LogsSeeder::class,
             QualificacaoProfissionalSeeder::class,
+            HistoricoCargoSeeder::class,
+            
 
         ]);
     }
