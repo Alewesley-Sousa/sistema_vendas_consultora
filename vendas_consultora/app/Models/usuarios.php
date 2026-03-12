@@ -22,7 +22,6 @@ class usuarios extends Authenticatable
     ];
 
     protected $casts = [
-        'senha' => 'hashed', // Isso dispensa o Hash::make no Service!
         'cep'   => 'encrypted',
     ];
 
