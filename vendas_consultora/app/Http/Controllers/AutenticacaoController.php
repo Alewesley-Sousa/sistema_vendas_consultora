@@ -14,7 +14,7 @@ class AutenticacaoController extends Controller
 {
     public function showLogin(Request $request)
     {
-        return view('auth.login');
+        return view('login');
 
     }
     
