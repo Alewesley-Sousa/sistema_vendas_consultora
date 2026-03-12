@@ -1,51 +1,67 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Models\usuario;
 
 class ResetarSenhaController extends Controller
 {
-    // Envia link de reset
-    public function forgot(Request $request)
-    {
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json(['message' => 'Link enviado para seu e-mail.'])
-            : response()->json(['message' => 'Erro ao enviar link.'], 400);
+    public function formularioRecuperacao() {
+        return \Inertia\Inertia::render('Auth/FormularioRecuperacao');
     }
 
-    // Reseta a senha
-    public function reset(Request $request)
-    {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
+    public function enviarLinkResetar(Request $request) {
+        $request->validate(['email' => 'required|email']);
+
+        $token = Str::random(60);
+        DB::table('resetar_senha_tokens')->insert([
+            'email' => $request->email,
+            'token' => $token,
+            'created_at' => now()
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
-                ])->save();
-            }
-        );
+        $link = url('/reset-password/'.$token);
 
-        return $status === Password::PASSWORD_RESET
-            ? response()->json(['message' => 'Senha redefinida com sucesso.'])
-            : response()->json(['message' => 'Erro ao redefinir senha.'], 400);
+        // Enviar email
+        Mail::raw("Clique aqui para resetar sua senha: $link", function($message) use ($request) {
+            $message->to($request->email)->subject('Recuperação de senha');
+        });
+
+        return back()->with('status', 'Link de recuperação enviado!');
+    }
+
+    public function formularioAtualizarSenha($token) {
+        return \Inertia\Inertia::render('Auth/ResetPassword', ['token' => $token]);
+    }
+
+    public function atualizarSenha(Request $request) {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:6',
+            'token' => 'required'
+        ]);
+
+        $reset = DB::table('resetar_senha_tokens')->where([
+            'email' => $request->email,
+            'token' => $request->token
+        ])->first();
+
+        if (!$reset) {
+            return back()->withErrors(['email' => 'Token inválido ou expirado']);
+        }
+
+        usuario::where('email', $request->email)->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        DB::table('resetar_senha_tokens')->where(['email' => $request->email])->delete();
+
+        return redirect('/login')->with('status', 'Senha alterada com sucesso!');
     }
 }
 
