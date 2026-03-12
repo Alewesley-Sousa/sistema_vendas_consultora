@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // \Database\Seeders\StatusSeeders\ProducaoSeeder::class,
             // \Database\Seeders\tipo\TesteSeeder::class,
-            // UsuariosSeeder::class,
+            UsuariosSeeder::class,
             // CategoriasSeeder::class,
             // ProdutosSeeder::class,
             // EstoquesSeeder::class,
@@ -28,20 +28,20 @@ class DatabaseSeeder extends Seeder
             // ItensPedidoSeeder::class,
             // DevolucoesSeeder::class,
             // ItensDevolucaoSeeder::class,
-            ComissoesSeeder::class,
-            HistoricoComissoesSeeder::class,
-            SolicitacoesSaqueSeeder::class,
-            CatalogosSeeder::class,
-            ItensCatalogosSeeder::class,
-            ResgatesSeeder::class,
-            ItensResgateSeeder::class,
-            PromocoesSeeder::class,
-            ItensPromocaoSeeder::class,
-            MetasSeeder::class,
-            LogsSeeder::class,
-            QualificacaoProfissionalSeeder::class,
-            HistoricoCargoSeeder::class,
-            PagamentosSeeder::class
+            // ComissoesSeeder::class,
+            // HistoricoComissoesSeeder::class,
+            // SolicitacoesSaqueSeeder::class,
+            // CatalogosSeeder::class,
+            // ItensCatalogoSeeder::class,
+            // ResgatesSeeder::class,
+            // ItensResgateSeeder::class,
+            // PromocoesSeeder::class,
+            // ItensPromocaoSeeder::class,
+            // MetasSeeder::class,
+            // LogsSeeder::class,
+            // QualificacaoProfissionalSeeder::class,
+            // HistoricoCargoSeeder::class,
+            // PagamentosSeeder::class
 
         ]);
     }
