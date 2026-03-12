@@ -21,11 +21,11 @@
       </div>
     @endif
 
-    <form method="POST" action="{{ route('password.update') }}" class="space-y-4">
+    <form method="POST" action="{{ route('senha.atualizar') }}" class="space-y-4">
     @csrf
 
     <input type="hidden" name="token" value="{{ $token }}">
-    <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
+    <input type="hidden" name="email" value="{{ old('email', $email) }}">
 
     <label class="block text-sm font-semibold text-slate-700">Nova senha</label>
     <input type="password" name="password" required
