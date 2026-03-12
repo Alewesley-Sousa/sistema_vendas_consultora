@@ -45,10 +45,6 @@
       </div>
 </form>
 
-
-      <div class="mt-4 text-center">
-        <a href="{{ route('senha-email') }}" class="text-slate-700 hover:text-pink-600">Esqueceu sua senha?</a>
-      </div>
     </div>
 
     <aside class="w-full md:w-1/3 bg-white/80 backdrop-blur rounded-2xl p-8 flex flex-col items-center justify-center shadow-sm">
