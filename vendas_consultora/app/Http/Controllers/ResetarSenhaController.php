@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\usuario;
+use App\Models\usuarios;
 
 class ResetarSenhaController extends Controller
 {
     public function formularioRecuperacao() {
-        return \Inertia\Inertia::render('Auth/FormularioRecuperacao');
+        return view('recuperar-senha');
     }
 
     public function enviarLinkResetar(Request $request) {
@@ -36,7 +37,10 @@ class ResetarSenhaController extends Controller
     }
 
     public function formularioAtualizarSenha($token) {
-        return \Inertia\Inertia::render('Auth/ResetPassword', ['token' => $token]);
+        return view('senha.atualizar', [
+            'token' => $token,
+            'email' => request()->query('email'),
+        ]);
     }
 
     public function atualizarSenha(Request $request) {
@@ -55,7 +59,7 @@ class ResetarSenhaController extends Controller
             return back()->withErrors(['email' => 'Token inválido ou expirado']);
         }
 
-        usuario::where('email', $request->email)->update([
+        usuarios::where('email', $request->email)->update([
             'password' => Hash::make($request->password)
         ]);
 
