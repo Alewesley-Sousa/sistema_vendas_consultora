@@ -1,217 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistema</title>
-    <style>
-        /* Paleta
-   coral        -> #ff6f61
-   deep pink    -> #ff1493
-   hot pink     -> #ff6984
-   dourado      -> #ffd700
-   branquinho   -> #fff5f7
-   azul petroleo-> #2c3e50
-*/
-
-:root{
-  --coral: #ff6f61;
-  --deep-pink: #ff1493;
-  --hot-pink: #ff6984;
-  --gold: #ffd700;
-  --soft-white: #fff5f7;
-  --petrol-blue: #2c3e50;
-  --card-bg: #ffffff;
-  --muted: #6b7280;
-  --radius: 14px;
-  --shadow: 0 12px 30px rgba(44,62,80,0.08);
-  --gap: 18px;
-  --max-width: 1100px;
-  --glass: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,245,247,0.85));
-}
-
-/* Reset simples */
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  color:var(--petrol-blue);
-  background: linear-gradient(180deg, var(--soft-white) 0%, #fff 100%);
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-}
-
-/* Layout */
-.wrap{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:40px;
-  padding:32px;
-  max-width:var(--max-width);
-  margin:0 auto;
-  flex-wrap:wrap;
-}
-
-/* Card do formulário */
-.card{
-  background:var(--card-bg);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  width:100%;
-  max-width:420px;
-  padding:28px;
-  border-top:8px solid var(--deep-pink);
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-
-/* Cabeçalho */
-.card-header .title{
-  font-size:1.6rem;
-  font-weight:700;
-  color:var(--petrol-blue);
-  margin-bottom:6px;
-}
-.card-header .subtitle{
-  color:var(--coral);
-  font-weight:600;
-  font-size:0.95rem;
-}
-
-/* Formulário */
-.form{display:flex;flex-direction:column;gap:12px;margin-top:6px}
-.label{
-  font-size:0.85rem;
-  color:var(--petrol-blue);
-  font-weight:600;
-  margin-bottom:6px;
-}
-.input{
-  width:100%;
-  padding:12px 14px;
-  border-radius:10px;
-  border:1px solid #e6e6e9;
-  background: #fff;
-  font-size:0.95rem;
-  color:var(--petrol-blue);
-  transition: box-shadow .18s ease, border-color .18s ease, transform .06s ease;
-  outline: none;
-}
-.input:focus{
-  box-shadow: 0 6px 18px rgba(255,105,132,0.08);
-  border-color: var(--hot-pink);
-  transform: translateY(-1px);
-}
-
-/* Acentos de foco por campo (email = hot-pink, senha = gold) */
-#email:focus{ box-shadow: 0 8px 24px rgba(255,105,132,0.08); border-color: var(--hot-pink); }
-#password:focus{ box-shadow: 0 8px 24px rgba(255,215,0,0.08); border-color: var(--gold); }
-
-/* Botão principal */
-.actions{margin-top:6px}
-.btn-primary{
-  width:100%;
-  padding:12px 16px;
-  border-radius:10px;
-  font-weight:700;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-  background: linear-gradient(90deg, var(--deep-pink) 0%, var(--hot-pink) 45%, var(--coral) 100%);
-  box-shadow: 0 8px 20px rgba(255,20,147,0.12);
-  transition: transform .12s ease, opacity .12s ease;
-}
-.btn-primary:hover{ transform: translateY(-3px); opacity:0.98; }
-.btn-primary:active{ transform: translateY(-1px); }
-
-/* Extras */
-.extras{ margin-top:10px; text-align:center; }
-.link{ color:var(--petrol-blue); text-decoration:none; font-size:0.9rem; }
-.link:hover{ color:var(--deep-pink); text-decoration:underline; }
-
-/* Painel lateral / marca */
-.panel{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  min-width:220px;
-  max-width:320px;
-  padding:28px;
-  border-radius:14px;
-  background: var(--glass);
-  box-shadow: 0 10px 30px rgba(44,62,80,0.04);
-  text-align:center;
-}
-.badge{
-  background: linear-gradient(90deg, var(--hot-pink), var(--coral));
-  color:#fff;
-  padding:10px 18px;
-  border-radius:999px;
-  font-weight:800;
-  letter-spacing:0.6px;
-  box-shadow: 0 8px 20px rgba(255,105,132,0.12);
-}
-.panel-text{
-  color:var(--petrol-blue);
-  font-weight:600;
-  font-size:0.95rem;
-}
-
-/* Responsividade */
-@media (max-width:900px){
-  .wrap{ padding:20px; gap:20px; }
-  .panel{ order:2; width:100%; max-width:720px; padding:20px; }
-  .card{ order:1; width:100%; max-width:720px; }
-}
-
-@media (max-width:480px){
-  .card{ padding:20px; border-top-width:6px; }
-  .panel{ padding:18px; }
-  .title{ font-size:1.3rem; }
-  .input{ padding:10px 12px; }
-  .btn-primary{ padding:10px 12px; }
-}
-
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login - Sistema</title>
+  @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
-<body class="page-bg">
+<body class="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+  <div class="max-w-4xl w-full flex gap-8 flex-wrap">
+    <div class="w-full md:w-1/2 bg-white rounded-2xl shadow-lg p-8 border-t-8 border-pink-600">
+      <header class="mb-4">
+        <h1 class="text-2xl font-extrabold text-slate-800">Bem-vinda, Consultora</h1>
+        <p class="text-pink-500 font-semibold">Acesse sua conta e conquiste seus objetivos!</p>
+      </header>
 
-    <div class="wrap">
-        <div class="card">
-            <header class="card-header">
-                <h1 class="title">Bem-vinda, Consultora</h1>
-                <p class="subtitle">Acesse sua conta e conquiste seus objetivos!</p>
-            </header>
+    <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-3">
+      @csrf
 
-            <form method="POST" action="{{ route('login') }}" class="form">
-                @csrf
+      <label for="email" class="text-sm font-semibold text-slate-700">Email</label>
+      <input id="email" name="email" type="email" required autofocus
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-4 focus:ring-pink-100"
+            value="{{ old('email') }}" />
 
-                <label for="email" class="label">Email</label>
-                <input id="email" name="email" type="email" required autofocus class="input">
+      <label for="password" class="text-sm font-semibold text-slate-700">Senha</label>
+      <input id="password" name="password" type="password" required
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-4 focus:ring-yellow-100" />
 
-                <label for="password" class="label">Senha</label>
-                <input id="password" name="password" type="password" required class="input">
+      <div class="flex items-center justify-between mt-2">
+        <label for="remember" class="inline-flex items-center text-sm text-slate-700">
+          <input id="remember" type="checkbox" name="remember"
+                class="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                {{ old('remember') ? 'checked' : '' }}>
+          <span class="ml-2">Lembrar-me</span>
+        </label>
 
-                <div class="actions">
-                    <button type="submit" class="btn-primary">Entrar</button>
-                </div>
-            </form>
+        <a href="{{ route('senha-email') }}" class="text-sm text-slate-700 hover:text-pink-600">Esqueceu sua senha?</a>
+      </div>
 
-            <div class="extras">
-                <a href="{{ route('senha-email') }}" class="link">Esqueceu sua senha?</a>
-            </div>
-        </div>
+      <div class="mt-3">
+        <button type="submit"
+                class="w-full bg-gradient-to-r from-pink-600 via-pink-500 to-rose-400 text-white font-bold py-3 rounded-lg shadow-md hover:translate-y-[-2px] transition-transform">
+          Entrar
+        </button>
+      </div>
+</form>
 
-        <aside class="panel">
-            <div class="badge">Meta</div>
-            <p class="panel-text">Empoderamento • Energia • Profissionalismo</p>
-        </aside>
+
+      <div class="mt-4 text-center">
+        <a href="{{ route('senha-email') }}" class="text-slate-700 hover:text-pink-600">Esqueceu sua senha?</a>
+      </div>
     </div>
 
+    <aside class="w-full md:w-1/3 bg-white/80 backdrop-blur rounded-2xl p-8 flex flex-col items-center justify-center shadow-sm">
+      <div class="px-4 py-2 rounded-full bg-gradient-to-r from-rose-400 to-pink-500 text-white font-extrabold">Meta</div>
+      <p class="mt-3 text-slate-800 font-semibold">Empoderamento • Energia • Profissionalismo</p>
+    </aside>
+  </div>
 </body>
 </html>
