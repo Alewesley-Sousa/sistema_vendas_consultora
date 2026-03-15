@@ -33,8 +33,7 @@
                 {{ old('remember') ? 'checked' : '' }}>
           <span class="ml-2">Lembrar-me</span>
         </label>
-
-        <a href="{{ route('senha-email') }}" class="text-sm text-slate-700 hover:text-pink-600">Esqueceu sua senha?</a>
+        <a href="{{ route('senha-formulario') }}" class="text-sm text-slate-700 hover:text-pink-600">Esqueceu sua senha?</a>
       </div>
 
       <div class="mt-3">
@@ -44,11 +43,6 @@
         </button>
       </div>
 </form>
-
-
-      <div class="mt-4 text-center">
-        <a href="{{ route('senha-email') }}" class="text-slate-700 hover:text-pink-600">Esqueceu sua senha?</a>
-      </div>
     </div>
 
     <aside class="w-full md:w-1/3 bg-white/80 backdrop-blur rounded-2xl p-8 flex flex-col items-center justify-center shadow-sm">
