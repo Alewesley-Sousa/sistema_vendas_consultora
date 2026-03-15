@@ -6,7 +6,7 @@
  */
 
 
-namespace App\Models;
+namespace App\Models\Tipo;
 
 use Illuminate\Database\Eloquent\Model;
 

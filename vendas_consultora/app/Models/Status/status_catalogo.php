@@ -5,7 +5,7 @@
  * Descrição: model responsavel pelas configurações da tabela referente
  */
 
-namespace App\Models;
+namespace App\Models\Status;
 
 use Illuminate\Database\Eloquent\Model;
 
