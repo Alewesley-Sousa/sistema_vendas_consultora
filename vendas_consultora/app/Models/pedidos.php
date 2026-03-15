@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\devolucoes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class pedidos extends Model
 {
@@ -17,4 +19,10 @@ class pedidos extends Model
         'valor_total' => 'decimal:2',
         'tipo_pagamento' => 'string'
     ];
+
+    //RELACIONAMENTO DEVOLUÇÕES
+    public function devolucoes(): HasMany
+    {
+        return $this->hasMany(devolucoes::class, 'pedido_id', 'id');
+    }
 }

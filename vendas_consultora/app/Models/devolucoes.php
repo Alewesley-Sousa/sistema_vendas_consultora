@@ -2,7 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\clientes;
+use App\Models\pedidos;
+use App\Models\Status\status_devolucao;
+use App\Models\Tipo\tipo_devolucao;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class devolucoes extends Model
 {
@@ -22,4 +27,28 @@ class devolucoes extends Model
         'data_solicitacao' => 'datetime',
         'usuario_responsavel' => 'integer'
     ];
+
+    // RELACIONAMENTO PEDIDOS
+    public function pedido(): BelongsTo
+    {
+        return $this->belongsTo(pedidos::class, 'pedido_id', 'id');
     }
+
+    // RELACIONAMENTO CLIENTE
+    public function cliente(): BelongsTo
+    {
+        return $this->belongsTo(clientes::class, 'cliente_id', 'id');
+    }
+
+    // RELACIONAMENTO TIPO DEVOLUÇÃO
+    public function tipoDevolucao(): BelongsTo
+    {
+        return $this->belongsTo(tipo_devolucao::class, 'tipo_devolucao_id', 'id');
+    }
+
+    //RELACIONAMENTO STATUS DEVOLUÇÃO
+    public function statusDevolucao(): BelongsTo
+    {
+        return $this->belongsTo(status_devolucao::class, 'status_id', 'id');
+    }
+}
