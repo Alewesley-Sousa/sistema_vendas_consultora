@@ -8,8 +8,11 @@
 namespace App\Models\Status;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\catalogos;
 
 class status_catalogo extends Model
 {
-    //
+    public function catalogos() {
+        return $this->belongsTo(catalogos::class, 'status_id', 'id');
+    }
 }
