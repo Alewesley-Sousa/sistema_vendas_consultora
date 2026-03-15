@@ -4,7 +4,9 @@ namespace App\Models;
 
 // Importante: Troque 'Model' por 'Authenticatable'
 use App\Models\clientes;
+use App\Models\comissoes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable; 
 use Illuminate\Notifications\Notifiable;
 
@@ -31,9 +33,15 @@ class usuarios extends Authenticatable
     {
         return $this->senha;
     }
-
+    // CLIENTES RELACIONAMENTO
     public function clientes(): HasMany
     {
         return $this->hasMany(clientes::class, 'consultora_id', 'id');
+    }
+
+    // COMISSAO RELACIONAMENTO
+    public function comissao(): HasOne
+    {
+        return $this->hasOne(comissoes::class, 'consultora_id', 'id');
     }
 }
