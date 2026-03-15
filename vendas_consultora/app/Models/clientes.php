@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\usuarios;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class clientes extends Model
 {
@@ -21,4 +23,9 @@ class clientes extends Model
         'consultora_id' => 'integer',
         'cpf' => 'string'
     ];
+
+    public function usuarios(): BelongsTo
+    {
+        return $this->belongsTo(usuarios::class, 'consultora_id', 'id');
+    }
 }
