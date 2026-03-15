@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use App\Models\usuario;
 use App\Models\usuarios;
 
 class ResetarSenhaController extends Controller
@@ -26,18 +25,20 @@ class ResetarSenhaController extends Controller
             'created_at' => now()
         ]);
 
-        $link = url('/reset-password/'.$token);
+         $link = url('/reset-password/'.$token.'?email='.urlencode($request->email));
+
 
         // Enviar email
-        Mail::raw("Clique aqui para resetar sua senha: $link", function($message) use ($request) {
+        Mail::raw("Clique aqui para resetar sua senha: $link", function($message) use ($request, $link) {
             $message->to($request->email)->subject('Recuperação de senha');
         });
+
 
         return back()->with('status', 'Link de recuperação enviado!');
     }
 
     public function formularioAtualizarSenha($token) {
-        return view('senha.atualizar', [
+        return view('atualizarSenha', [
             'token' => $token,
             'email' => request()->query('email'),
         ]);
@@ -60,7 +61,7 @@ class ResetarSenhaController extends Controller
         }
 
         usuarios::where('email', $request->email)->update([
-            'password' => Hash::make($request->password)
+            'senha' => Hash::make($request->password)
         ]);
 
         DB::table('resetar_senha_tokens')->where(['email' => $request->email])->delete();
