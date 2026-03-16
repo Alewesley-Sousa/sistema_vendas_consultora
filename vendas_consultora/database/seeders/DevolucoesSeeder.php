@@ -24,7 +24,7 @@ class DevolucoesSeeder extends Seeder
                 'status_id' => 1,
                 'data_decisao' => null,
                 'data_solicitacao' => Carbon::now(),
-                'usuario_responsavel' => 1,
+                'usuario_responsavel' => 1
             ],
             [
                 'pedido_id' => 2,
@@ -34,7 +34,7 @@ class DevolucoesSeeder extends Seeder
                 'status_id' => 2,
                 'data_decisao' => Carbon::now(),
                 'data_solicitacao' => Carbon::now(),
-                'usuario_responsavel' => 1,
+                'usuario_responsavel' => 1
             ],
             [
                 'pedido_id' => 3,
@@ -44,7 +44,7 @@ class DevolucoesSeeder extends Seeder
                 'status_id' => 2,
                 'data_decisao' => Carbon::now(),
                 'data_solicitacao' => Carbon::now(),
-                'usuario_responsavel' => 1,
+                'usuario_responsavel' => 1
             ],
             [
                 'pedido_id' => 4,
@@ -54,7 +54,7 @@ class DevolucoesSeeder extends Seeder
                 'status_id' => 3,
                 'data_decisao' => Carbon::now(),
                 'data_solicitacao' => Carbon::now(),
-                'usuario_responsavel' => 1,
+                'usuario_responsavel' => 1
             ],
             [
                 'pedido_id' => 5,
@@ -64,7 +64,7 @@ class DevolucoesSeeder extends Seeder
                 'status_id' => 1,
                 'data_decisao' => null,
                 'data_solicitacao' => Carbon::now(),
-                'usuario_responsavel' => 1,
+                'usuario_responsavel' => 1
             ],
             [
                 'pedido_id' => 6,
@@ -74,7 +74,27 @@ class DevolucoesSeeder extends Seeder
                 'status_id' => 2,
                 'data_decisao' => Carbon::now(),
                 'data_solicitacao' => Carbon::now(),
-                'usuario_responsavel' => 1,
+                'usuario_responsavel' => 1
+            ],
+            [
+                'pedido_id' => 7,
+                'cliente_id' => 8,
+                'motivo' => 'Produto entregue fora do prazo, devolução parcial',
+                'tipo_devolucao_id' => 1,
+                'status_id' => 3,
+                'data_decisao' => Carbon::now(),
+                'data_solicitacao' => Carbon::now(),
+                'usuario_responsavel' => 1
+            ],
+            [
+                'pedido_id' => 9,
+                'cliente_id' => 10,
+                'motivo' => 'Itens faltando na caixa, devolução total',
+                'tipo_devolucao_id' => 2,
+                'status_id' => 1,
+                'data_decisao' => null,
+                'data_solicitacao' => Carbon::now(),
+                'usuario_responsavel' => 1
             ]
         ];
 
