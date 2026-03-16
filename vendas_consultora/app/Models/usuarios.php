@@ -3,12 +3,14 @@
 namespace App\Models;
 
 // Importante: Troque 'Model' por 'Authenticatable'
-use App\Models\clientes;
-use App\Models\comissoes;
+
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable; 
 use Illuminate\Notifications\Notifiable;
+use App\Models\clientes;
+use App\Models\comissoes;
+use App\Models\historico_cargo;
 
 class usuarios extends Authenticatable
 {
@@ -44,4 +46,12 @@ class usuarios extends Authenticatable
     {
         return $this->hasOne(comissoes::class, 'consultora_id', 'id');
     }
+
+    // RELACIONAMENTO HISTORICO CARGO
+    public function historicoCargo(): HasMany
+    {
+        return $this->hasMany(historico_cargo::class, 'consultora_id', 'id');
+    }
+
+    
 }

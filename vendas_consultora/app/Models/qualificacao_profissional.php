@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\historico_cargo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class qualificacao_profissional extends Model
 {
@@ -20,4 +21,10 @@ class qualificacao_profissional extends Model
         'total_recrutas_ativos' => 'integer',
         'status' => 'string'
     ];
+
+    // RELACIONAMENTO HISTORICO CARGO
+    public function historicoCargo(): HasOne
+    {
+        return $this->hasOne(historico_cargo::class, 'qualificacao_profissional_id', 'id');
+    }
 }
