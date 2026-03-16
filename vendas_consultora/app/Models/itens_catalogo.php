@@ -5,8 +5,10 @@ namespace App\Models;
 use App\Models\catalogos;
 use App\Models\produtos;
 use App\Models\Status\status_item_catalogo;
+use App\Models\itens_resgate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class itens_catalogo extends Model
 {
@@ -41,5 +43,11 @@ class itens_catalogo extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(status_item_catalogo::class, 'status_id', 'id');
+    }
+
+    // RELACIONAMENTO ITENS RESGATE
+    public function itensResgate(): HasOne
+    {
+        return $this->hasOne(itens_resgate::class, 'item_catalogo_id', 'id');
     }
 }

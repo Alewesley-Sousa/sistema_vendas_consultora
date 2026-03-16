@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class resgates extends Model
 {
@@ -19,4 +20,10 @@ class resgates extends Model
         'status_id' => 'integer',
         'usuario_responsavel' => 'integer'
     ];
+
+    // RELACIONAMENTO ITENS RESGATE
+    public function itensResgate(): HasMany
+    {
+        return $this->hasMany(itens_resgate::class, 'resgate_id', 'id');
+    }
 }
