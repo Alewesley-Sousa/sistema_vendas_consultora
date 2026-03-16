@@ -11,6 +11,7 @@ use App\Models\historico_comissoes;
 use App\Models\logs;
 use App\Models\metas;
 use App\Models\pedidos;
+use App\Models\qualificacao_profissional;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable; 
@@ -39,6 +40,13 @@ class usuarios extends Authenticatable
     {
         return $this->senha;
     }
+
+    // RELACIONAMENTO QUALIFICAÇÃO PROFISSIONAL
+    public function qualificacaoProfissional(): HasMany
+    {
+        return $this->hasMany(qualificacao_profissional::class, 'consultora_id', 'id');
+    }
+
     // CLIENTES RELACIONAMENTO
     public function clientes(): HasMany
     {
