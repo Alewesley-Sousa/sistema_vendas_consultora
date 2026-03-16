@@ -1,11 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\AutenticacaoController;
+use App\Http\Controllers\Auth\ResetarSenhaController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\AutenticacaoController;
-use App\Http\Controllers\ResetarSenhaController;
 
 Route::get('/login', [AutenticacaoController::class, 'showLogin'])->name('login');
 Route::post('/login', [AutenticacaoController::class, 'login']);
