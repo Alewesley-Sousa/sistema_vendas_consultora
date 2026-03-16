@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Auth\Controllers;
+namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\usuarios;
+use App\Http\Controllers\Controller;
 
 class ResetarSenhaController extends Controller
 {
