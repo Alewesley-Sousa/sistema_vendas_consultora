@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\pedidos;
 use Illuminate\Database\Eloquent\Model;
 
 class pagamentos extends Model
@@ -23,4 +24,10 @@ class pagamentos extends Model
         'data_solicitacao' => 'date',
         'data_confirmacao' => 'date'
     ];
+
+    // RELACIONAMENTO PEDIDO
+    public function pedido()
+    {
+        return $this->belongsTo(pedidos::class, 'pedido_id', 'id');
+    }
 }

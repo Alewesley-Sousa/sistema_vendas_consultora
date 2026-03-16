@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\produtos;
 use Illuminate\Database\Eloquent\Model;
 
 class movimentacao_estoque extends Model
@@ -20,4 +21,10 @@ class movimentacao_estoque extends Model
         'tipo_movimentacao_id' => 'integer',
         'usuario_responsavel' => 'integer'
     ];
+
+    // RELACIONAMENTO PRODUTO
+    public function produto()
+    {
+        return $this->belongsTo(produtos::class, 'produto_id', 'id');
+    }
 }

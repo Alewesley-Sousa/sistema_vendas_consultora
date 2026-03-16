@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\clientes;
 use App\Models\devolucoes;
 use App\Models\itens_pedido;
+use App\Models\pagamentos;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class pedidos extends Model
 {
@@ -37,5 +40,17 @@ class pedidos extends Model
     public function itensPedidos(): HasMany
     {
         return $this->hasMany(itens_pedido::class, 'pedido_id', 'id');
+    }
+
+    // RELACIONAMENTO PAGAMENTOS
+    public function pagamentos(): HasOne
+    {
+        return $this->hasOne(pagamentos::class, 'pedido_id', 'id');
+    }
+
+    // RELACIONAMENTO CLIENTES
+    public function clientes(): HasOne
+    {
+        return $this->hasOne(clientes::class, 'id', 'cliente_id');
     }
 }

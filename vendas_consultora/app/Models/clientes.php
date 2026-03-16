@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\devolucoes;
+use App\Models\pedidos;
 use App\Models\usuarios;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -35,5 +36,11 @@ class clientes extends Model
     public function devolucoes(): HasMany
     {
         return $this->hasMany(devolucoes::class, 'cliente_id', 'id');
+    }
+
+    // RELACIONAMENTO PEDIDOS
+    public function pedidos(): HasMany
+    {
+        return $this->hasMany(pedidos::class, 'cliente_id', 'id');
     }
 }

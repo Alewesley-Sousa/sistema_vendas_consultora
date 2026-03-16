@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Status\status_meta;
 use App\Models\usuarios;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,5 +32,11 @@ class metas extends Model
     public function consultora(): BelongsTo
     {
         return $this->belongsTo(usuarios::class, 'consultora_id', 'id');
+    }
+
+    // RELACIONAMENTO STATUS METAS
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(status_meta::class, 'status_id', 'id');
     }
 }

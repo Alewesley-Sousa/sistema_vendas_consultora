@@ -12,6 +12,7 @@ use App\Models\estoques;
 use App\Models\itens_catalogo;
 use App\Models\itens_pedido;
 use App\Models\itens_promocao;
+use App\Models\movimentacao_estoque;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -55,5 +56,11 @@ class produtos extends Model
     public function itensPromocao(): HasMany
     {
         return $this->hasMany(itens_promocao::class, 'produto_id', 'id');
+    }
+
+    // RELACIONAMENTO MOVIMENTAÇÃO ESTOQUE
+    public function movimentacaoEstoque(): HasMany
+    {
+        return $this->hasMany(movimentacao_estoque::class, 'produto_id', 'id');
     }
 }
