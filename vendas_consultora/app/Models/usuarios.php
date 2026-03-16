@@ -12,6 +12,7 @@ use App\Models\logs;
 use App\Models\metas;
 use App\Models\pedidos;
 use App\Models\qualificacao_profissional;
+use App\Models\resgates;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable; 
@@ -39,6 +40,12 @@ class usuarios extends Authenticatable
     public function getAuthPassword()
     {
         return $this->senha;
+    }
+
+    // RELACIONAMENTO RESGATE
+    public function resgates(): HasMany
+    {
+        return $this->hasMany(resgates::class, 'consultora_id', 'id');
     }
 
     // RELACIONAMENTO QUALIFICAÇÃO PROFISSIONAL

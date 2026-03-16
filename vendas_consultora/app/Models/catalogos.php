@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\itens_catalogo;
+use App\Models\resgates;
 use App\Models\Status\status_catalogo;
 use App\Models\Tipo\tipo_catalogo;
-use App\Models\itens_catalogo;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class catalogos extends Model
 {
@@ -37,5 +39,11 @@ class catalogos extends Model
     // RELACIONAMENTO ITENS CATALOGO
     public function itensCatalogo() {
         return $this->hasMany(itens_catalogo::class, 'catalogo_id', 'id');
+    }
+
+    // RELACIONAMENTO RESGATE
+    public function resgates(): HasMany
+    {
+        return $this->hasMany(resgates::class, 'catalogo_id', 'id');
     }
 }
