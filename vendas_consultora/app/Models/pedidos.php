@@ -25,4 +25,10 @@ class pedidos extends Model
     {
         return $this->hasMany(devolucoes::class, 'pedido_id', 'id');
     }
+
+    //RELACIONAMENTO HISTORICO COMISSOES
+    public function historicoComissoes(): HasMany
+    {
+        return $this->hasMany(historico_comissoes::class, 'pedido_id', 'id');
+    }
 }

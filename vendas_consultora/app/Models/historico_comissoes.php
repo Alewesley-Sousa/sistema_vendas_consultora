@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\pedidos;
+use App\Models\Tipo\tipos_comissao;
+use App\Models\usuarios;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class historico_comissoes extends Model
 {
@@ -23,4 +27,22 @@ class historico_comissoes extends Model
         'data_movimentacao' => 'datetime',
         'usuario_responsavel' => 'integer'
     ];
+
+    // RELACIONAMENTO CONSULTORA
+    public function usuario(): BelongsTo
+    {
+        return $this->belongsTo(usuarios::class, 'consultora_id', 'id');
+    }
+
+    //RELACIONAMENTO PEDIDO
+    public function pedido(): BelongsTo
+    {
+        return $this->belongsTo(pedidos::class, 'pedido_id', 'id');
+    }
+
+    //RELACIONAMENTO TIPO COMISSÃO
+    public function tipoComissao(): BelongsTo
+    {
+        return $this->belongsTo(tipos_comissao::class, 'tipo_comissao_id', 'id');
+    }
 }

@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\clientes;
 use App\Models\comissoes;
 use App\Models\historico_cargo;
+use App\Models\historico_comissoes;
 
 class usuarios extends Authenticatable
 {
@@ -53,5 +54,11 @@ class usuarios extends Authenticatable
         return $this->hasMany(historico_cargo::class, 'consultora_id', 'id');
     }
 
-    
+    //RELACIONAMENTO HISTORICO COMISSOES
+    public function historicoComissoes(): HasMany
+    {
+        return $this->hasMany(historico_comissoes::class, 'consultora_id', 'id');
+    }
+
+
 }
