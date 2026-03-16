@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\pedidos;
+use App\Models\Tipo\tipo_movimentacao_comissao;
 use App\Models\Tipo\tipos_comissao;
 use App\Models\usuarios;
 use Illuminate\Database\Eloquent\Model;
@@ -44,5 +45,11 @@ class historico_comissoes extends Model
     public function tipoComissao(): BelongsTo
     {
         return $this->belongsTo(tipos_comissao::class, 'tipo_comissao_id', 'id');
+    }
+
+    //RELACIONAMENTO TIPO MOVIMENTAÇÃO
+    public function tipoMovimentacao(): BelongsTo
+    {
+        return $this->belongsTo(tipo_movimentacao_comissao::class, 'tipo_movimentacao_id', 'id');
     }
 }

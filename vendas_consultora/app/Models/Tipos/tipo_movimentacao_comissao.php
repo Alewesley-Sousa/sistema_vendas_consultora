@@ -8,9 +8,14 @@
 
 namespace App\Models\Tipo;
 
+use App\Models\historico_comissoes;
 use Illuminate\Database\Eloquent\Model;
 
 class tipo_movimentacao_comissao extends Model
 {
-    //
+    // RELACIONAMENTO HISTÓRICO COMISSÕES
+    public function historicoComissoes()
+    {
+        return $this->hasOne(historico_comissoes::class, 'tipo_movimentacao_id', 'id');
+    }
 }
