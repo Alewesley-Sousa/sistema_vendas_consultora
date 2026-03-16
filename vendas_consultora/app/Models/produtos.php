@@ -11,6 +11,7 @@ namespace App\Models;
 use App\Models\estoques;
 use App\Models\itens_catalogo;
 use App\Models\itens_pedido;
+use App\Models\itens_promocao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -48,5 +49,11 @@ class produtos extends Model
     public function itensPedidos(): HasMany
     {
         return $this->hasMany(itens_pedido::class, 'produto_id', 'id');
+    }
+
+    // RELACIONAMENTO ITENS PROMOÇÃO
+    public function itensPromocao(): HasMany
+    {
+        return $this->hasMany(itens_promocao::class, 'produto_id', 'id');
     }
 }

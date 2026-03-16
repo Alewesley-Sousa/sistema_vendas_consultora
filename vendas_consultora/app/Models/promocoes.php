@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\itens_promocao;
 
 class promocoes extends Model
 {
@@ -21,4 +23,10 @@ class promocoes extends Model
         'data_fim' => 'date',
         'status_id' => 'integer'
     ];
+
+    // RELACIONAMENTO ITENS PROMOÇÃO
+    public function itensPromocao(): HasMany
+    {
+        return $this->hasMany(itens_promocao::class, 'promocao_id', 'id');
+    }
 }
