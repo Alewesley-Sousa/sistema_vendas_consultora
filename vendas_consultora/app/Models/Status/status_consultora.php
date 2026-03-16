@@ -8,9 +8,14 @@
 
 namespace App\Models\Status;
 
+use App\Models\usuarios;
 use Illuminate\Database\Eloquent\Model;
 
 class status_consultora extends Model
 {
-    //
+    // RELACIONAMENTO USUARIO
+    public function usuarios()
+    {
+        return $this->hasOne(usuarios::class, 'status_id', 'id');
+    }
 }
