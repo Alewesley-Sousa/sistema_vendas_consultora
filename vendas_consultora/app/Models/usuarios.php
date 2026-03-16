@@ -13,6 +13,7 @@ use App\Models\metas;
 use App\Models\pedidos;
 use App\Models\qualificacao_profissional;
 use App\Models\resgates;
+use App\Models\solicitacoes_saque;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable; 
@@ -40,6 +41,12 @@ class usuarios extends Authenticatable
     public function getAuthPassword()
     {
         return $this->senha;
+    }
+
+    // RELACIONAMENTO SOLICITACAO SAQUE
+    public function solicitacoesSaque(): HasMany
+    {
+        return $this->hasMany(solicitacoes_saque::class, 'consultora_id', 'id');
     }
 
     // RELACIONAMENTO RESGATE

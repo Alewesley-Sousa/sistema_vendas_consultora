@@ -8,9 +8,14 @@
 
 namespace App\Models\Status;
 
+use App\Models\solicitacoes_saque;
 use Illuminate\Database\Eloquent\Model;
 
 class status_solicitacao_saque extends Model
 {
-    //
+    // RELACIONAMENTO SOLICITACOES SAQUE
+    public function solicitacoesSaque()
+    {
+        return $this->hasOne(solicitacoes_saque::class, 'status_id', 'id');
+    }
 }
