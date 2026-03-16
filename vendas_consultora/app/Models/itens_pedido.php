@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class itens_pedido extends Model
 {
@@ -20,4 +21,9 @@ class itens_pedido extends Model
         'preco_unitario' => 'decimal:2'
     ];
     
+    // RELACIONAMENTO ITENS DEVOLUÇÃO
+    public function itensDevolucao(): HasOne
+    {
+        return $this->hasOne(itens_devolucao::class, 'item_pedido_id', 'id');
+    }
 }

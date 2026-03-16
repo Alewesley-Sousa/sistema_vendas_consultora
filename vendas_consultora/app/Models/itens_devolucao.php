@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\devolucoes;
+use App\Models\itens_pedido;
 use Illuminate\Database\Eloquent\Model;
 
 class itens_devolucao extends Model
@@ -23,4 +25,16 @@ class itens_devolucao extends Model
         'quantidade' => 'integer',
         'subtotal' => 'decimal:2',
     ];
+
+    // RELACIONAMENTO ITEM PEDIDO
+    public function itemPedido()
+    {
+        return $this->belongsTo(itens_pedido::class, 'item_pedido_id', 'id');
+    }
+
+    // RELACIONAMENTO DEVOLUCAO
+    public function devolucao()
+    {
+        return $this->belongsTo(devolucoes::class, 'devolucao_id', 'id');
+    }
 }

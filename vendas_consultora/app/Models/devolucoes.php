@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Models\clientes;
+use App\Models\itens_devolucao as ModelsItens_devolucao;
 use App\Models\pedidos;
 use App\Models\Status\status_devolucao;
 use App\Models\Tipo\tipo_devolucao;
+use App\Models\Itens_devolucao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class devolucoes extends Model
 {
@@ -50,5 +53,11 @@ class devolucoes extends Model
     public function statusDevolucao(): BelongsTo
     {
         return $this->belongsTo(status_devolucao::class, 'status_id', 'id');
+    }
+
+    // RELACIONAMENTO ITENS DEVOLUÇÃO
+    public function itensDevolucao(): HasOne
+    {
+        return $this->hasOne(Itens_devolucao::class, 'devolucao_id', 'id');
     }
 }
