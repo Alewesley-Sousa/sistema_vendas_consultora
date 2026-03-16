@@ -8,7 +8,9 @@
 
 namespace App\Models;
 
+use App\Models\produtos;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class estoques extends Model
 {
@@ -20,4 +22,10 @@ class estoques extends Model
         'produto_id' => 'integer',
         'quantidade' => 'integer'
     ];
+
+    // RELACIONAMENTO PRODUTO
+    public function produto(): BelongsTo
+    {
+        return $this->belongsTo(produtos::class, 'produto_id', 'id');
+    }
 }
