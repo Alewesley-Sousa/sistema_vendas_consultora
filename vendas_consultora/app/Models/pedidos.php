@@ -6,7 +6,9 @@ use App\Models\clientes;
 use App\Models\devolucoes;
 use App\Models\itens_pedido;
 use App\Models\pagamentos;
+use App\Models\usuarios;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -52,5 +54,11 @@ class pedidos extends Model
     public function clientes(): HasOne
     {
         return $this->hasOne(clientes::class, 'id', 'cliente_id');
+    }
+
+    // RELACIONAMENTO CONSULTORA
+    public function consultora(): BelongsTo
+    {
+        return $this->belongsTo(usuarios::class, 'consultora_id', 'id');
     }
 }

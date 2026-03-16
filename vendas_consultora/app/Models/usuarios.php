@@ -10,6 +10,7 @@ use App\Models\historico_cargo;
 use App\Models\historico_comissoes;
 use App\Models\logs;
 use App\Models\metas;
+use App\Models\pedidos;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable; 
@@ -77,5 +78,11 @@ class usuarios extends Authenticatable
     public function metasLider(): HasMany
     {
         return $this->hasMany(metas::class, 'lider_id', 'id');
+    }
+
+    // RELACIONAMENTO PEDIDOS
+    public function pedidos(): HasMany
+    {
+        return $this->hasMany(pedidos::class, 'consultora_id', 'id');
     }
 }
