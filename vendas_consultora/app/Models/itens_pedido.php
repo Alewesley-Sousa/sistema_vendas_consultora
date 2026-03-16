@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\produtos;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class itens_pedido extends Model
@@ -25,5 +27,17 @@ class itens_pedido extends Model
     public function itensDevolucao(): HasOne
     {
         return $this->hasOne(itens_devolucao::class, 'item_pedido_id', 'id');
+    }
+
+    // RELACIONAMENTO PRODUTO
+    public function produto(): BelongsTo
+    {
+        return $this->belongsTo(produtos::class, 'produto_id', 'id');
+    }
+
+    // RELACIONAMENTO PEDIDOS
+    public function pedido(): BelongsTo
+    {
+        return $this->belongsTo(pedidos::class, 'pedido_id', 'id');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\devolucoes;
+use App\Models\itens_pedido;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -30,5 +31,11 @@ class pedidos extends Model
     public function historicoComissoes(): HasMany
     {
         return $this->hasMany(historico_comissoes::class, 'pedido_id', 'id');
+    }
+
+    // RELACIONAMENTO ITENS PEDIDOS
+    public function itensPedidos(): HasMany
+    {
+        return $this->hasMany(itens_pedido::class, 'pedido_id', 'id');
     }
 }

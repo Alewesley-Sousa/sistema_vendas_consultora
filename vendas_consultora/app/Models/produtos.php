@@ -9,6 +9,8 @@
 namespace App\Models;
 
 use App\Models\estoques;
+use App\Models\itens_catalogo;
+use App\Models\itens_pedido;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -40,5 +42,11 @@ class produtos extends Model
     public function itensCatalogo(): HasMany
     {
         return $this->hasMany(itens_catalogo::class, 'produto_id', 'id');
+    }
+
+    // RELACIONAMENTO ITENS PEDIDOS
+    public function itensPedidos(): HasMany
+    {
+        return $this->hasMany(itens_pedido::class, 'produto_id', 'id');
     }
 }
