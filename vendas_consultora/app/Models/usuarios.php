@@ -60,5 +60,11 @@ class usuarios extends Authenticatable
         return $this->hasMany(historico_comissoes::class, 'consultora_id', 'id');
     }
 
+    // RELACIONAMENTO LOGS
+    public function logs(): HasMany
+    {
+        return $this->hasMany(logs::class, 'usuario_id', 'id');
+    }
 
+    
 }

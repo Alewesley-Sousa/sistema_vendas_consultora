@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\usuarios;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class logs extends Model
 {
@@ -21,4 +23,12 @@ class logs extends Model
         'ip_origem' => 'string',
         'data_hora' => 'datetime'
     ];
+
+    // RELACIONAMENTO USUÁRIO
+    public function usuario(): BelongsTo
+    {
+        return $this->belongsTo(usuarios::class, 'usuario_id', 'id');
+    }
+
+    
 }
