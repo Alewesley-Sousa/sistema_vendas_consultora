@@ -4,14 +4,16 @@ namespace App\Models;
 
 // Importante: Troque 'Model' por 'Authenticatable'
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Foundation\Auth\User as Authenticatable; 
-use Illuminate\Notifications\Notifiable;
 use App\Models\clientes;
 use App\Models\comissoes;
 use App\Models\historico_cargo;
 use App\Models\historico_comissoes;
+use App\Models\logs;
+use App\Models\metas;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable; 
+use Illuminate\Notifications\Notifiable;
 
 class usuarios extends Authenticatable
 {
@@ -66,5 +68,14 @@ class usuarios extends Authenticatable
         return $this->hasMany(logs::class, 'usuario_id', 'id');
     }
 
-    
+    // RELACIONAMENTO METAS
+    public function metasConsultora(): HasMany
+    {
+        return $this->hasMany(metas::class, 'consultora_id', 'id');
+    }
+
+    public function metasLider(): HasMany
+    {
+        return $this->hasMany(metas::class, 'lider_id', 'id');
+    }
 }
