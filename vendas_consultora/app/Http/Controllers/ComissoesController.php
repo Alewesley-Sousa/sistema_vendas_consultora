@@ -4,54 +4,41 @@ namespace App\Http\Controllers;
 
 use App\Models\comissoes;
 use App\Http\Controllers\Controller;
+use App\Services\ComissaoService;
 use Illuminate\Http\Request;
 
 class ComissoesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $comissaoService;
+
+    public function __construct(ComissaoService $comissaoService)
     {
-        //
+        $this->comissaoService = $comissaoService;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function visualizar(comissoes $comissoes)
     {
-        //
+        $comissao =  $this->comissaoService->comissaoUsuario();
+
+        return response()->json([
+            'status' => 'sucesso',
+            'data' => $comissao
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function armazernar(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(comissoes $comissoes)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(comissoes $comissoes)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, comissoes $comissoes)
+    public function atualizar(Request $request, comissoes $comissoes)
     {
         //
     }
@@ -59,7 +46,7 @@ class ComissoesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(comissoes $comissoes)
+    public function apagar(comissoes $comissoes)
     {
         //
     }
