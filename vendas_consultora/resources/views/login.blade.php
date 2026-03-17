@@ -17,6 +17,23 @@
     <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-3">
       @csrf
 
+      {{-- Mensagens de erro --}}
+      @if ($errors->any())
+        <div role="alert" class="mb-3 p-3 bg-red-50 border border-red-200 text-red-800 rounded">
+          <ul class="list-disc pl-5">
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
+      @if (session('error'))
+        <div role="alert" class="mb-3 p-3 bg-red-50 border border-red-200 text-red-800 rounded">
+          {{ session('error') }}
+        </div>
+      @endif
+
       <label for="email" class="text-sm font-semibold text-slate-700">Email</label>
       <input id="email" name="email" type="email" required autofocus
             class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-4 focus:ring-pink-100"
