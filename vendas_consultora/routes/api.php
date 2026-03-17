@@ -16,3 +16,6 @@ Route::get('comissao', [ComissoesController::class, 'visualizar']);
 
 //pegar meta atual do usuario autenticado
 Route::get('meta', [MetasController::class, 'metaAtual']);
+
+// pegar progresso atual da meta do usuario autenticado
+Route::get('meta/progresso', [MetasController::class, 'progressoMeta']);
