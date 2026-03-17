@@ -3,63 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\metas;
+use App\Services\MetaService;
 use Illuminate\Http\Request;
 
 class MetasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $metaService;
+
+    public function __construct(MetaService $metaService)
     {
-        //
+        $this->metaService = $metaService;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    public function metaAtual() {
+        $meta = $this->metaService->metaUsuario();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(metas $metas)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(metas $metas)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, metas $metas)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(metas $metas)
-    {
-        //
+        return response()->json([
+            'status' => 'sucesso',
+            'data' => $meta
+        ]);
     }
 }
