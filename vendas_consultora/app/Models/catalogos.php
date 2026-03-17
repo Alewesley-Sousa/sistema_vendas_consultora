@@ -28,7 +28,7 @@ class catalogos extends Model
 
     // RELACIONAMENTO STATUS CATEGORIA
     public function categoriaStatus() {
-        return $this->hasOne(status_catalogo::class, 'status_id', 'id');
+        return $this->belongsTo(status_catalogo::class, 'status_id', 'id');
     }
 
     // RELACIONAMENTO TIPO CATEGORIA

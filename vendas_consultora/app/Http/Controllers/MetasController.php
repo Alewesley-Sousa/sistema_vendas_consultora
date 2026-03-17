@@ -17,10 +17,17 @@ class MetasController extends Controller
 
     public function metaAtual() {
         $meta = $this->metaService->metaUsuario();
-
         return response()->json([
             'status' => 'sucesso',
             'data' => $meta
+        ]);
+    }
+
+    public function progressoMeta() {
+        $progresso = $this->metaService->progressoMeta();
+        return response()->json([
+            'status' => 'sucesso',
+            'data' => $progresso
         ]);
     }
 }

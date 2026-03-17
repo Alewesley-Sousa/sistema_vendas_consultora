@@ -16,6 +16,6 @@ class status_meta extends Model
     // RELACIONAMENTO METAS
     public function metas()
     {
-        return $this->hasOne(metas::class, 'status_id', 'id');
+        return $this->hasMany(metas::class, 'status_id', 'id');
     }
 }

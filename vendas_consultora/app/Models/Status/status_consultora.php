@@ -16,6 +16,6 @@ class status_consultora extends Model
     // RELACIONAMENTO USUARIO
     public function usuarios()
     {
-        return $this->hasOne(usuarios::class, 'status_id', 'id');
+        return $this->hasMany(usuarios::class, 'status_id', 'id');
     }
 }
