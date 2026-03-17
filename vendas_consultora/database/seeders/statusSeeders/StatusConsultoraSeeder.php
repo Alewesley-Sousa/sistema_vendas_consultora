@@ -5,7 +5,7 @@
  * Descrição: seeder responsavel por criar dados iniciais da tabela status_consultora
  */
 
-namespace Database\Seeders;
+namespace Database\Seeders\statusSeeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;

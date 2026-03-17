@@ -11,8 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class resgates extends Model
 {
-    public $tiemstamps = false;
+    public $timestamps = false;
 
+    protected $CREATED_AT = 'data';
+    
     protected $guarded = [
         'id', 'usuario_responsavel'
     ];
@@ -22,7 +24,7 @@ class resgates extends Model
         'consultora_id' => 'integer',
         'catalogo_id' => 'integer',
         'status_id' => 'integer',
-        'usuario_responsavel' => 'integer'
+        'data' => 'datetime'
     ];
 
     // RELACIONAMENTO ITENS RESGATE

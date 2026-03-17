@@ -7,6 +7,7 @@
 
 namespace Database\Seeders\tipoSeeders;
 
+use App\Models\Tipos\tipo_catalogo;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,6 +18,19 @@ class TipoCatalogoSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $tipoCatalogo = [
+            [
+                'nome' => 'recompensas',
+                'descricao' => 'Catálogo de recompensas para resgate de pontos'
+            ], 
+            [
+                'nome' => 'vendas',
+                'descricao' => 'Catálogo de produtos disponíveis para venda'
+            ]
+        ];
+
+        foreach ($tipoCatalogo as $tipo) {
+            tipo_catalogo::forceCreate($tipo);
+        }
     }
 }

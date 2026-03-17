@@ -5,7 +5,7 @@
  * Descrição: model responsavel pelas configurações da tabela referente
  */
 
-namespace App\Models\Tipo;
+namespace App\Models\Tipos;
 
 use App\Models\historico_comissoes;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class tipos_comissao extends Model
 {
+    public $timestamps = false;
+    protected $table = 'tipos_comissao';
+
     // RELACIONAMENTO HISTÓRICO COMISSÕES
     public function historicoComissoes(): HasMany
     {

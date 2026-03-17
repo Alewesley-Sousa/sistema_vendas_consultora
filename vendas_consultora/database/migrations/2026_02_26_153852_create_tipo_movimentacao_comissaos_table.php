@@ -18,14 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('nome', 50);
             $table->text('descricao')->nullable();
-            $table->timestamps();
         });
-
-        DB::table('tipo_movimentacao_comissao')->insert([
-            ['nome' => 'venda', 'descricao' => 'Movimentação de comissão gerada por venda'],
-            ['nome' => 'estorno', 'descricao' => 'Movimentação de comissão gerada por estorno de venda, se a comissão ja tiver sido sacada, o valor do estorno será descontado do próximo saque'],
-            ['nome' => 'saque', 'descricao' => 'Movimentação de comissão gerada por solicitação de saque'],
-        ]);
     }
 
     public function down()

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('consultora_id')->constrained('usuarios');
             $table->foreignId('catalogo_id')->constrained('catalogos')->cascadeOnDelete();
             $table->foreignId('status_id')->constrained('status_resgate');
+            $table->timestamp('data')->useCurrent();
         });
     }
 

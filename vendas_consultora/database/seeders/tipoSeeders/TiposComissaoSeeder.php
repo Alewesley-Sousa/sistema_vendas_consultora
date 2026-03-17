@@ -7,6 +7,7 @@
 
 namespace Database\Seeders\tipoSeeders;
 
+use App\Models\Tipos\tipos_comissao;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,6 +18,31 @@ class TiposComissaoSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $tiposComissao = [
+            [
+                'nome' => 'vendas direta',
+                'descricao' => 'Comissão gerada por venda direta da consultora',
+                'taxa' => 0.30
+            ],
+            [
+                'nome' => 'nivel 1',
+                'descricao' => 'Comissão gerada por venda da rede da sua rede (1º nível)',
+                'taxa' => 0.05
+            ],
+            [
+                'nome' => 'nivel 2',
+                'descricao' => 'Comissão gerada por venda da rede da sua rede (2º nível)',
+                'taxa' => 0.02
+            ],
+            [
+                'nome' => 'administrativa',
+                'descricao' => 'taxa administrativa sobre cada venda',
+                'taxa' => 0.02
+            ]
+        ];
+
+        foreach ($tiposComissao as $tipo) {
+            tipos_comissao::create($tipo);
+        }
     }
 }

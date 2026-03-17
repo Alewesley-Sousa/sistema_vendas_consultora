@@ -18,15 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('nome', 50);
             $table->text('descricao')->nullable();
-            $table->timestamps();
         });
-
-        DB::table('tipo_promocao')->insert([
-            ['nome' => 'desconto percentual', 'descricao' => 'Promoção que oferece um desconto percentual sobre o preço do produto'],
-            ['nome' => 'desconto fixo', 'descricao' => 'Promoção que oferece um desconto fixo em reais sobre o preço do produto'],
-            ['nome' => 'brinde', 'descricao' => 'Promoção que oferece um brinde na compra do produto'],
-            ['nome' => 'frete grátis', 'descricao' => 'Promoção que oferece frete grátis na compra do produto'],
-        ]);
     }
 
     public function down()

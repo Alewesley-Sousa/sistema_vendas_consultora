@@ -18,13 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('nome', 50);
             $table->text('descricao')->nullable();
-            $table->timestamps();
         });
-
-        DB::table('tipo_devolucao')->insert([
-            ['nome' => 'parcial', 'descricao' => 'Devolução parcial do pedido, onde apenas alguns itens são devolvidos'],
-            ['nome' => 'total', 'descricao' => 'Devolução total do pedido, onde todos os itens são devolvidos'],
-        ]);
     }
 
     public function down()

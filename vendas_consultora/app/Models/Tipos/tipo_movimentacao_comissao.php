@@ -6,13 +6,16 @@
  */
 
 
-namespace App\Models\Tipo;
+namespace App\Models\Tipos;
 
 use App\Models\historico_comissoes;
 use Illuminate\Database\Eloquent\Model;
 
 class tipo_movimentacao_comissao extends Model
 {
+    public $timestamps = false;
+    protected $table = 'tipo_movimentacao_comissao';
+
     // RELACIONAMENTO HISTÓRICO COMISSÕES
     public function historicoComissoes()
     {

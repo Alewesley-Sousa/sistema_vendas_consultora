@@ -7,10 +7,13 @@
 
 namespace Database\Seeders\tipoSeeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class TipoSeeder extends Seeder
 {
+    use WithoutModelEvents;
+
     public function run(): void
     {
         $this->call([
@@ -19,7 +22,7 @@ class TipoSeeder extends Seeder
             TipoMovimentacaoEstoqueSeeder::class,
             TipoMovimentacaoComissaoSeeder::class,
             TipoPromocaoSeeder::class,
-            TipoComissaoSeeder::class
+            TiposComissaoSeeder::class
         ]);
     }
 }

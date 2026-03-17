@@ -7,6 +7,7 @@
 
 namespace Database\Seeders\tipoSeeders;
 
+use App\Models\Tipos\tipo_movimentacao_estoque;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,6 +18,19 @@ class TipoMovimentacaoEstoqueSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $tiposMovimentacao = [
+            [
+                'nome' => 'entrada',
+                'descricao' => 'Movimentação de entrada de estoque'
+            ],
+            [
+                'nome' => 'saida',
+                'descricao' => 'Movimentação de saída de estoque'
+            ]
+        ];
+
+        foreach ($tiposMovimentacao as $tipo) {
+            tipo_movimentacao_estoque::create($tipo);
+        }
     }
 }

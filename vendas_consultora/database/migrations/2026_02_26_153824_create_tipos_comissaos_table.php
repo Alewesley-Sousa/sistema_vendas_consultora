@@ -19,15 +19,7 @@ return new class extends Migration
             $table->string('nome', 50);
             $table->decimal('taxa', 5, 2)->nullable();
             $table->text('descricao')->nullable();
-            $table->timestamps();
         });
-
-        DB::table('tipos_comissao')->insert([
-            ['nome' => 'Venda Direta', 'descricao' => 'Comissão gerada por venda direta da consultora', 'taxa' => 0.30],
-            ['nome' => 'nivel 1', 'descricao' => 'Comissão gerada por venda da rede direta (1º nível)', 'taxa' => 0.05],
-            ['nome' => 'nivel 2', 'descricao' => 'Comissão gerada por venda da rede da sua rede (2º nível)', 'taxa' => 0.02],
-            ['nome' => 'administrativa', 'descricao' => 'taxa administrativa sobre cada venda', 'taxa' => 0.02],
-        ]);
     }
 
     public function down()

@@ -7,10 +7,13 @@
 
 namespace Database\Seeders\statusSeeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class StatusSeeder extends Seeder
 {
+    use WithoutModelEvents;
+
     public function run(): void
     {
         $this->call([

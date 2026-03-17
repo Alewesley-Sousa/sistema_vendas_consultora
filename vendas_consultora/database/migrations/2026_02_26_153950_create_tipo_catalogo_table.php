@@ -18,13 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('nome', 50);
             $table->text('descricao')->nullable();
-            $table->timestamps();
         });
-
-        DB::table('tipo_catalogo')->insert([
-            ['nome' => 'recompensas', 'descricao' => 'Catálogo de recompensas para resgate de pontos'],
-            ['nome' => 'vendas', 'descricao' => 'Catálogo de produtos disponíveis para venda'],
-        ]);
     }
 
     public function down()

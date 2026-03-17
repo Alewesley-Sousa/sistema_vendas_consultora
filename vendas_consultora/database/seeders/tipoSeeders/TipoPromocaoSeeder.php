@@ -7,6 +7,7 @@
 
 namespace Database\Seeders\tipoSeeders;
 
+use App\Models\Tipos\tipo_promocao;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,6 +18,27 @@ class TipoPromocaoSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $tiposPromocao = [
+            [
+                'nome' => 'desconto',
+                'descricao' => 'Promoção de desconto em produtos'
+            ],
+            [
+                'nome' => 'frete grátis',
+                'descricao' => 'Promoção de frete grátis para compras acima de um valor'
+            ],
+            [
+                'nome' => 'desconto fixo',
+                'descricao' => 'Promoção que oferece um desconto fixo em reais sobre o preço do produto'
+            ],
+            [
+                'nome' => 'brinde',
+                'descricao' => 'Promoção que oferece um brinde na compra de produtos selecionados'
+            ]
+        ];
+
+        foreach ($tiposPromocao as $tipo) {
+            tipo_promocao::create($tipo);
+        }
     }
 }

@@ -16,9 +16,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // \Database\Seeders\StatusSeeders\ProducaoSeeder::class,
-            // \Database\Seeders\tipo\TesteSeeder::class,
-            UsuariosSeeder::class,
+            // \Database\Seeders\statusSeeders\StatusSeeder::class,
+            // \Database\Seeders\tipoSeeders\TipoSeeder::class,
+            // UsuariosSeeder::class,
             // CategoriasSeeder::class,
             // ProdutosSeeder::class,
             // EstoquesSeeder::class,
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             // HistoricoComissoesSeeder::class,
             // SolicitacoesSaqueSeeder::class,
             // CatalogosSeeder::class,
-            // ItensCatalogoSeeder::class,
+            ItensCatalogoSeeder::class,
             // ResgatesSeeder::class,
             // ItensResgateSeeder::class,
             // PromocoesSeeder::class,

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\itens_catalogo;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -115,5 +116,9 @@ class ItensCatalogoSeeder extends Seeder
                 'produto_id' => 12
             ]
         ];
+
+        foreach ($itensCatalogo as $item) {
+            itens_catalogo::forceCreate($item);
+        }
     }
 }

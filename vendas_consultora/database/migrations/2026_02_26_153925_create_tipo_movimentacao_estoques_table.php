@@ -18,13 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('nome', 50);
             $table->text('descricao')->nullable();
-            $table->timestamps();
         });
-
-        DB::table('tipo_movimentacao_estoque')->insert([
-            ['nome' => 'Entrada', 'descricao' => 'Movimentação de entrada de estoque'],
-            ['nome' => 'Saída', 'descricao' => 'Movimentação de saída de estoque'],
-        ]);
     }
 
     public function down()
