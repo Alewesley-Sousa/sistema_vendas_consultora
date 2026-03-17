@@ -13,6 +13,6 @@ use App\Models\catalogos;
 class status_catalogo extends Model
 {
     public function catalogos() {
-        return $this->belongsTo(catalogos::class, 'status_id', 'id');
+        return $this->hasMany(catalogos::class, 'status_id', 'id');
     }
 }

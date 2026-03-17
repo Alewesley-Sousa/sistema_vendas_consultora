@@ -10,13 +10,13 @@ namespace App\Models\Status;
 
 use App\Models\itens_catalogo;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class status_item_catalogo extends Model
 {
     // RELACIONAMENTO ITENS CATALOGO
-    public function itensCatalogo(): HasOne
+    public function itensCatalogo(): HasMany
     {
-        return $this->hasOne(itens_catalogo::class, 'status_id', 'id');
+        return $this->hasMany(itens_catalogo::class, 'status_id', 'id');
     }
 }
