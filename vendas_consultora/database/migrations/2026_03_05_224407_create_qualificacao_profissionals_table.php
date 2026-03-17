@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('qualificacao_profissionals', function (Blueprint $table) {
+        Schema::create('qualificacao_profissional', function (Blueprint $table) {
             $table->id();
             $table->foreignId('consultora_id')->constrained('usuarios')->cascadeOnDelete();
             $table->timestamp('data_validacao');

@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class qualificacao_profissional extends Model
 {
     public $timestamps = false;
-
+    protected $table = 'qualificacao_profissional';
+    
     protected $fillable = [
         'data_validacao', 'data_referencia'
     ];

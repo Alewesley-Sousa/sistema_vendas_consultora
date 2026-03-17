@@ -101,7 +101,7 @@ class ItensPromocaoSeeder extends Seeder
 
 
         foreach ($itensP as $itemP) {
-            itens_promocoes::forceCreate($itemP);
+            itens_promocao::forceCreate($itemP);
         }
     }
 }

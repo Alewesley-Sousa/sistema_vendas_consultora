@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('itens_promocaos', function (Blueprint $table) {
+        Schema::create('itens_promocao', function (Blueprint $table) {
             $table->id();
             $table->foreignId('produto_id')->constrained('produtos')->cascadeOnDelete();
             $table->foreignId('promocao_id')->constrained('promocoes')->cascadeOnDelete();
-            $table->integer('quantidade-min')->default(1);
+            $table->integer('quantidade_min')->default(1);
             $table->string('condicao_especial', 100)->nullable();
         });
     }

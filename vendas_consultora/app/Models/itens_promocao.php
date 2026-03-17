@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class itens_promocao extends Model
 {
     public $timestamps = false;
-
+    protected $table = 'itens_promocao';
     protected $guarded = [
         'id'
     ];

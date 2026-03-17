@@ -14,18 +14,12 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('status_metas', function (Blueprint $table) {
+        Schema::create('status_meta', function (Blueprint $table) {
             $table->id();
             $table->string('nome', 50);
             $table->text('descricao')->nullable();
             $table->timestamps();
         });
-
-        DB::table('status_metas')->insert([
-            ['nome' => 'Atingida', 'descricao' => 'Meta foi atingida'],
-            ['nome' => 'Não atingida', 'descricao' => 'Meta não foi atingida'],
-            ['nome' => 'Ativa', 'descricao' => 'Meta está ativa'],
-        ]);
     }
 
     public function down()

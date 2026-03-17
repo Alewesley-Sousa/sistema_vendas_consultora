@@ -18,7 +18,7 @@ class StatusMetaSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('status_metas')->insert([
+        DB::table('status_meta')->insert([
             [
                 'nome' => 'Atingida', 
                 'descricao' => 'Meta foi atingida',

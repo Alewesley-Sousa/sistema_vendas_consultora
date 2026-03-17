@@ -17,7 +17,7 @@ class StatusItemCatalogoSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('status_item_catalogos')->insert([
+        DB::table('status_item_catalogo')->insert([
             [
                 'nome' => 'Disponível', 
                 'descricao' => 'Item disponível para compra',

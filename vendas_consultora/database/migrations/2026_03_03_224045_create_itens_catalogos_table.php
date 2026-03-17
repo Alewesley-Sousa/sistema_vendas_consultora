@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('itens_catalogos', function (Blueprint $table) {
+        Schema::create('itens_catalogo', function (Blueprint $table) {
             $table->id();
-            $table->decimal('preco', 10, 2);
-            $table->integer('pontos_necessarios');
+            $table->decimal('preco', 10, 2)->nullable();
+            $table->integer('pontos_necessarios')->nullable();
             $table->foreignId('status_id')->constrained('status_item_catalogo');
             $table->integer('estoque_disponivel')->default(1);
             $table->foreignId('produto_id')->constrained('produtos')->cascadeOnDelete();

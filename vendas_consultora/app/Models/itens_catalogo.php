@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class itens_catalogo extends Model
 {
     public $timestamps = false;
+    protected $table = 'itens_catalogo';
 
     protected $guarded = [
         'id'

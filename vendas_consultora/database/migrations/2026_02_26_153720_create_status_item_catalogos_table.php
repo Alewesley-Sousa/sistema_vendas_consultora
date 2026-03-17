@@ -14,17 +14,12 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('status_item_catalogos', function (Blueprint $table) {
+        Schema::create('status_item_catalogo', function (Blueprint $table) {
             $table->id();
             $table->string('nome', 50);
             $table->text('descricao')->nullable();
             $table->timestamps();
         });
-
-        DB::table('status_item_catalogos')->insert([
-            ['nome' => 'Disponível', 'descricao' => 'Item disponível para compra'],
-            ['nome' => 'Indisponível', 'descricao' => 'Item indisponível para compra'],
-        ]);
     }
 
     public function down()

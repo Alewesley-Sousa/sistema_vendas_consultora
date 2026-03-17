@@ -12,7 +12,8 @@ class historico_cargo extends Model
     public $timestamps = false;
 
     protected $CREATED_AT = 'data_mudanca';
-
+    protected $table = 'historico_cargo';
+    
     protected $guarded = [
         'id', 'data_mudanca'
     ];
