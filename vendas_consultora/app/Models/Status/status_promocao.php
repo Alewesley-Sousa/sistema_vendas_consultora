@@ -10,13 +10,14 @@ namespace App\Models\Status;
 
 use App\Models\promocoes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class status_promocao extends Model
 {
     // RELACIONAMENTO PROMOÇÕES
-    public function promocoes(): HasOne
+    public function promocoes(): HasMany
     {
-        return $this->hasOne(promocoes::class, 'status_id', 'id');
+        return $this->hasMany(promocoes::class, 'status_id', 'id');
     }
 }

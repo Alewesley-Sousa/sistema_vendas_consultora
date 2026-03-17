@@ -8,13 +8,15 @@
 
 namespace App\Models\Status;
 
+use App\Models\pedidos;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class status_pedido extends Model
 {
     // RELACIONAMENTO PEDIDO
-    public function comments(): HasMany
+    public function pedidos(): HasMany
     {
-        return $this->hasMany(Comment::class, 'foreign_key', 'local_key');
+        return $this->hasMany(pedidos::class, 'status_id', 'id');
     }
 }

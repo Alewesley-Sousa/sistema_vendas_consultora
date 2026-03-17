@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\produtos;
+use App\Models\Tipo\tipo_movimentacao_estoque;
 use Illuminate\Database\Eloquent\Model;
 
 class movimentacao_estoque extends Model
@@ -26,5 +27,11 @@ class movimentacao_estoque extends Model
     public function produto()
     {
         return $this->belongsTo(produtos::class, 'produto_id', 'id');
+    }
+
+    // RELACIONAMENTO TIPO MOVIMENTAÇÃO
+    public function tipoMovimentacao()
+    {
+        return $this->belongsTo(tipo_movimentacao_estoque::class, 'tipo_movimentacao_id', 'id');
     }
 }

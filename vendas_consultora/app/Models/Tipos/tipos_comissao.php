@@ -9,13 +9,13 @@ namespace App\Models\Tipo;
 
 use App\Models\historico_comissoes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class tipos_comissao extends Model
 {
     // RELACIONAMENTO HISTÓRICO COMISSÕES
-    public function historicoComissoes(): HasOne
+    public function historicoComissoes(): HasMany
     {
-        return $this->hasOne(historico_comissoes::class, 'tipo_comissao_id', 'id');
+        return $this->hasMany(historico_comissoes::class, 'tipo_comissao_id', 'id');
     }
 }

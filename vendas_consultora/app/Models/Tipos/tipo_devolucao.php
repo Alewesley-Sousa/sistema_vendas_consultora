@@ -10,13 +10,13 @@ namespace App\Models\Tipo;
 
 use App\Models\devolucoes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class tipo_devolucao extends Model
 {
     // RELACIONAMENTO DEVOLUCAO
-    public function devolucao(): HasOne
+    public function devolucao(): HasMany
     {
-        return $this->hasOne(devolucoes::class, 'tipo_devolucao_id', 'id');
+        return $this->hasMany(devolucoes::class, 'tipo_devolucao_id', 'id');
     }
 }

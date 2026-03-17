@@ -16,6 +16,6 @@ class status_solicitacao_saque extends Model
     // RELACIONAMENTO SOLICITACOES SAQUE
     public function solicitacoesSaque()
     {
-        return $this->hasOne(solicitacoes_saque::class, 'status_id', 'id');
+        return $this->hasMany(solicitacoes_saque::class, 'status_id', 'id');
     }
 }

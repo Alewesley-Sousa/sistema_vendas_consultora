@@ -16,6 +16,6 @@ class tipo_movimentacao_comissao extends Model
     // RELACIONAMENTO HISTÓRICO COMISSÕES
     public function historicoComissoes()
     {
-        return $this->hasOne(historico_comissoes::class, 'tipo_movimentacao_id', 'id');
+        return $this->hasMany(historico_comissoes::class, 'tipo_movimentacao_id', 'id');
     }
 }

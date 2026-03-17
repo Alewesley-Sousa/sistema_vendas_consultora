@@ -33,7 +33,7 @@ class catalogos extends Model
 
     // RELACIONAMENTO TIPO CATEGORIA
     public function categoriaTipo() {
-        return $this->hasOne(tipo_catalogo::class, 'tipo_categoria_id', 'id');
+        return $this->belongsTo(tipo_catalogo::class, 'tipo_categoria_id', 'id');
     }
 
     // RELACIONAMENTO ITENS CATALOGO

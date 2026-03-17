@@ -14,6 +14,6 @@ use App\Models\catalogos;
 class tipo_catalogo extends Model
 {
     public function catalogos() {
-        return $this->belongsTo(catalogos::class, 'tipo_categoria_id', 'id');
+        return $this->hasMany(catalogos::class, 'tipo_categoria_id', 'id');
     }
 }

@@ -16,6 +16,6 @@ class status_resgate extends Model
     // RELACIONAMENTO RESGATE
     public function resgates()
     {
-        return $this->hasOne(resgates::class, 'status_id', 'id');
+        return $this->hasMany(resgates::class, 'status_id', 'id');
     }
 }
