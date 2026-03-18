@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\metas;
 use App\Services\MetaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MetasController extends Controller
 {
@@ -15,11 +16,11 @@ class MetasController extends Controller
         $this->metaService = $metaService;
     }
 
-    public function metaAtual() {
-        $meta = $this->metaService->metaUsuario();
+    public function metaAtual($idUsuario) {
+        $meta = $this->metaService->metaUsuario($idUsuario);
         return response()->json([
             'status' => 'sucesso',
-            'data' => $meta
+            'data' => $meta->toArray()
         ]);
     }
 
