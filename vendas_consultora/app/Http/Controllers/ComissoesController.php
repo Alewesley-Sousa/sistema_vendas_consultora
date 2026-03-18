@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\comissoes;
 use App\Http\Controllers\Controller;
+use App\Models\comissoes;
 use App\Services\ComissaoService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ComissoesController extends Controller
 {
@@ -19,11 +20,11 @@ class ComissoesController extends Controller
     public function visualizar()
     {
         $idUsuario = Auth::id();
-        $comissao =  $this->comissaoService->comissaoUsuario();
+        $comissao =  $this->comissaoService->comissaoUsuario($idUsuario);
 
         return response()->json([
             'status' => 'sucesso',
-            'data' => $comissao->saldo
+            'data' => $comissao->saldo_liquido
         ]);
     }
 
