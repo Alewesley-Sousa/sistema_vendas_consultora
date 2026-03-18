@@ -43,6 +43,7 @@
                 Entrar
               </button>
           </div>
+          <div class="hidden animate-bounce [animation-delay:-0.3s] [animation-delay:-0.15s] opacity-70 cursor-not-allowed"></div>
       </form>
     </div>
 
