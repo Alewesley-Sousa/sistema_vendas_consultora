@@ -12,10 +12,10 @@ use App\Http\Controllers\UsuariosController;
 
 Route::get('/usr', [UsuariosController::class, 'index']);
 // Pegar comissao atual do usuario autenticado
-Route::get('comissao', [ComissoesController::class, 'visualizar']);
+Route::get('/comissao/{id}', [ComissoesController::class, 'visualizar']);
 
 //pegar meta atual do usuario autenticado
-Route::get('meta', [MetasController::class, 'metaAtual']);
+Route::get('/meta/{id}', [MetasController::class, 'metaAtual']);
 
 // pegar progresso atual da meta do usuario autenticado
-Route::get('meta/progresso', [MetasController::class, 'progressoMeta']);
+Route::get('/meta/progresso/{id}', [MetasController::class, 'progressoMeta']);
