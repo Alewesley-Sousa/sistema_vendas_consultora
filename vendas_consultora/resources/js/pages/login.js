@@ -12,11 +12,24 @@ export function initLogin() {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Reset da interface
+        // 1. Início do Loading
         errorDiv.classList.add('hidden');
         errorList.innerHTML = '';
         btnEntrar.disabled = true;
-        btnEntrar.innerText = 'Autenticando...';
+        
+        // Adicionamos as reticências com a classe animate-pulse do Tailwind
+        btnEntrar.innerHTML = `
+            <span class="flex items-center justify-center gap-1">
+                Autenticando
+                <span class="inline-flex">
+                    <span class="animate-bounce [animation-delay:-0.3s]">.</span>
+                    <span class="animate-bounce [animation-delay:-0.15s]">.</span>
+                    <span class="animate-bounce">.</span>
+                </span>
+            </span>
+        `;
+        // Adiciona um feedback visual de desabilitado
+        btnEntrar.classList.add('opacity-70', 'cursor-not-allowed');
 
         const payload = {
             email: document.getElementById('email').value,
@@ -26,16 +39,16 @@ export function initLogin() {
 
         try {
             const response = await AuthService.login(payload);
-            
-            // Redireciona para o dashboard retornado pelo backend (PHP)
             window.location.href = response.redirect;
 
         } catch (error) {
+            // 2. Fim do Loading (em caso de erro)
             btnEntrar.disabled = false;
-            btnEntrar.innerText = 'Entrar';
+            btnEntrar.innerText = 'Entrar'; // Volta o texto original
+            btnEntrar.classList.remove('opacity-70', 'cursor-not-allowed');
+            
             errorDiv.classList.remove('hidden');
 
-            // Se o Laravel retornar erros de validação (422) ou mensagem simples
             const message = error.message || 'Erro ao realizar login.';
             const li = document.createElement('li');
             li.innerText = message;

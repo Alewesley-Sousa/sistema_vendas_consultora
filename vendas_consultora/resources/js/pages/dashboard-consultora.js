@@ -4,6 +4,7 @@ import { DashboardConsultoraService } from '../api/dashboardConsultora';
 export function initDashboardConsultora() {
     const comissaoSpan = document.getElementById('comissao');
     const metaSpan = document.getElementById('meta');
+    const metaProgressoSpan = document.getElementById('metaProgresso');
     const erroP = document.getElementById('erro');
 
     if (!comissaoSpan) return; // Só roda se estiver na página certa
@@ -11,14 +12,16 @@ export function initDashboardConsultora() {
     async function carregarDados() {
         try {
             // Buscamos os dados em paralelo (mais rápido)
-            const [metaRes, comissaoRes] = await Promise.all([
+            const [metaRes, comissaoRes, metaProgressoRes] = await Promise.all([
                 DashboardConsultoraService.getMeta(),
-                DashboardConsultoraService.getComissao()
+                DashboardConsultoraService.getComissao(),
+                DashboardConsultoraService.getProgresso()
             ]);
 
             // Atualiza o HTML
             // Note que seu controller envia dentro de 'data'
-            metaSpan.innerText = `R$ ${metaRes.data}`; 
+            metaSpan.innerText = `R$ ${metaRes.data}`;
+            metaProgressoSpan.innerText = `${metaProgressoRes.data}%`;
             comissaoSpan.innerText = `R$ ${comissaoRes.data}`;
 
         } catch (err) {
