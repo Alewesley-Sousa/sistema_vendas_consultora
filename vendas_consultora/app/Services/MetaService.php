@@ -9,10 +9,8 @@ use Illuminate\Support\Facades\DB;
 
 class MetaService 
 {
-    public function metaUsuario(){
-        $idUsuario = Auth::id(); // pega o id do usuario autenticado
-
-        return metas::where('consultora_id', $idUsuario)->where('status_id', 3); // pega o registro da meta que esta ativa do usuario longado
+    public function metaUsuario($idUsuario){
+        return metas::where('consultora_id', $idUsuario)->where('status_id', 3)->get(); // pega o registro da meta que esta ativa do usuario longado
     }
 
     public function progressoMeta() {
