@@ -9,9 +9,16 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return redirect()->route('login');
 });
-
+// pagina de login
 Route::get('/login', [AutenticacaoController::class, 'showLogin'])->name('login');
+
+// Processa o login
 Route::post('/login', [AutenticacaoController::class, 'login']);
+
+// cria o token
+Route::post('/login/token', [AutenticacaoController::class, 'geraToken']);
+
+// Processa o logout
 Route::post('/logout', [AutenticacaoController::class, 'logout'])->name('logout');
 
 // Rotas protegidas por cargo

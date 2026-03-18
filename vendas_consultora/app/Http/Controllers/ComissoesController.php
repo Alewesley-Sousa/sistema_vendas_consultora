@@ -16,13 +16,14 @@ class ComissoesController extends Controller
         $this->comissaoService = $comissaoService;
     }
 
-    public function visualizar(comissoes $comissoes)
+    public function visualizar()
     {
+        $idUsuario = Auth::id();
         $comissao =  $this->comissaoService->comissaoUsuario();
 
         return response()->json([
             'status' => 'sucesso',
-            'data' => $comissao
+            'data' => $comissao->saldo
         ]);
     }
 

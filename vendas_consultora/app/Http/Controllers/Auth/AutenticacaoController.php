@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\usuarios;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -25,33 +26,35 @@ class AutenticacaoController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
-
             $user = Auth::user();
 
+            // url de destino
+            $redirectUrl = match ($user->cargo) {
+                'distribuidora' => route('distribuidora.dashboard'),
+                'lider'         => route('lider.dashboard'),
+                'consultora'    => route('consultora.dashboard'),
+                default         => null,
+            };
 
-            // Redireciona conforme o cargo já existente na tabela
-            switch ($user->cargo) {
-                case 'distribuidora':
-                    return redirect()->route('distribuidora.dashboard');
-                case 'lider':
-                    return redirect()->route('lider.dashboard');
-                case 'consultora':
-                    return redirect()->route('consultora.dashboard');
-            default:
-                // Se não tiver cargo válido, faz logout e mostra erro
+            if (!$redirectUrl) {
                 Auth::logout();
-                return back()->withErrors([
-                    'cargo' => 'Seu usuário não possui permissão para acessar o sistema.',
-                ]);
+                return response()->json(['message' => 'Usuário sem permissão.'], 403);
             }
+
+            // Criamos o token no mesmo momento do login para o Axios guardar
+            $token = $user->createToken('web-acesso')->plainTextToken;
+
+            return response()->json([
+                'redirect' => $redirectUrl,
+                'token'    => $token,
+                'user'     => $user->name
+            ]);
         }
 
-        return back()->withErrors([
-            'email' => 'Credenciais inválidas.',
-        ]);
-
+        // Se falhar, retornamos erro JSON
+        return response()->json(['message' => 'Credenciais inválidas.'], 401);
     }
-    
+
     public function logout(Request $request)
     {
         Auth::logout();

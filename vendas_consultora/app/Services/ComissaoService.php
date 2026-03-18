@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class ComissaoService 
 {
-    public function comissaoUsuario(){
-        $idUsuario = Auth::id(); // pega o id do usuario autenticado
-
+    public function comissaoUsuario($idUsuario) {
         return comissoes::find($idUsuario);
     }
 }

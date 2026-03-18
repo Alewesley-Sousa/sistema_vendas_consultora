@@ -10,28 +10,37 @@ use Illuminate\Support\Facades\DB;
 class MetaService 
 {
     public function metaUsuario($idUsuario){
-        return metas::where('consultora_id', $idUsuario)->where('status_id', 3)->get(); // pega o registro da meta que esta ativa do usuario longado
+        return metas::where('consultora_id', $idUsuario)->where('status_id', 3)->first(); // pega o registro da meta que esta ativa do usuario longado
     }
 
     public function progressoMeta() {
-        // pega o id do usuario autenticado (UA)
-        $idUsuario = Auth::id();
-        // pega a meta ativa do UA
-        $metaAtual = metas::where('consultora_id', $idUsuario)->where('status_id', 3);
-        // pega o mês de referencia
+$idUsuario = $idUsuario ?? Auth::id();
+        
+        // Usamos o método acima para pegar a meta
+        $metaAtual = $this->metaUsuario($idUsuario);
+
+        // Segurança: Se não houver meta ativa, retorna 0 de progresso
+        if (!$metaAtual) {
+            return 0;
+        }
+
+        // Se data_referencia não for um objeto Carbon, adicione no Model: protected $casts = ['data_referencia' => 'date'];
         $mes = $metaAtual->data_referencia->format('m');
-
-        // pega o ano de referencia
-        $ano = $metaAtual->data_referencia->format('y');
-
-        // pega o valor da meta atual
+        $ano = $metaAtual->data_referencia->format('Y'); // 'Y' maiúsculo para 2026
         $valorMeta = $metaAtual->valor_meta;
 
-        // total de vendas no mês e ano de referencia
-        $totalVendido = pedidos::whereMonth('created_at', $mes)->whereYear('created_at', $ano)->where('status_id', 6)->sum('valor');
+        // Total vendido (Status 6 = Pago/Finalizado)
+        $totalVendido = pedidos::where('consultora_id', $idUsuario) // Importante filtrar por consultora aqui também!
+            ->whereMonth('created_at', $mes)
+            ->whereYear('created_at', $ano)
+            ->where('status_id', 6)
+            ->sum('valor');
 
-        // pega o percentual em decimal do progresso da meta
-        return ( $valorMeta / $totalVendido );
+        if ($valorMeta <= 0) return 0;
+
+        // O cálculo correto de progresso é (O que eu fiz / O que eu preciso fazer)
+        // Se eu vendi 500 e a meta é 1000, fiz 0.5 (50%)
+        return ($totalVendido / $valorMeta);
     }
 }
 

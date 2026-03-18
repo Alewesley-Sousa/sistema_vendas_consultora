@@ -27,23 +27,17 @@
       </div>
     @endif
 
-    <form method="POST" action="{{ route('senha-email') }}" class="space-y-4">
-      @csrf
+    <form id="formRecuperar" class="space-y-4">
+        <div id="msg-feedback" class="hidden mb-4 p-3 rounded"></div>
 
-      <label class="block text-sm font-semibold text-slate-700">Email</label>
-      <input type="email" name="email" value="{{ old('email') }}" required autofocus
-             class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-100" />
+        <label class="block text-sm font-semibold text-slate-700">Email</label>
+        <input type="email" id="email_recuperar" required autofocus
+              class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-100" />
 
-      <div>
-        <button type="submit"
+        <button type="submit" id="btnEnviar"
                 class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-lg transition">
           Enviar link de recuperação
         </button>
-      </div>
-
-      <div class="text-center text-sm text-slate-600">
-        <a href="{{ route('login') }}" class="text-pink-600 hover:underline">Voltar ao login</a>
-      </div>
     </form>
   </div>
 </body>

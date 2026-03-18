@@ -16,6 +16,7 @@ class ResetarSenhaController extends Controller
         return view('recuperar-senha');
     }
 
+    // Enviar o link
     public function enviarLinkResetar(Request $request) {
         $request->validate(['email' => 'required|email']);
 
@@ -26,17 +27,16 @@ class ResetarSenhaController extends Controller
             'created_at' => now()
         ]);
 
-         $link = url('/reset-password/'.$token.'?email='.urlencode($request->email));
+        $link = url('/resetar-senha/'.$token.'?email='.urlencode($request->email));
 
-
-        // Enviar email
-        Mail::raw("Clique aqui para resetar sua senha: $link", function($message) use ($request, $link) {
+        Mail::raw("Clique aqui para resetar sua senha: $link", function($message) use ($request) {
             $message->to($request->email)->subject('Recuperação de senha');
         });
 
-
-        return back()->with('status', 'Link de recuperação enviado!');
+        // RETORNO AJAX
+        return response()->json(['message' => 'Link de recuperação enviado com sucesso!']);
     }
+
 
     public function formularioAtualizarSenha($token) {
         return view('atualizarSenha', [
@@ -45,6 +45,7 @@ class ResetarSenhaController extends Controller
         ]);
     }
 
+    // Atualizar a senha
     public function atualizarSenha(Request $request) {
         $request->validate([
             'email' => 'required|email',
@@ -58,16 +59,17 @@ class ResetarSenhaController extends Controller
         ])->first();
 
         if (!$reset) {
-            return back()->withErrors(['email' => 'Token inválido ou expirado']);
+            return response()->json(['message' => 'Token inválido ou expirado.'], 422);
         }
 
+        // Usando seu modelo "usuarios" conforme o User Summary
         usuarios::where('email', $request->email)->update([
             'senha' => Hash::make($request->password)
         ]);
 
         DB::table('resetar_senha_tokens')->where(['email' => $request->email])->delete();
 
-        return redirect('/login')->with('status', 'Senha alterada com sucesso!');
+        return response()->json(['message' => 'Senha alterada com sucesso!', 'redirect' => '/login']);
     }
 }
 
