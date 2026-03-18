@@ -15,5 +15,14 @@ export const DashboardConsultoraService = {
         } catch (error) {
             throw error.response.data;
         }
+    },
+
+    async getProgresso() {
+        try {
+            const response = await axios.get('/api/meta/progresso');
+            return response.data;
+        } catch (error) {
+            throw error.response.data;
+        }
     }
 };
