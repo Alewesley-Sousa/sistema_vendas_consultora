@@ -6,21 +6,45 @@
     <title>Painel Administrativo - Sistema de Vendas</title>
     <link rel="stylesheet" href="estilo.css">
     <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --card: #ffffff;
+            --bg: #f6f8ff;
+            --text: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #eef2ff 0%, #f7f9ff 100%);
+            color: var(--text);
+            line-height: 1.45;
+        }
+
         .admin-container {
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 20px;
+            max-width: 1200px;
+            margin: 16px auto;
+            padding: 16px;
+            min-height: calc(100vh - 32px);
         }
 
         .admin-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 18px;
             background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
+            padding: 16px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e8ebfa;
         }
 
         .admin-title h1 {
@@ -86,15 +110,17 @@
         }
 
         .dashboard-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            background: var(--card);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid #eef1ff;
         }
 
         .dashboard-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
 
         .card-header {
@@ -129,10 +155,11 @@
 
         .users-section, .clients-section {
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+            border: 1px solid #edf0ff;
         }
 
         .section-header {
@@ -154,17 +181,23 @@
             gap: 10px;
         }
 
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
         .users-table, .clients-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 16px;
+            min-width: 600px;
         }
 
         .users-table th, .users-table td,
         .clients-table th, .clients-table td {
-            padding: 15px;
+            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #e1e5e9;
+            border-bottom: 1px solid #e9ecff;
+            font-size: 14px;
         }
 
         .users-table th, .clients-table th {
@@ -449,22 +482,24 @@
                     <input type="text" id="userSearch" placeholder="Buscar usuários..." style="padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
                 </div>
             </div>
-            <table class="users-table">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>E-mail</th>
-                        <th>Papel</th>
-                        <th>Data Cadastro</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                    <tr>
-                        <td colspan="5" class="no-data">Carregando usuários...</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-wrapper">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Papel</th>
+                            <th>Data Cadastro</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="5" class="no-data">Carregando usuários...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
