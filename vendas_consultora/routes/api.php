@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ComissoesController;
+use App\Http\Controllers\HistoricoComissoesController;
 use App\Http\Controllers\MetasController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -19,3 +20,6 @@ Route::get('/meta', [MetasController::class, 'metaAtual'])->middleware('auth:san
 
 // pegar progresso atual da meta do usuario autenticado
 Route::get('/meta/progresso', [MetasController::class, 'progressoMeta'])->middleware('auth:sanctum');
+
+// pegar historico de comissoes do usuarioa autenticado
+Route::get('/comissao/historico', [HistoricoComissoesController::class, 'visualizarHistorico'])->middleware('auth:sanctum');
