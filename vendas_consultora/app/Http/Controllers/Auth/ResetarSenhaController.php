@@ -39,7 +39,7 @@ class ResetarSenhaController extends Controller
 
 
     public function formularioAtualizarSenha($token) {
-        return view('atualizarSenha', [
+        return view('atualizar-senha', [
             'token' => $token,
             'email' => request()->query('email'),
         ]);
