@@ -1,12 +1,5 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Recuperar senha</title>
-  @vite(['resources/css/app.css','resources/js/app.js'])
-</head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+@extends('layouts.app')
+@section('conteudo')
   <div class="w-full max-w-md bg-white rounded-2xl shadow-md p-6">
     <h2 class="text-2xl font-bold text-slate-800 mb-2">Recuperar senha</h2>
     <p class="text-sm text-slate-600 mb-4">Informe seu e-mail e enviaremos um link para redefinir sua senha.</p>
@@ -40,5 +33,4 @@
         </button>
     </form>
   </div>
-</body>
-</html>
+@endsection

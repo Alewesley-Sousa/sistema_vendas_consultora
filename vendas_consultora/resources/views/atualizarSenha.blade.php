@@ -1,4 +1,5 @@
-<body class="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+@extends('layouts.app')
+@section('conteudo')
   <div class="w-full max-w-md bg-white rounded-2xl shadow-md p-6">
     <h2 class="text-2xl font-bold text-slate-800 mb-2">Redefinir senha</h2>
     <p class="text-sm text-slate-600 mb-4">Escolha uma nova senha para sua conta.</p>
@@ -27,4 +28,4 @@
       </button>
     </form>
   </div>
-</body>
+@endsection
