@@ -1,8 +1,4 @@
 import './bootstrap';
-// import { VendaService } from './api/vendas';
-
-// // Tornamos o serviço global para usar nos arquivos Blade
-// window.VendaService = VendaService;
 
 import { AuthService } from './api/auth';
 import { ResetarSenhaService } from './api/resetarSenha';
