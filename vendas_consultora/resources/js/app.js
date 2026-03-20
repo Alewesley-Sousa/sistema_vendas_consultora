@@ -7,6 +7,8 @@ import { initAtualizarSenha } from './pages/atualizar-senha';
 import { initLogin } from './pages/login';
 import { initDashboardConsultora } from './pages/dashboard-consultora';
 import { UIService } from './service/uiService';
+import { ImportGlobFunction } from 'vite';
+import { initHistoricoComissao } from "./pages/historico-comissao";
 
 // Inicializa a lógica da página
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initDashboardConsultora();
     initAtualizarSenha();
     initLogin();
+    initHistoricoComissao();
 
 // Garante que o loader suma quando a página carregar (F5/Navegação normal)
     UIService.hide();
