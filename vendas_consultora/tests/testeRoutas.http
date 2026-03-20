@@ -1,0 +1,4 @@
+@baseUrl = http://127.0.0.1:8080/proxy/8000/
+
+GET {{baseUrl}}/login
+Accept: text/html
