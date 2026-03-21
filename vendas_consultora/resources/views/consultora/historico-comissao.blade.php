@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('conteudo')
-{{-- TERMINAR DE CONFIGURAR --}}
 <div class="table-responsive">
     <table class="table table-hover">
         <thead>
