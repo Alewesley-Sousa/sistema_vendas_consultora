@@ -19,6 +19,11 @@ class ComissaoService
         return $query->first();
     }
 
+    public function solicitacaoPendente() {
+        $usuario = Auth::user();
+        return solicitacoes_saque::where('consultora_id', $usuario->id)->where('status_id', 1)->first();
+    }
+
 }
 
 
