@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AutenticacaoController;
 use App\Http\Controllers\Auth\ResetarSenhaController;
+use App\Http\Controllers\HistoricoComissoesController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -41,3 +42,5 @@ Route::post('/recuperar-senha', [ResetarSenhaController::class, 'enviarLinkReset
 Route::get('/resetar-senha/{token}', [ResetarSenhaController::class, 'formularioAtualizarSenha'])->name('senha.resetar');
 
 Route::post('/resetar-senha', [ResetarSenhaController::class, 'atualizarSenha'])->name('senha.atualizar');
+
+Route::get('/comissao/historico', [HistoricoComissoesController::class, 'historicoComissao'])->name('consultoraHistorico');
