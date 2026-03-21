@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\ComissoesController;
 use App\Http\Controllers\HistoricoComissoesController;
 use App\Http\Controllers\MetasController;
@@ -26,4 +27,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // solicitar o saque da comissão do usuario
     Route::get('/comissao/solicitar', [ComissoesController::class, 'solicitarComissao']);
+    
+    // cadastrar cliente
+    Route::post('/cliente', [ClientesController::class, 'cadastrarCliente']);
+
+    // atualzar dados do cliente
+    Route::put('/cliente/{cliente}', [ClientesController::class, 'atualizarDados']);
+
+    // exibir um cliente
+    Route::get('/cliente/{cliente}', [ClientesController::class, 'exibir']);
 });
