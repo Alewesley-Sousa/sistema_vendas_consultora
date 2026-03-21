@@ -8,7 +8,7 @@
             <h2 class="text-lg">Meta Atual: <span id="meta" class="font-bold text-pink-600">Carregando...</span></h2>
             <h2 class="text-lg">Progresso: <span id="metaProgresso" class="font-bold text-blue-600">Carregando...</span></h2>
         </div>
-
+        <a href='{{ route('consultoraHistorico') }}'> historico comissao </a>
         <p id="erro" class="text-red-500 mt-4 font-medium"></p>
     </div>
 @endsection
