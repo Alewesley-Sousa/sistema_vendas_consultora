@@ -6,6 +6,8 @@
             <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Histórico de Comissões</h1>
             <p class="text-sm text-slate-500">Acompanhe seus ganhos e movimentações.</p>
         </div>
+        <button id="btn-solicitar-saque" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl shadow-sm transition-all active:scale-95 disabled:opacity-50">
+        Solicitar Saque </button>
         <div id="status-badge" class="hidden animate-pulse px-3 py-1 bg-pink-100 text-pink-600 rounded-full text-xs font-bold">
             Atualizando...
         </div>
