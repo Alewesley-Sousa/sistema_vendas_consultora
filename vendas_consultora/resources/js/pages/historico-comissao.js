@@ -1,10 +1,11 @@
-import { HistoricoComissaoService } from '../api/historicoComissao';
+import { ComissaoService } from '../api/comissao';
 import { UIService } from '../service/uiService';
 
 export function initHistoricoComissao() {
     const tabelaCorpo = document.getElementById('tabela-comissao-corpo');
     const paginacaoContainer = document.getElementById('paginacao-historico');
     const statusBadge = document.getElementById('status-badge');
+    const btnSolicitar = document.getElementById('btn-solicitar-saque');
     
     // Seletores para ordenação
     const sortData = document.getElementById('sort-data');
@@ -17,6 +18,33 @@ export function initHistoricoComissao() {
         direcao: 'desc',
         page: 1
     };
+
+    // --- LÓGICA DE SOLICITAÇÃO DE SAQUE ---
+    async function realizarSolicitacao() {
+        if (!confirm('Deseja realmente solicitar o saque do seu saldo?')) return;
+
+        UIService.show();
+        btnSolicitar.disabled = true; // Evita cliques duplos
+
+        try {
+            const response = await ComissaoService.solicitarSaque();
+            
+            if (response.status === 'success') {
+                alert(response.message || 'Solicitação enviada!');
+                // Recarregamos os dados para atualizar a tabela (caso a solicitação crie uma linha)
+                carregarDados(1); 
+            }
+        } catch (err) {
+            // O erro 400 (pendência ou saldo 0) cai aqui
+            alert(err.message || 'Erro ao processar solicitação.');
+        } finally {
+            UIService.hide();
+            btnSolicitar.disabled = false;
+        }
+    }
+
+    btnSolicitar?.addEventListener('click', realizarSolicitacao);
+
 
     // --- LÓGICA DE ORDENAÇÃO ---
     function alternarOrdenacao(coluna) {
@@ -50,7 +78,7 @@ export function initHistoricoComissao() {
         atualizarIconesOrdenacao();
 
         try {
-            const response = await HistoricoComissaoService.getHistorico(estado);
+            const response = await ComissaoService.getHistorico(estado);
             
             if (response.status === 'success') {
                 renderizarTabela(response.data.data);
