@@ -15,7 +15,7 @@ class clientes extends Model
     const CREATED_AT = 'criado_em';
 
     protected $fillable = [
-        'nome', 'email', 'telefone', 'cep', 'cpf'
+        'nome', 'email', 'telefone', 'cep', 'cpf', 'consultora_id'
     ];
 
     protected $casts = [
