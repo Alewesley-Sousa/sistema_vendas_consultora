@@ -8,10 +8,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class logs extends Model
 {
-    public $timestamps = false;
+    public $timestamps = false; 
 
     protected $fillable = [
-        'detalhes', 'data_hora'
+        'usuario_id',
+        'acao',
+        'entidade_afetada',
+        'registro_afetado_id',
+        'data_hora',
+        'descricao',
+        'ip_origem'
     ];
 
     protected $casts = [
