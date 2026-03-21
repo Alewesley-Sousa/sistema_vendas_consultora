@@ -1,6 +1,7 @@
 <?php 
 namespace App\Services;
 
+use App\Models\historico_comissoes;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,12 @@ class HistoricoComissaoService
         $coluna = in_array($request->ordenar_por, $colunasPermitidas) ? $request->ordenar_por : 'data_movimentacao';
         $direcao = ($request->direcao === 'asc') ? 'asc' : 'desc';
 
-        return DB::table('historico_comissoes')
+        return historico_comissoes::query()
+        ->with(
+            [
+               'tipoComissao', 'tipoMovimentacao' 
+            ]
+        )
         //Se não for distribuidora, vai mostrar apenas o historico do usuario autenticado.
         ->when($cargo !== 'distribuidora', function ($query) use ($usuario) {
             return $query->where('consultora_id', $usuario->id);
@@ -28,6 +34,7 @@ class HistoricoComissaoService
         ->when($cargo === 'distribuidora' && $request->id_usuario, function ($query, $idEscolhido) {
             return $query->where('consultora_id', $idEscolhido);
         })
+        ->whereIn('tipo_movimentacao_id', [1, 2]) // Só vai pegar do tipo estorno e venda
 
         ->orderBy($coluna, $direcao)
         ->paginate(10);
