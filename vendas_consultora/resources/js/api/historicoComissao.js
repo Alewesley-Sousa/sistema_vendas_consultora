@@ -3,7 +3,7 @@
 export const HistoricoComissaoService = {
     async getHistorico(params = {}) {
         try {
-            const response = await axios.get('/api/historico-comissoes', { params });
+            const response = await axios.get('/api/comissao/historico', { params });
             return response.data;
         } catch (error) {
             throw error.response ? error.response.data : error;
