@@ -7,7 +7,6 @@ import { initAtualizarSenha } from './pages/atualizar-senha';
 import { initLogin } from './pages/login';
 import { initDashboardConsultora } from './pages/dashboard-consultora';
 import { UIService } from './service/uiService';
-import { ImportGlobFunction } from 'vite';
 import { initHistoricoComissao } from "./pages/historico-comissao";
 
 // Inicializa a lógica da página
