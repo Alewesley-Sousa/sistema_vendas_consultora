@@ -17,6 +17,10 @@ class HistoricoComissoesController extends Controller
         $this->historicoComissaoService = $historicoComissao;
     }
 
+    public function historicoComissao() {
+        return view('consultora.historico-comissao');
+    }
+
     public function visualizarHistorico(Request $request): JsonResponse
     {
         try {
