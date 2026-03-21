@@ -10,16 +10,20 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\UsuariosController;
+// agrupa todos que usam a autenticação com token
+Route::middleware('auth:sanctum')->group(function () {
+    // Pegar comissao atual do usuario autenticado
+    Route::get('/comissao', [ComissoesController::class, 'visualizar']);
 
-Route::get('/usr', [UsuariosController::class, 'index']);
-// Pegar comissao atual do usuario autenticado
-Route::get('/comissao', [ComissoesController::class, 'visualizar'])->middleware('auth:sanctum');
+    //pegar meta atual do usuario autenticado
+    Route::get('/meta', [MetasController::class, 'metaAtual']);
 
-//pegar meta atual do usuario autenticado
-Route::get('/meta', [MetasController::class, 'metaAtual'])->middleware('auth:sanctum');
+    // pegar progresso atual da meta do usuario autenticado
+    Route::get('/meta/progresso', [MetasController::class, 'progressoMeta']);
 
-// pegar progresso atual da meta do usuario autenticado
-Route::get('/meta/progresso', [MetasController::class, 'progressoMeta'])->middleware('auth:sanctum');
+    // pegar historico de comissoes do usuarioa autenticado
+    Route::get('/comissao/historico', [HistoricoComissoesController::class, 'visualizarHistorico']);
 
-// pegar historico de comissoes do usuarioa autenticado
-Route::get('/comissao/historico', [HistoricoComissoesController::class, 'visualizarHistorico'])->middleware('auth:sanctum');
+    // solicitar o saque da comissão do usuario
+    Route::get('/comissao/solicitar', [ComissoesController::class, 'solicitarComissao']);
+});
