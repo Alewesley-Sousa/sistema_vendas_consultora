@@ -17,7 +17,7 @@ class SolicitacoesSaqueSeeder extends Seeder
             [
                 'consultora_id' => 2,
                 'valor_solicitado' => 150.00,
-                'status_id' => 1,
+                'status_id' => 3,
                 'data_decisao' => null
             ],
             [
