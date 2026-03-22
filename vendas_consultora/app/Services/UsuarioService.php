@@ -26,7 +26,8 @@ class UsuarioService
                 'telefone' => $dados->telefone,
                 'senha' =>  Hash::make($dados->senha),
                 'cep' => $dados->cep,
-                'consultora_id' => $usuario->cargo === 'consultora' ? $usuario->id : null,
+                'cpf' => $dados->cpf,
+                'consultora_id' => in_array($usuario->cargo, ['consultora', 'lider']) ? $usuario->id : null,
                 'status_id' => $usuario->cargo === 'consultora' ? 3 : $dados->status 
             ]);
 
