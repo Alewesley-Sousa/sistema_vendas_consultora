@@ -6,6 +6,7 @@ use App\Models\usuarios;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class UsuarioService
 {
@@ -13,40 +14,67 @@ class UsuarioService
         return usuarios::all();
     }
 
-    public function store(array $data): usuarios
+    public function registrarUsuario($dados)
     {
+        DB::beginTransaction();
+        $usuario = Auth::user();
         try {
-            return DB::transaction(function () use ($data) {
-                // Realiza o hash da senha antes de salvar
-                $data['senha'] = Hash::make($data['senha']);
+            $usr = usuarios::create([
+                'nome' => $dados->nome,
+                'cargo' => $usuario->cargo === 'consultora' ? 'consultora' : $dados->cargo,
+                'email' => $dados->email,
+                'telefone' => $dados->telefone,
+                'senha' =>  Hash::make($dados->senha),
+                'cep' => $dados->cep,
+                'consultora_id' => $usuario->cargo === 'consultora' ? $usuario->id : null,
+                'status_id' => $usuario->cargo === 'consultora' ? 3 : $dados->status 
+            ]);
 
-                // Cria o registro no banco de dados
-                return usuarios::create($data);
-            });
+            $descricao = $usuario->cargo === 'consultora' ? "consultor(a) $usuario->nome fazendo pré cadastro de $usr->nome." : "usuario(a) $usuario->nome fazendo cadastro do(a) $usr->nome";
+
+            LogService::registrarAcao(
+                'cadastrar novo usuario',
+                'usuarios',
+                $usr->id,
+                $descricao
+            );
+
+            DB::commit();
+
+            return [
+                'status' => 'success',
+                'mensagem' => "usuario " . $usr->status_id === 3 ? 'pré ' : ' ' . "cadastrado com sucesso"
+            ];
+
         } catch (Exception $e) {
-            // Aqui você pode logar o erro se desejar: \Log::error($e->getMessage());
-            throw new Exception("Erro ao criar usuário: " . $e->getMessage());
+            return [
+                'status' => 'error',
+                'messagem' => 'falha ao cadastrar o usuario: ' . $e->getMessage()
+            ];
         }
     }
 
-    public function update(int $id, array $data): Usuarios
+    public function atualizarRegistro($dados, $id)
     {
+        DB::beginTransaction();
+
         try {
-            return DB::transaction(function () use ($id, $data) {
-                $usuario = Usuarios::findOrFail($id); // <-- Busca no plural
+                $usuario = Usuarios::findOrFail($id);
+                $usuario->update($dados);
 
-                if (!empty($data['senha'])) {
-                    $data['senha'] = Hash::make($data['senha']);
-                } else {
-                    unset($data['senha']);
-                }
+                DB::commit();
 
-                $usuario->update($data);
-
-                return $usuario;
-            });
+                return [
+                    'status' => 'success',
+                    'mensagem' => 'usuario atualizado com sucesso!'
+                ];
         } catch (Exception $e) {
-            throw new Exception("Erro ao atualizar usuário: " . $e->getMessage());
+            DB::rollBack();
+
+            return [
+                'status' => 'error',
+                'messagem' => 'falha ao atualizar o usuario: ' . $e->getMessage()
+            ];
         }
     }
 
