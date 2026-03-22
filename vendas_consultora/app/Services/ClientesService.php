@@ -41,6 +41,8 @@ class ClientesService
             ];
 
         } catch (Exception $e) {
+            DB::rollBack();
+
             return [
                 'status' => 'error',
                 'messagem' => 'falha ao cadastrar o cliente: ' . $e->getMessage()
