@@ -9,6 +9,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UsuarioRequest;
 use App\Http\Requests\UsuariosRequest;
+use App\Models\Status\status_consultora;
 use App\Models\usuarios;
 use App\Services\UsuarioService;
 use Exception;
@@ -20,6 +21,11 @@ class UsuariosController extends Controller
     protected $usuarioService;
 
     public function __construct(protected UsuarioService $service) {$this->usuarioService = $service;}
+
+    public function formulario($id = null) {
+        $status = status_consultora::all();
+        return view('formularios.formulario-usuario', ['id' => $id, 'status' => $status]);
+    }
 
     public function cadastrarUsuario(UsuarioRequest $request)
     {
