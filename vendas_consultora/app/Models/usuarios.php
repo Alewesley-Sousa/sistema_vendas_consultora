@@ -30,7 +30,7 @@ class usuarios extends Authenticatable
 
     // Troquei guarded por fillable para maior controle
     protected $fillable = [
-        'nome', 'cargo', 'email', 'telefone', 'senha', 'cep', 'consultora_id', 'status_id'
+        'nome', 'cargo', 'email', 'telefone', 'senha', 'cep', 'consultora_id', 'status_id', 'cpf'
     ];
 
     protected $hidden = [
