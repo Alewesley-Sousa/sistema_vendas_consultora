@@ -41,6 +41,11 @@ class AutenticacaoController extends Controller
                 return response()->json(['message' => 'Usuário sem permissão.'], 403);
             }
 
+            if ($user->status_id === 3) {
+                Auth::logout();
+                return response()->json(['message' => 'Usuario não cadastrado'], 403);
+            }
+
             // Criamos o token no mesmo momento do login para o Axios guardar
             $token = $user->createToken('web-acesso')->plainTextToken;
 
