@@ -36,4 +36,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // exibir um cliente
     Route::get('/cliente/{cliente}', [ClientesController::class, 'exibir']);
+
+    // cadastrar usuario
+    Route::post('/usuario', [UsuariosController::class, 'cadastrarUsuario']);
+
+    // atualzar dados do usuario
+    Route::put('/usuario/{usuario}', [UsuariosController::class, 'atualizarUsuario']);
+
+    // exibir um usuario
+    Route::get('/usuario/{usuario}', [UsuariosController::class, 'exibirUsuario']);
 });

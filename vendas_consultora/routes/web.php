@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AutenticacaoController;
 use App\Http\Controllers\Auth\ResetarSenhaController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\HistoricoComissoesController;
+use App\Http\Controllers\UsuariosController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -49,3 +50,7 @@ Route::get('/comissao/historico', [HistoricoComissoesController::class, 'histori
 Route::get('/cliente/cadastro', [ClientesController::class, 'formulario'])->name('cliente.cadastrar')->middleware(['auth', 'cargo:consultora']);
 
 Route::get('/cliente/edicao/{id}', [ClientesController::class, 'formulario'])->name('cliente.editar')->middleware(['auth', 'cargo:consultora']);
+
+Route::get('/usuario/cadastro', [UsuariosController::class, 'formulario'])->name('usuario.cadastrar')->middleware(['auth', 'cargo:consultora']);
+
+Route::get('/usuario/edicao/{id}', [UsuariosController::class, 'formulario'])->name('usuario.editar')->middleware(['auth', 'cargo:distribuidora']);
