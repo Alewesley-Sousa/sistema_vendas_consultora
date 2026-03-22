@@ -9,6 +9,7 @@ import { initDashboardConsultora } from './pages/dashboard-consultora';
 import { UIService } from './service/uiService';
 import { initHistoricoComissao } from "./pages/historico-comissao";
 import { initFormCliente } from './pages/formularios/formulario-cliente';
+import { initFormUsuario } from './pages/formularios/formulario-usuario';
 
 // Inicializa a lógica da página
 document.addEventListener('DOMContentLoaded', () => {
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initLogin();
     initHistoricoComissao();
     initFormCliente();
+    initFormUsuario();
 
 // Garante que o loader suma quando a página carregar (F5/Navegação normal)
     UIService.hide();
