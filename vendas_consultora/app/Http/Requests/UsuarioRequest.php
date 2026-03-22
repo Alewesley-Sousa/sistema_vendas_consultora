@@ -23,11 +23,6 @@ class UsuarioRequest extends FormRequest
 
         return [
             'nome' => 'required|string|max:100',
-            
-            'cargo' => [
-                'required',
-                Rule::in(['consultora', 'lider', 'distribuidora']),
-            ],
 
             'cpf' => [
                 'required',
@@ -64,8 +59,6 @@ class UsuarioRequest extends FormRequest
     {
         return [
             'nome.required'     => 'O nome é obrigatório.',
-            'cargo.required'    => 'Você deve selecionar um cargo.',
-            'cargo.in'          => 'O cargo selecionado é inválido.',
             
             'email.required'    => 'O e-mail é obrigatório para o acesso.',
             'email.email'       => 'Insira um formato de e-mail válido.',
