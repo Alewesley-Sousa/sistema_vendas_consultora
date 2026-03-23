@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\CatalogosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\ComissoesController;
 use App\Http\Controllers\HistoricoComissoesController;
+use App\Http\Controllers\ItensCatalogoController;
 use App\Http\Controllers\MetasController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -45,4 +47,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // exibir um usuario
     Route::get('/usuario/{usuario}', [UsuariosController::class, 'exibirUsuario']);
+
+    Route::get('/catalogo', [CatalogosController::class, 'visualizarCatalogo']);
+
+    Route::get('/catalogo/itens/{id}', [ItensCatalogoController::class, 'visualizarItens']);
 });

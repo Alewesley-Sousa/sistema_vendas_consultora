@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AutenticacaoController;
 use App\Http\Controllers\Auth\ResetarSenhaController;
+use App\Http\Controllers\CatalogosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\HistoricoComissoesController;
 use App\Http\Controllers\UsuariosController;
@@ -54,3 +55,5 @@ Route::get('/cliente/edicao/{id}', [ClientesController::class, 'formulario'])->n
 Route::get('/usuario/cadastro', [UsuariosController::class, 'formulario'])->name('usuario.cadastrar')->middleware(['auth', 'cargo:consultora']);
 
 Route::get('/usuario/edicao/{id}', [UsuariosController::class, 'formulario'])->name('usuario.editar')->middleware(['auth', 'cargo:distribuidora']);
+
+Route::get('/catalogo', [CatalogosController::class, 'index'])->middleware('auth')->name('catalogo.visualizar');
