@@ -46,7 +46,7 @@ git clone https://github.com/Alewesley-Sousa/sistema-vendas-consultora.git
 cd sistema-vendas-consultora/vendas_consultora
 composer install
 npm install
-npm run build
+npm run dev
 cp .env.example .env
 touch database/database.sqlite
 php artisan key:generate
