@@ -37,7 +37,7 @@ O projeto foi desenvolvido utilizando o framework Laravel com foco na aplicaçã
 
 ## ▶️ Como Rodar o Projeto
 
-Para executar o projeto localmente, é necessário ter instalado PHP 8.1 ou superior, Composer, MySQL e Node.js.
+Para executar o projeto localmente, é necessário ter instalado PHP 8.3 ou superior, Composer, MySQL e Node.js.
 
 Primeiramente, clone o repositório:
 
