@@ -14,7 +14,8 @@ class MetaService
     }
 
     public function progressoMeta() {
-$idUsuario = $idUsuario ?? Auth::id();
+        $usuario = Auth::user();
+        $idUsuario = $usuario->id;
         
         // Usamos o método acima para pegar a meta
         $metaAtual = $this->metaUsuario($idUsuario);
@@ -30,17 +31,19 @@ $idUsuario = $idUsuario ?? Auth::id();
         $valorMeta = $metaAtual->valor_meta;
 
         // Total vendido (Status 6 = Pago/Finalizado)
-        $totalVendido = pedidos::where('consultora_id', $idUsuario) // Importante filtrar por consultora aqui também!
+        $totalVendido = pedidos::where('usuario_id', $idUsuario) // Importante filtrar por consultora aqui também!
             ->whereMonth('created_at', $mes)
             ->whereYear('created_at', $ano)
             ->where('status_id', 6)
-            ->sum('valor');
+            ->sum('valor_total');
 
         if ($valorMeta <= 0) return 0;
 
         // O cálculo correto de progresso é (O que eu fiz / O que eu preciso fazer)
         // Se eu vendi 500 e a meta é 1000, fiz 0.5 (50%)
-        return ($totalVendido / $valorMeta);
+        $progresso = ($totalVendido / $valorMeta) * 100;
+        return round($progresso, 2);
+        
     }
 }
 
