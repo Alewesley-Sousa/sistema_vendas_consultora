@@ -3,63 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\catalogos;
+use App\Services\CatalogoService;
 use Illuminate\Http\Request;
 
 class CatalogosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+    protected $catalogoService;
+
+    public function __construct(CatalogoService $service) {$this->catalogoService = $service;}
+    
+    public function index() {
+        return view('consultora.catalogo-produtos');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    public function visualizarCatalogo(Request $request) {
+        $busca = $request->query('search');
+        $resultado = $this->catalogoService->trazerCatalogos($busca);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(catalogos $catalogos)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(catalogos $catalogos)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, catalogos $catalogos)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(catalogos $catalogos)
-    {
-        //
+        return response()->json($resultado);
     }
 }
