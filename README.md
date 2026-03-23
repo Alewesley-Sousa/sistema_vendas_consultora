@@ -43,13 +43,14 @@ Primeiramente, clone o repositório:
 
 ```bash
 git clone https://github.com/Alewesley-Sousa/sistema-vendas-consultora.git
-cd sistema-vendas-cosmeticos
+cd sistema-vendas-consultora/vendas_consultora
 composer install
 npm install
+npm run build
 cp .env.example .env
+touch database/database.sqlite
 php artisan key:generate
-php artisan migrate
-php artisan db:seed
+php artisan migrate --seed
 php artisan serve
 ```
 ---
