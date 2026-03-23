@@ -63,27 +63,15 @@ class ClientesController extends Controller
         ], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(clientes $clientes)
-    {
-        //
+    public function listar() {
+        // Para renderizar a página Blade
+        $clientes = $this->clienteService->listarTodos();
+        return view('distribuidora.lista', compact('clientes'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, clientes $clientes)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(clientes $clientes)
-    {
-        //
+    public function destroy($id) {
+        // Para ser chamado via API/Axios
+        $resultado = $this->clienteService->excluir($id);
+        return response()->json($resultado, $resultado['status'] === 'success' ? 200 : 400);
     }
 }

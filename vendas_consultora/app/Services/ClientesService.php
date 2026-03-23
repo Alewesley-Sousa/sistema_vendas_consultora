@@ -90,4 +90,40 @@ class ClientesService
             ];
         }
     }
+
+    public function listarTodos() {
+        // Retorna os clientes da consultora logada (ou todos, se for distribuidora)
+        $usuario = Auth::user();
+        
+        $query = clientes::query();
+        
+        if ($usuario->cargo === 'consultora') {
+            $query->where('consultora_id', $usuario->id);
+        }
+
+        return $query->orderBy('nome', 'asc')->paginate(5);
+    }
+
+    public function excluir($id) {
+        DB::beginTransaction();
+        try {
+            $cliente = clientes::findOrFail($id);
+            $nomeRemovido = $cliente->nome;
+
+            $cliente->delete();
+
+            LogService::registrarAcao(
+                'excluir cliente',
+                'clientes',
+                $id,
+                "cliente {$nomeRemovido} foi removido com sucesso"
+            );
+
+            DB::commit();
+            return ['status' => 'success', 'mensagem' => 'Cliente removido com sucesso'];
+        } catch (Exception $e) {
+            DB::rollBack();
+            return ['status' => 'error', 'mensagem' => 'Erro ao excluir: ' . $e->getMessage()];
+        }
+    }
 }

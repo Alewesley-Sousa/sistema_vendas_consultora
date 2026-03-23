@@ -50,10 +50,12 @@ Route::get('/comissao/historico', [HistoricoComissoesController::class, 'histori
 
 Route::get('/cliente/cadastro', [ClientesController::class, 'formulario'])->name('cliente.cadastrar')->middleware(['auth', 'cargo:consultora']);
 
-Route::get('/cliente/edicao/{id}', [ClientesController::class, 'formulario'])->name('cliente.editar')->middleware(['auth', 'cargo:consultora']);
+Route::get('/cliente/edicao/{id}', [ClientesController::class, 'formulario'])->name('cliente.editar')->middleware(['auth']);
 
 Route::get('/usuario/cadastro', [UsuariosController::class, 'formulario'])->name('usuario.cadastrar')->middleware(['auth', 'cargo:consultora']);
 
 Route::get('/usuario/edicao/{id}', [UsuariosController::class, 'formulario'])->name('usuario.editar')->middleware(['auth', 'cargo:distribuidora']);
 
 Route::get('/catalogo', [CatalogosController::class, 'index'])->middleware('auth')->name('catalogo.visualizar');
+
+Route::get('/clientes', [ClientesController::class, 'listar'])->name('cliente.listar')->middleware(['auth', 'cargo:distribuidora']);

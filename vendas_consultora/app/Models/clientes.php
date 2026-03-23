@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class clientes extends Model
 {
+
+
     public $timestamps = false;
     const CREATED_AT = 'criado_em';
 
