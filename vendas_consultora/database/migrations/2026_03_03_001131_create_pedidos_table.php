@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('usuario_id')->constrained('usuarios');
             $table->foreignId('cliente_id')->constrained('clientes');
             $table->string('link')->nullable();
+            $table->foreignId('status_id')->constrained('status_pedido');
             $table->decimal('valor_total', 10, 2)->default(0.0);
             $table->enum('tipo_pagamento', ['credito', 'debito', 'pix']);
             $table->timestamps();

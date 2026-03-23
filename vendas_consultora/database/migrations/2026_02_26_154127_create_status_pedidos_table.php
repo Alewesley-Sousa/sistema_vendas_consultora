@@ -20,16 +20,6 @@ return new class extends Migration
             $table->text('descricao')->nullable();
             $table->timestamps();
         });
-
-        DB::table('status_pedido')->insert([
-            ['nome' => 'Aguardando Pagamento', 'descricao' => 'Pedido aguardando confirmação de pagamento'],
-            ['nome' => 'Pagamento Confirmado', 'descricao' => 'Pagamento foi confirmado'],
-            ['nome' => 'Separando Pedido', 'descricao' => 'Pedido sendo separado no estoque'],
-            ['nome' => 'Pronto para Envio', 'descricao' => 'Pedido pronto para ser enviado'],
-            ['nome' => 'Enviado', 'descricao' => 'Pedido foi enviado'],
-            ['nome' => 'Entregue', 'descricao' => 'Pedido entregue ao cliente'],
-            ['nome' => 'Cancelado', 'descricao' => 'Pedido cancelado'],
-        ]);
     }
 
     public function down()

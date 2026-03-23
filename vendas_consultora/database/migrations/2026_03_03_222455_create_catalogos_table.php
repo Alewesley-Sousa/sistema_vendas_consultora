@@ -19,7 +19,6 @@ return new class extends Migration
             $table->text('descricao')->nullable();
             $table->timestamp('data_encerramento');
             $table->timestamp('data_publicacao');
-            $table->timestamps();
         });
     }
 
