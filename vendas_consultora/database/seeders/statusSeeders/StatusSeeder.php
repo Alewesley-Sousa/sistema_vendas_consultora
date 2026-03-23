@@ -23,7 +23,6 @@ class StatusSeeder extends Seeder
             StatusItemCatalogoSeeder::class,
             StatusMetaSeeder::class,
             StatusPedidoSeeder::class,
-            StatusProdutoSeeder::class,
             StatusPromocaoSeeder::class,
             StatusResgateSeeder::class,
             StatusSolicitacaoSaqueSeeder::class
