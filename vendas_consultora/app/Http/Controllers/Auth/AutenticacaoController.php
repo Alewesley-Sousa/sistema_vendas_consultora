@@ -13,12 +13,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AutenticacaoController extends Controller
 {
-    public function showLogin(Request $request)
-    {
-        return view('login');
 
-    }
-    
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
@@ -66,7 +61,21 @@ class AutenticacaoController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/login');
-
     }
 
+    public function showLogin(Request $request)
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            return match ($user->cargo) {
+                'distribuidora' => redirect()->route('distribuidora.dashboard'),
+                'lider'         => redirect()->route('lider.dashboard'),
+                'consultora'    => redirect()->route('consultora.dashboard'),
+                default         => redirect()->route('login'),
+            };
+        }
+
+        return view('login');
+    }
 }
