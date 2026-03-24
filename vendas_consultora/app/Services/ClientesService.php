@@ -96,12 +96,8 @@ class ClientesService
         $usuario = Auth::user();
         
         $query = clientes::query();
-        
-        if ($usuario->cargo === 'consultora') {
-            $query->where('consultora_id', $usuario->id);
-        }
 
-        return $query->orderBy('nome', 'asc')->paginate(5);
+        return $query->orderBy('paginate', 'asc')->paginate(5);
     }
 
     public function excluir($id) {
