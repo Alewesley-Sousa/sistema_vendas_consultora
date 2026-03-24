@@ -20,6 +20,7 @@ return new class extends Migration
             $table->char('cep', 8)->nullable();
             $table->foreignId('consultora_id')->constrained('usuarios')->nullOnDelete();
             $table->char('cpf', 11)->unique();
+            $table->softDeletes();
             $table->timestamp('criado_em')->useCurrent();
         });
     }
