@@ -10,9 +10,24 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use Illuminate\Support\Facades\Auth;
+
 Route::get('/', function () {
+    if (Auth::check()) {
+        $user = Auth::user();
+
+        // Decide o dashboard conforme o cargo
+        return match ($user->cargo) {
+            'distribuidora' => redirect()->route('distribuidora.dashboard'),
+            'lider'         => redirect()->route('lider.dashboard'),
+            'consultora'    => redirect()->route('consultora.dashboard'),
+            default         => redirect()->route('login'),
+        };
+    }
+
     return redirect()->route('login');
 });
+
 // pagina de login
 Route::get('/login', [AutenticacaoController::class, 'showLogin'])->name('login');
 
