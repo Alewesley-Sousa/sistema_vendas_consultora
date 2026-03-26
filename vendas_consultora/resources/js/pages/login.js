@@ -1,4 +1,3 @@
-// resources/js/pages/login.js
 import { AuthService } from '../api/auth';
 
 export function initLogin() {
@@ -12,24 +11,22 @@ export function initLogin() {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // 1. Início do Loading
         errorDiv.classList.add('hidden');
         errorList.innerHTML = '';
         btnEntrar.disabled = true;
         
-        // Adicionamos as reticências com a classe animate-pulse do Tailwind
+        // Mantendo o tracking-[0.5em] e a fonte para não "pular" o layout
         btnEntrar.innerHTML = `
-            <span class="flex items-center justify-center gap-1">
-                Autenticando
-                <span class="inline-flex">
-                    <span class="animate-bounce [animation-delay:-0.3s]">.</span>
-                    <span class="animate-bounce [animation-delay:-0.15s]">.</span>
-                    <span class="animate-bounce">.</span>
+            <span class="flex items-center justify-center gap-2 tracking-[0.2em]">
+                AUTENTICANDO
+                <span class="flex gap-1">
+                    <span class="animate-bounce [animation-delay:-0.3s] text-[#FFD700]">.</span>
+                    <span class="animate-bounce [animation-delay:-0.15s] text-[#FFD700]">.</span>
+                    <span class="animate-bounce text-[#FFD700]">.</span>
                 </span>
             </span>
         `;
-        // Adiciona um feedback visual de desabilitado
-        btnEntrar.classList.add('opacity-70', 'cursor-not-allowed');
+        btnEntrar.classList.add('opacity-80', 'cursor-not-allowed');
 
         const payload = {
             email: document.getElementById('email').value,
@@ -42,10 +39,13 @@ export function initLogin() {
             window.location.href = response.redirect;
 
         } catch (error) {
-            // 2. Fim do Loading (em caso de erro)
             btnEntrar.disabled = false;
-            btnEntrar.innerText = 'Entrar'; // Volta o texto original
-            btnEntrar.classList.remove('opacity-70', 'cursor-not-allowed');
+            // Voltando para o texto "ACESSAR" com o ícone correto
+            btnEntrar.innerHTML = `
+                <span>ACESSAR</span>
+                <i class="fa-solid fa-arrow-right-long text-[10px] opacity-50"></i>
+            `;
+            btnEntrar.classList.remove('opacity-80', 'cursor-not-allowed');
             
             errorDiv.classList.remove('hidden');
 
