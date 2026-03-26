@@ -1,7 +1,7 @@
 @extends('layouts.app-consultora')
 
 @section('conteudo')
-{{-- Ajustei o x-data para o nome do componente definido no seu initDashboardConsultora --}}
+{{-- Iniciando o componente do Alpine --}}
 <div class="space-y-8" x-data="dashboardComponent" x-init="fetchData()">
     
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -16,7 +16,9 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <a href="/clientes/cadastrar" class="flex items-center gap-2 bg-[#2C3E50] hover:bg-[#34495e] text-white px-5 py-2.5 rounded-full shadow-lg transition-all active:scale-95 group no-underline">
+            {{-- Rota de Cadastro de Cliente aplicada aqui --}}
+            <a href="{{ route('cliente.cadastrar') }}" 
+               class="flex items-center gap-2 bg-[#2C3E50] hover:bg-[#34495e] text-white px-5 py-2.5 rounded-full shadow-lg transition-all active:scale-95 group no-underline">
                 <div class="bg-[#FF69B4] rounded-full h-6 w-6 flex items-center justify-center group-hover:rotate-90 transition-transform duration-300">
                     <i class="fa-solid fa-plus text-[10px]"></i>
                 </div>
@@ -33,7 +35,7 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
+        {{-- Card Meta --}}
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative overflow-hidden flex flex-col justify-between min-h-[220px]">
             <div class="relative z-10">
                 <div class="flex justify-between items-start">
@@ -61,11 +63,9 @@
                     Faltam <span class="font-bold text-[#2C3E50]" x-text="formatCurrency(faltaParaMeta)"></span> para o objetivo.
                 </p>
             </div>
-            <div class="absolute -right-4 -bottom-4 opacity-5 text-8xl transform -rotate-12 pointer-events-none">
-                <i class="fa-solid fa-gem text-[#2C3E50]"></i>
-            </div>
         </div>
 
+        {{-- Card Comissão --}}
         <div class="bg-[#2C3E50] rounded-2xl p-6 shadow-xl relative overflow-hidden text-white flex flex-col justify-between min-h-[220px]">
             <div class="relative z-10">
                 <div class="flex justify-between items-start">
@@ -85,20 +85,88 @@
                     <button class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-white/5 cursor-pointer">
                         Extrato
                     </button>
-                    <button class="flex-1 bg-[#FFD700] hover:bg-[#ffc800] text-[#2C3E50] py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md cursor-pointer">
-                        Sacar
+                    <button 
+                        @click="solicitarSaque()"
+                        :disabled="carregandoSaque || comissaoTotal <= 0"
+                        :class="(carregandoSaque || comissaoTotal <= 0) ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-[#FFD700] hover:bg-[#ffc800] active:scale-95'"
+                        class="flex-1 text-[#2C3E50] py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md cursor-pointer transition-all flex items-center justify-center gap-2 text-center border-none">
+                        
+                        <i x-show="carregandoSaque" class="fa-solid fa-spinner animate-spin"></i>
+                        <span x-text="carregandoSaque ? 'Processando...' : 'Sacar'"></span>
                     </button>
                 </div>
             </div>
-            <div class="absolute -right-6 -bottom-6 opacity-10 text-7xl transform -rotate-12 pointer-events-none">
-                <i class="fa-solid fa-sack-dollar"></i>
+        </div>
+    </div>
+
+    {{-- MODAL DE CONFIRMAÇÃO --}}
+    <template x-teleport="body">
+        <div x-show="mostrarModalSaque" 
+             class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#2C3E50]/80 backdrop-blur-sm"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             x-cloak>
+            
+            <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl transform transition-all border-b-4 border-[#FFD700]"
+                 @click.away="mostrarModalSaque = false">
+                
+                <div class="text-center">
+                    <div class="bg-[#FFF5F7] h-16 w-16 rounded-full flex items-center justify-center text-[#FF69B4] mx-auto mb-4">
+                        <i class="fa-solid fa-hand-holding-dollar text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-[#2C3E50] mb-2" style="font-family: 'The Seasons', serif;">Solicitar Resgate</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">
+                        Você está prestes a solicitar o resgate de sua comissão acumulada de 
+                        <span class="font-bold text-[#2C3E50]" x-text="formatCurrency(comissaoTotal)"></span>.
+                    </p>
+                </div>
+
+                <div class="mt-8 flex flex-col gap-3">
+                    <button @click="executarSaque()" 
+                            class="w-full bg-[#2C3E50] hover:bg-[#1a252f] text-white font-bold py-3 rounded-xl uppercase text-[10px] tracking-widest transition-all active:scale-95 shadow-lg border-none cursor-pointer">
+                        Confirmar Solicitação
+                    </button>
+                    <button @click="mostrarModalSaque = false" 
+                            class="w-full bg-gray-50 hover:bg-gray-100 text-gray-500 font-bold py-3 rounded-xl uppercase text-[10px] tracking-widest transition-all border-none cursor-pointer">
+                        Agora não
+                    </button>
+                </div>
             </div>
         </div>
+    </template>
 
+    {{-- SISTEMA DE TOASTS - REPOSICIONADO PARA O TOPO --}}
+    <div class="fixed top-6 left-4 right-4 md:left-auto md:right-8 z-[110] flex flex-col gap-3 pointer-events-none">
+        <template x-for="toast in toasts" :key="toast.id">
+            <div x-show="toast.show" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="-translate-y-12 opacity-0"
+                 x-transition:enter-end="translate-y-0 opacity-100"
+                 x-transition:leave="transition ease-in duration-300"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 :class="toast.type === 'success' ? 'bg-[#2C3E50] border-[#FFD700]' : 'bg-red-600 border-red-400'"
+                 class="flex items-center gap-4 px-6 py-4 rounded-2xl shadow-2xl border-t-4 text-white min-w-[300px] pointer-events-auto transition-all">
+                
+                <i class="fa-solid text-lg" :class="toast.type === 'success' ? 'fa-circle-check text-[#FFD700]' : 'fa-circle-exclamation'"></i>
+                
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase tracking-widest font-black opacity-60" 
+                          x-text="toast.type === 'success' ? 'Sucesso' : 'Atenção'"></span>
+                    <span class="text-xs font-bold leading-tight" x-text="toast.message"></span>
+                </div>
+
+                <button @click="toast.show = false" class="ml-auto opacity-50 hover:opacity-100 transition-opacity">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+        </template>
     </div>
-</div>
-@endsection
 
-@push('scripts')
-    @vite(['resources/js/app.js'])
-@endpush
+
+</div> {{-- FIM DO x-data dashboardComponent --}}
+@endsection
