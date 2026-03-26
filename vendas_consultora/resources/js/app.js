@@ -6,6 +6,7 @@ import { initRecuperarSenha } from './pages/recuperar-senha';
 import { initAtualizarSenha } from './pages/atualizar-senha';
 import { initLogin } from './pages/login';
 import { initDashboardConsultora } from './pages/dashboard-consultora';
+import { initFormularioCliente } from './pages/formularios/formulario-cliente.js';
 
 // Inicializa a lógica da página
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initRecuperarSenha();
     initAtualizarSenha();
     initLogin();
+    initFormularioCliente();
+    
 
 
     Alpine.start();
