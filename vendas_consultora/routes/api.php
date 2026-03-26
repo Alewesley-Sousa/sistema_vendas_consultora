@@ -28,7 +28,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/comissao/historico', [HistoricoComissoesController::class, 'visualizarHistorico']);
 
     // solicitar o saque da comissão do usuario
-    Route::get('/comissao/solicitar', [ComissoesController::class, 'solicitarComissao']);
+    Route::get('/comissao/solicitar', [ComissoesController::class,
+    'solicitarComissao'])->name('solicitarSaque');
     
     // cadastrar cliente
     Route::post('/cliente', [ClientesController::class, 'cadastrarCliente']);
