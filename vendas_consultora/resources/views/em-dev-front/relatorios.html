@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Relatório de Vendas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --coral: #FF6F61;
+      --deep-pink: #FF1493;
+      --dourado: #FFD700;
+      --rosa-claro: #FFF5F7;
+      --azul-petroleo: #2C3E50;
+      --hot-pink: #FF69B4;
+      --card-bg: #FFFFFF;
+      --radius: 12px;
+      --shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: var(--rosa-claro);
+      margin: 0;
+      color: var(--azul-petroleo);
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--azul-petroleo), #1a252f);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border-bottom: 4px solid var(--dourado);
+      margin-bottom: 40px;
+    }
+    
+    h3.section-title {
+      color: var(--azul-petroleo);
+      margin: 30px 0 20px;
+      border-left: 5px solid var(--coral);
+      padding-left: 15px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 25px;
+    }
+
+    .chart-container {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 25px;
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+    }
+
+    .section {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 25px;
+      box-shadow: var(--shadow);
+      border-top: 5px solid transparent;
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section:hover {
+      transform: translateY(-5px);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .icon-box {
+      width: 45px;
+      height: 45px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    /* Estilização Sutil das Cores */
+    .coral { border-top-color: var(--coral); }
+    .coral .icon-box { background: rgba(255, 111, 97, 0.1); color: var(--coral); }
+
+    .deep-pink { border-top-color: var(--deep-pink); }
+    .deep-pink .icon-box { background: rgba(255, 20, 147, 0.1); color: var(--deep-pink); }
+
+    .dourado { border-top-color: var(--dourado); }
+    .dourado .icon-box { background: rgba(255, 215, 0, 0.1); color: #b8860b; }
+
+    .soft-pink { border-top-color: var(--hot-pink); }
+    .soft-pink .icon-box { background: rgba(255, 105, 180, 0.1); color: var(--hot-pink); }
+
+    .petroleo { border-top-color: var(--azul-petroleo); }
+    .petroleo .icon-box { background: rgba(44, 62, 80, 0.1); color: var(--azul-petroleo); }
+
+    /* Estilo para Tabela de Comissões */
+    .commission-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .commission-table th, .commission-table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .commission-table th {
+      background: #f8f9fa;
+      color: var(--azul-petroleo);
+      font-weight: 600;
+    }
+
+    .total-badge {
+      background: var(--azul-petroleo);
+      color: var(--dourado);
+      padding: 20px;
+      border-radius: var(--radius);
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .total-badge span {
+      display: block;
+      font-size: 0.8rem;
+      color: white;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+      color: var(--azul-petroleo);
+      margin: 0;
+    }
+
+    p {
+      color: #5d6d7e;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid #f1f1f1;
+      padding-top: 15px;
+    }
+
+    ul li {
+      padding: 5px 0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: #34495e;
+    }
+
+    ul li strong {
+      color: var(--azul-petroleo);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <i class="fas fa-file-invoice-dollar" style="color: var(--dourado); margin-right: 15px;"></i>
+    Relatório 
+  </header>
+
+  <div class="container">
+    <div class="report-grid">
+      <div class="section coral">
+        <div class="section-header">
+          <div class="icon-box"><i class="fas fa-bolt"></i></div>
+          <h2>Energia da Equipe</h2>
+        </div>
+        <p>Consultoras engajadas e motivadas para alcançar metas.</p>
+        <ul>
+          <li>Treinamentos realizados: <strong>5</strong></li>
+          <li>Novas consultoras: <strong>12</strong></li>
+        </ul>
+      </div>
+
+      <div class="section deep-pink">
+        <div class="section-header">
+          <div class="icon-box"><i class="fas fa-female"></i></div>
+          <h2>Força Feminina</h2>
+        </div>
+        <p>Maioria das vendas realizadas por consultoras mulheres.</p>
+        <ul>
+          <li>Participação: <strong>78%</strong></li>
+          <li>Top vendedora: <strong>Maria Oliveira</strong></li>
+        </ul>
+      </div>
+
+      <div class="section dourado">
+        <div class="section-header">
+          <div class="icon-box"><i class="fas fa-trophy"></i></div>
+          <h2>Sucesso e Conquista</h2>
+        </div>
+        <p>Metas de vendas superadas neste mês de Março.</p>
+        <ul>
+          <li>Meta estipulada: <strong>R$ 50.000</strong></li>
+          <li>Realizado: <strong>R$ 62.300</strong></li>
+        </ul>
+      </div>
+
+      <div class="section petroleo">
+        <div class="section-header">
+          <div class="icon-box"><i class="fas fa-users"></i></div>
+          <h2>Clientes</h2>
+        </div>
+        <p>Feedback positivo e aumento na fidelização da base.</p>
+        <ul>
+          <li>Novos clientes: <strong>45</strong></li>
+          <li>Clientes recorrentes: <strong>120</strong></li>
+        </ul>
+      </div>
+
+      <div class="section soft-pink">
+        <div class="section-header">
+          <div class="icon-box"><i class="fas fa-award"></i></div>
+          <h2>Metas Alcançadas</h2>
+        </div>
+        <p>Todas as consultoras atingiram suas metas individuais.</p>
+        <ul>
+          <li>Taxa de sucesso: <strong>100%</strong></li>
+          <li>Bônus distribuído: <strong>R$ 8.500</strong></li>
+        </ul>
+      </div>
+
+      <div class="section petroleo">
+        <div class="section-header">
+          <div class="icon-box"><i class="fas fa-boxes"></i></div>
+          <h2>Gestão de Estoque</h2>
+        </div>
+        <p>Organização e controle de inventário profissional.</p>
+        <ul>
+          <li>Produtos ativos: <strong>350</strong></li>
+          <li>Entregas no prazo: <strong>98%</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
