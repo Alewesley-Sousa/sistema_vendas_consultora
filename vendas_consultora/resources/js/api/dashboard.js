@@ -11,5 +11,9 @@ export const DashboardService = {
             meta: resMeta.data.data || 0,
             progresso: parseFloat(resProgresso.data.data || 0)
         };
+    },
+    async solicitarSaque() {
+        const response = await axios.get('/api/comissao/solicitar');
+        return response.data;
     }
 };
