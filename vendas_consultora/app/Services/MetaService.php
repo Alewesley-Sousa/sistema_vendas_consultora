@@ -41,7 +41,7 @@ class MetaService
 
         // O cálculo correto de progresso é (O que eu fiz / O que eu preciso fazer)
         // Se eu vendi 500 e a meta é 1000, fiz 0.5 (50%)
-        $progresso = ($totalVendido / $valorMeta) * 100;
+        $progresso = ($totalVendido / $valorMeta);
         return round($progresso, 2);
         
     }
