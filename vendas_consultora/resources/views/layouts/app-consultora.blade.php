@@ -20,21 +20,19 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center p-6 font-sans antialiased">
+<body class="min-h-screen bg-[#FFF5F7] flex flex-col font-sans antialiased"> 
+
+    <x-header-consultora />
 
     <div id="global-loader" class="fixed inset-0 z-[9999] flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
-        <div class="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"></div>
-        <p class="mt-4 font-medium text-gray-700">Carregando...</p>
+        <div class="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-[#FF69B4]"></div> <p class="mt-4 font-medium text-gray-700">Carregando...</p>
     </div>
 
-
-    <div class="min-h-screen">
-        <main class="py-10">
-            <div class="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-                @yield('conteudo')
-            </div>
-        </main>
-    </div>
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div class="w-full max-w-7xl">
+            @yield('conteudo')
+        </div>
+    </main>
 
     <script>
         window.addEventListener('load', () => {
