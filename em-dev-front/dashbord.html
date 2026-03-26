@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --primary: #3498db; 
+      --primary-dark: #2980b9; 
+      --dark-sidebar: #2f3640;
+      --dark-sidebar-end: #1c2025;
+      --background: #f0f2f5; 
+      --card-bg: #FFFFFF;
+      --text: #333333;
+      --text-muted: #7f8c8d;
+      --radius: 15px; 
+      --shadow: 0 4px 12px rgba(0,0,0,0.08); 
+      --hover-lift: translateY(-5px); 
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--background);
+      margin: 0;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--dark-sidebar), var(--dark-sidebar-end));
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      border-bottom-left-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+    }
+
+    header i {
+      margin-right: 15px;
+      color: var(--primary);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      padding: 40px;
+      max-width: 1200px; /* Max width for better content flow */
+      margin: 0 auto; /* Center the container */
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .card:hover {
+      transform: var(--hover-lift);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.3rem;
+      color: var(--dark-sidebar);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid var(--background);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    h2 i {
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    button {
+      background: #fff;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-filled {
+      background: var(--primary);
+      color: white;
+      border: none;
+      margin-top: auto;
+    }
+
+    .btn-filled:hover {
+      background: var(--primary-dark);
+      transform: scale(1.02);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px 0;
+      flex-grow: 1;
+    }
+
+    ul li {
+      padding: 8px 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    ul li::before {
+      content: "\f00c";
+      font-family: "Font Awesome 5 Free";
+      font-weight: 900;
+      color: var(--primary);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <i class="fas fa-chart-line"></i> Painel de Vendas
+  </header>
+
+  <div class="container">
+    <!-- Card de Ações -->
+    <div class="card">
+      <h2><i class="fas fa-tasks"></i> Ações Rápidas</h2>
+      <div class="actions">
+        <button onclick="cadastrarCliente()"><i class="fas fa-user-plus"></i> Novo Cliente</button>
+        <button onclick="cadastrarConsultora()"><i class="fas fa-user-tie"></i> Nova Consultora</button>
+        <button onclick="realizarPedido()"><i class="fas fa-cart-plus"></i> Criar Pedido</button>
+        <button onclick="verHistorico()"><i class="fas fa-history"></i> Relatórios</button>
+      </div>
+    </div>
+
+    <!-- Histórico de Comissões -->
+    <div class="card">
+      <h2><i class="fas fa-wallet"></i> Comissões</h2>
+      <ul>
+        <li>Visualizar registro de histórico</li>
+        <li>Ver total acumulado</li>
+      </ul>
+      <button class="btn-filled" onclick="verHistorico()">Abrir Histórico</button>
+    </div>
+
+    <!-- Cadastro de Cliente -->
+    <div class="card">
+      <h2><i class="fas fa-users"></i> Clientes</h2>
+      <ul>
+        <li>Formulário para cadastrar clientes</li>
+        <li>Gestão de base ativa</li>
+      </ul>
+      <button class="btn-filled" onclick="cadastrarCliente()">Gerenciar Clientes</button>
+    </div>
+
+    <!-- Cadastro de Consultoras -->
+    <div class="card">
+      <h2><i class="fas fa-id-card"></i> Consultoras</h2>
+      <ul>
+        <li>Formulário para cadastrar consultoras</li>
+        <li>Monitoramento de desempenho</li>
+      </ul>
+      <button class="btn-filled" onclick="cadastrarConsultora()">Gerenciar Equipe</button>
+    </div>
+
+    <!-- Estoque da Loja -->
+    <div class="card">
+      <h2><i class="fas fa-boxes"></i> Inventário</h2>
+      <ul>
+        <li>Visualizar produtos disponíveis</li>
+        <li>Selecionar quantidade de produto</li>
+      </ul>
+      <button class="btn-filled" onclick="estoqueLoja()">Ver Estoque</button>
+    </div>
+
+    <!-- Pedido Link -->
+    <div class="card">
+      <h2><i class="fas fa-link"></i> Venda Online</h2>
+      <ul>
+        <li>Ver subtotais e frete</li>
+        <li>Gerar link de pagamento</li>
+      </ul>
+      <button class="btn-filled" onclick="pedidoLink()">Gerar Link</button>
+    </div>
+  </div>
+
+  <script>
+    function verHistorico() {
+      window.location.href = "pasta/historico.html";
+    }
+    function cadastrarCliente() {
+      window.location.href = "register.html";
+    }
+    function cadastrarConsultora() {
+      window.location.href = "pasta/cadastrar-consultora.html";
+    }
+    function realizarPedido() {
+      window.location.href = "pasta/realizar-pedido.html";
+    }
+    function estoqueLoja() {
+      window.location.href = "pasta/estoque.html";
+    }
+    function pedidoLink() {
+      window.location.href = "pasta/pedido-link.html";
+    }
+  </script>
+</body>
+</html>

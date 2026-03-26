@@ -13,8 +13,9 @@ class MetaService
         return metas::where('consultora_id', $idUsuario)->where('status_id', 3)->first(); // pega o registro da meta que esta ativa do usuario longado
     }
 
-    public function progressoMeta() {
-$idUsuario = $idUsuario ?? Auth::id();
+    public function progressoMeta($idUsuario = null) {
+        // Se idUsuario não for passado, pega o do usuário logado
+        $idUsuario = $idUsuario ?? Auth::id();
         
         // Usamos o método acima para pegar a meta
         $metaAtual = $this->metaUsuario($idUsuario);
