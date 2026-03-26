@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Vendas Online - Sistema Consultora</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --primary: #FF6F61; /* Coral */
+      --primary-dark: #FF1493; /* Deep Pink */
+      --secondary: #FF69B4; /* Hot Pink */
+      --dark-sidebar: #2C3E50; /* Azul Petróleo */
+      --dark-sidebar-end: #141E30;
+      --background: #fdfdfd;
+      --gold: #FFD700; /* Dourado */
+      --card-bg: #FFFFFF;
+      --text: #2C3E50;
+      --text-muted: #5d6d7e;
+      --radius: 15px; 
+      --shadow: 0 4px 12px rgba(0,0,0,0.08); 
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--background);
+      margin: 0;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--dark-sidebar), var(--dark-sidebar-end));
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      border-bottom: 3px solid var(--gold);
+      margin-bottom: 30px;
+    }
+
+    header i {
+      margin-right: 15px;
+      color: var(--gold);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 35px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+      border: none;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      color: var(--dark-sidebar);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid var(--background);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    h2 i {
+      color: var(--primary);
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+      margin-bottom: 25px;
+      transition: color 0.3s;
+    }
+
+    .back-btn:hover {
+      color: var(--primary-dark);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background-color: rgba(44, 62, 80, 0.03);
+      color: var(--dark-sidebar);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+
+    tr:hover {
+      background-color: rgba(255, 111, 97, 0.04);
+    }
+
+    input[type="number"] {
+      width: 60px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    .total {
+      text-align: right;
+      font-weight: bold;
+      margin-top: 25px;
+      font-size: 1.4rem;
+      color: var(--primary-dark);
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .codigo {
+      background: #fff9e6;
+      color: #856404;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 20px;
+      font-size: 1.1rem;
+    }
+
+    .progresso {
+      background: #fdfdfd;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+    }
+
+    .progresso p {
+      margin: 10px 0;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .barra {
+      background: #edf0f2;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 12px;
+      margin-top: 15px;
+    }
+
+    .barra span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(to right, var(--secondary), var(--primary-dark));
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    button {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 25px;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 10px rgba(255, 111, 97, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(255, 111, 97, 0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <i class="fas fa-globe"></i> Aba de Vendas Online
+  </header>
+
+  <div class="container">
+    <a href="dashbord.html" class="back-btn"><i class="fas fa-arrow-left"></i> Voltar ao Dashboard</a>
+
+    <!-- Produtos -->
+    <div class="card">
+      <h2><i class="fas fa-cart-arrow-down"></i> Seleção de Produtos</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Preço</th>
+            <th>Quantidade</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody id="pedido">
+          <tr>
+            <td>Perfume Essencial</td>
+            <td>120.00</td>
+            <td><input type="number" value="1" min="0" onchange="atualizarTotal()"></td>
+            <td class="subtotal">120.00</td>
+          </tr>
+          <tr>
+            <td>Creme Hidratante</td>
+            <td>45.00</td>
+            <td><input type="number" value="2" min="0" onchange="atualizarTotal()"></td>
+            <td class="subtotal">90.00</td>
+          </tr>
+          <tr>
+            <td>Shampoo Revitalizante</td>
+            <td>35.00</td>
+            <td><input type="number" value="1" min="0" onchange="atualizarTotal()"></td>
+            <td class="subtotal">35.00</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="total" id="valorTotal">Total: R$ 245,00</div>
+      <div class="codigo" id="codigoPedido">Código do Pedido: -</div>
+      <button onclick="finalizarPedido()">
+        <i class="fas fa-paper-plane"></i> Finalizar Pedido
+      </button>
+    </div>
+
+    <!-- Monitoramento -->
+    <div class="card">
+      <h2><i class="fas fa-chart-line"></i> Monitoramento de Desempenho</h2>
+      <div class="progresso">
+        <p><span>Meta Mensal:</span> <span>R$ 50.000</span></p>
+        <p><span>Vendas Realizadas:</span> <span id="vendasRealizadas" style="color: var(--primary-dark);">R$ 0,00</span></p>
+        <div class="barra"><span id="barraProgresso"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let vendasAcumuladas = 0;
+
+    function atualizarTotal() {
+      let linhas = document.querySelectorAll("#pedido tr");
+      let total = 0;
+
+      linhas.forEach(linha => {
+        let preco = parseFloat(linha.cells[1].innerText);
+        let qtd = parseInt(linha.cells[2].querySelector("input").value);
+        let subtotal = preco * qtd;
+        linha.cells[3].innerText = subtotal.toFixed(2);
+        total += subtotal;
+      });
+
+      document.getElementById("valorTotal").innerText = "Total: R$ " + total.toFixed(2).replace(".", ",");
+    }
+
+    function gerarCodigoUnico() {
+      return 'PED-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    }
+
+    function finalizarPedido() {
+      let codigo = gerarCodigoUnico();
+      document.getElementById("codigoPedido").innerText = "Código do Pedido: " + codigo;
+
+      // Atualiza desempenho
+      let total = parseFloat(document.getElementById("valorTotal").innerText.replace("Total: R$ ", "").replace(",", "."));
+      vendasAcumuladas += total;
+      document.getElementById("vendasRealizadas").innerText = "R$ " + vendasAcumuladas.toFixed(2);
+
+      let meta = 50000;
+      let progresso = (vendasAcumuladas / meta) * 100;
+      document.getElementById("barraProgresso").style.width = progresso + "%";
+
+      alert("Pedido finalizado com sucesso!\nCódigo: " + codigo);
+    }
+  </script>
+</body>
+</html>
