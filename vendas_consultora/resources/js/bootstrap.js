@@ -1,6 +1,8 @@
 import axios from 'axios';
+import Alpine from 'alpinejs';
 import { UIService } from './service/uiService'; // Importamos o serviço que gerencia o loader
 
+window.Alpine = Alpine;
 window.axios = axios;
 
 // Identifica para o Laravel que a requisição é AJAX
