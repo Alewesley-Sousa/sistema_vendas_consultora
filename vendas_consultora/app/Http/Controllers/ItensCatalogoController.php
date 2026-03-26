@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\itens_catalogo;
 use App\Services\CatalogoService;
 use Illuminate\Http\Request;
 
@@ -12,9 +11,23 @@ class ItensCatalogoController extends Controller
 
     public function __construct(CatalogoService $service){$this->catalogoService = $service;}
 
-    public function visualizarItens(Request $request, $id) {
+    /**
+     * Visualiza os itens do catálogo.
+     */
+    public function visualizarItensCatalogo(Request $request, $id) {
         $busca = $request->query('search');
         $resultado = $this->catalogoService->trazerItens($id, $busca);
+
+        return response()->json($resultado);
+    }
+
+    /**
+     * Visualiza os itens selecionados.
+     */
+    public function visualizarItens($ids) {
+        $idsArray = array_map('trim', explode(',', $ids));
+        if (empty($idsArray)) 
+        $resultado = $this->catalogoService->visualizarItens($idsArray);
 
         return response()->json($resultado);
     }

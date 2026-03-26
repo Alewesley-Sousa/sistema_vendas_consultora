@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\catalogos;
 use App\Models\itens_catalogo;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -53,5 +54,20 @@ class CatalogoService {
         } catch (Exception $e) {
             return ['status' => 'error', 'mensagem' => $e->getMessage()];
         }
+    }
+
+    public function visualizarItens(array $ids) {
+        try {
+            $resultado['data'] = itens_catalogo::whereIn('id', $ids)->with('produto')->get();
+
+            $resultado['status'] = 'success';
+
+            return response()->json($resultado);
+        } catch (Exception $e) {
+            return ['status' => 'error', 'mensagem' => $e->getMessage()];
+        }
+        $resultado = itens_catalogo::whereIn('id', explode(',', $ids))->get();
+
+        return response()->json($resultado);
     }
 }

@@ -50,7 +50,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/catalogo', [CatalogosController::class, 'visualizarCatalogo']);
 
-    Route::get('/catalogo/itens/{id}', [ItensCatalogoController::class, 'visualizarItens']);
+    Route::get('/catalogo/itens/{id}', [ItensCatalogoController::class, 'visualizarItensCatalogo']);
+
+    //exibir itens selecionados
+    Route::get('/itens/{id}', [ItensCatalogoController::class, 'visualizarItens']);
 
     // Rota de Ação (API)
     Route::delete('/cliente/{id}', [ClientesController::class, 'destroy']);
