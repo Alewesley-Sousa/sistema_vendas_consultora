@@ -2,8 +2,8 @@ import './bootstrap';
 
 import { AuthService } from './api/auth';
 import { ResetarSenhaService } from './api/resetarSenha';
-import { initRecuperarSenha } from './recuperar-senha'
-import { initAtualizarSenha } from './atualizar-senha';
+import { initRecuperarSenha } from './pages/recuperar-senha'
+import { initAtualizarSenha } from './pages/atualizar-senha';
 import { initLogin } from './pages/login';
 
 // Inicializa a lógica da página
