@@ -4,55 +4,59 @@ export function initLogin() {
     const loginForm = document.getElementById('loginForm');
     if (!loginForm) return;
 
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const rememberInput = document.getElementById('remember');
     const btnEntrar = document.getElementById('btnEntrar');
-    const errorDiv = document.getElementById('error-message');
-    const errorList = document.getElementById('error-list');
 
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        errorDiv.classList.add('hidden');
-        errorList.innerHTML = '';
-        btnEntrar.disabled = true;
+        // 1. Pega os dados do Alpine do componente Blade
+        const alpineData = window.Alpine ? Alpine.$data(loginForm.closest('[x-data]')) : null;
         
-        // Mantendo o tracking-[0.5em] e a fonte para não "pular" o layout
-        btnEntrar.innerHTML = `
-            <span class="flex items-center justify-center gap-2 tracking-[0.2em]">
-                AUTENTICANDO
-                <span class="flex gap-1">
-                    <span class="animate-bounce [animation-delay:-0.3s] text-[#FFD700]">.</span>
-                    <span class="animate-bounce [animation-delay:-0.15s] text-[#FFD700]">.</span>
-                    <span class="animate-bounce text-[#FFD700]">.</span>
-                </span>
-            </span>
-        `;
-        btnEntrar.classList.add('opacity-80', 'cursor-not-allowed');
+        if (alpineData) {
+            alpineData.isSubmitting = true;
+            alpineData.errors = []; 
+        }
+
+        if (btnEntrar) btnEntrar.disabled = true;
 
         const payload = {
-            email: document.getElementById('email').value,
-            password: document.getElementById('password').value,
-            remember: document.getElementById('remember').checked
+            email: emailInput?.value,
+            password: passwordInput?.value,
+            remember: rememberInput ? rememberInput.checked : false
         };
 
         try {
+            // Chama seu AuthService (que já salva o token no localStorage)
             const response = await AuthService.login(payload);
+            
+            // 2. Redirecionamento usando o 'redirect' do seu Controller PHP
             window.location.href = response.redirect;
 
         } catch (error) {
-            btnEntrar.disabled = false;
-            // Voltando para o texto "ACESSAR" com o ícone correto
-            btnEntrar.innerHTML = `
-                <span>ACESSAR</span>
-                <i class="fa-solid fa-arrow-right-long text-[10px] opacity-50"></i>
-            `;
-            btnEntrar.classList.remove('opacity-80', 'cursor-not-allowed');
+            // 3. Tratamento de Erro sincronizado com o que o Controller envia
+            if (btnEntrar) btnEntrar.disabled = false;
             
-            errorDiv.classList.remove('hidden');
-
-            const message = error.message || 'Erro ao realizar login.';
-            const li = document.createElement('li');
-            li.innerText = message;
-            errorList.appendChild(li);
+            if (alpineData) {
+                alpineData.isSubmitting = false;
+                
+                // O seu Controller envia ['message' => '...']
+                // Como o seu AuthService dá 'throw error.response.data', o erro aqui já é o JSON
+                if (error.errors) {
+                    // Caso o Laravel envie erros de validação automáticos
+                    alpineData.errors = Object.values(error.errors).flat();
+                } else if (error.message) {
+                    // Caso seja a mensagem de "Credenciais inválidas" ou "Status 3"
+                    alpineData.errors = [error.message];
+                } else {
+                    alpineData.errors = ['Erro ao realizar login.'];
+                }
+            } else {
+                // Fallback de segurança
+                alert(error.message || 'Erro ao processar login.');
+            }
         }
     });
 }
