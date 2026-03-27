@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\comissoes;
 use App\Services\ComissaoService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,12 +29,34 @@ class ComissoesController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function armazernar(Request $request)
+    public function solicitarComissao(Request $request): JsonResponse
     {
-        //
+        try {
+            $resultado = $this->comissaoService->solicitarSaque();
+
+        // Se toda operação for um sucesso
+        if ($resultado['status'] === 'success') {
+            return response()->json([
+                'status'  => 'success',
+                'message' => $resultado['mensagem'],
+                // Usamos o valor que o Service confirmou que está em análise
+                'valor_solicitado' => $resultado['valor_solicitado'] 
+            ], 200);
+        }
+
+        // Caso o Service retorne um status de erro controlado
+        return response()->json([
+            'status'  => 'error',
+            'message' => $resultado['mensagem']
+        ], 400);
+
+    } catch (\Exception $e) {
+        // Se algo explodiu (erro de banco, código, etc)
+        return response()->json([
+            'status'  => 'error',
+            'message' => 'Erro interno: ' . $e->getMessage()
+        ], 500);
+    }
     }
 
 

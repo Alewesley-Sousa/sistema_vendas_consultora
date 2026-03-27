@@ -2,13 +2,32 @@
 
 use App\Http\Controllers\Auth\AutenticacaoController;
 use App\Http\Controllers\Auth\ResetarSenhaController;
+use App\Http\Controllers\CatalogosController;
+use App\Http\Controllers\ClientesController;
+use App\Http\Controllers\HistoricoComissoesController;
+use App\Http\Controllers\UsuariosController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use Illuminate\Support\Facades\Auth;
+
 Route::get('/', function () {
+    if (Auth::check()) {
+        $user = Auth::user();
+
+        // Decide o dashboard conforme o cargo
+        return match ($user->cargo) {
+            'distribuidora' => redirect()->route('distribuidora.dashboard'),
+            'lider'         => redirect()->route('lider.dashboard'),
+            'consultora'    => redirect()->route('consultora.dashboard'),
+            default         => redirect()->route('login'),
+        };
+    }
+
     return redirect()->route('login');
 });
+
 // pagina de login
 Route::get('/login', [AutenticacaoController::class, 'showLogin'])->name('login');
 
@@ -41,3 +60,17 @@ Route::post('/recuperar-senha', [ResetarSenhaController::class, 'enviarLinkReset
 Route::get('/resetar-senha/{token}', [ResetarSenhaController::class, 'formularioAtualizarSenha'])->name('senha.resetar');
 
 Route::post('/resetar-senha', [ResetarSenhaController::class, 'atualizarSenha'])->name('senha.atualizar');
+
+Route::get('/comissao/historico', [HistoricoComissoesController::class, 'historicoComissao'])->name('consultoraHistorico');
+
+Route::get('/cliente/cadastro', [ClientesController::class, 'formulario'])->name('cliente.cadastrar')->middleware(['auth', 'cargo:consultora']);
+
+Route::get('/cliente/edicao/{id}', [ClientesController::class, 'formulario'])->name('cliente.editar')->middleware(['auth']);
+
+Route::get('/usuario/cadastro', [UsuariosController::class, 'formulario'])->name('usuario.cadastrar')->middleware(['auth', 'cargo:consultora']);
+
+Route::get('/usuario/edicao/{id}', [UsuariosController::class, 'formulario'])->name('usuario.editar')->middleware(['auth', 'cargo:distribuidora']);
+
+Route::get('/catalogo', [CatalogosController::class, 'index'])->middleware('auth')->name('catalogo.visualizar');
+
+Route::get('/clientes', [ClientesController::class, 'listar'])->name('cliente.listar')->middleware(['auth', 'cargo:distribuidora']);

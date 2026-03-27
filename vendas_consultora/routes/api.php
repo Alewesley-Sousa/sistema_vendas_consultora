@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\CatalogosController;
+use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\ComissoesController;
+use App\Http\Controllers\HistoricoComissoesController;
+use App\Http\Controllers\ItensCatalogoController;
 use App\Http\Controllers\MetasController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -9,13 +13,45 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\UsuariosController;
+// agrupa todos que usam a autenticação com token
+Route::middleware('auth:sanctum')->group(function () {
+    // Pegar comissao atual do usuario autenticado
+    Route::get('/comissao', [ComissoesController::class, 'visualizar']);
 
-Route::get('/usr', [UsuariosController::class, 'index']);
-// Pegar comissao atual do usuario autenticado
-Route::get('/comissao', [ComissoesController::class, 'visualizar'])->middleware('auth:sanctum');
+    //pegar meta atual do usuario autenticado
+    Route::get('/meta', [MetasController::class, 'metaAtual']);
 
-//pegar meta atual do usuario autenticado
-Route::get('/meta', [MetasController::class, 'metaAtual'])->middleware('auth:sanctum');
+    // pegar progresso atual da meta do usuario autenticado
+    Route::get('/meta/progresso', [MetasController::class, 'progressoMeta']);
 
-// pegar progresso atual da meta do usuario autenticado
-Route::get('/meta/progresso', [MetasController::class, 'progressoMeta'])->middleware('auth:sanctum');
+    // pegar historico de comissoes do usuarioa autenticado
+    Route::get('/comissao/historico', [HistoricoComissoesController::class, 'visualizarHistorico']);
+
+    // solicitar o saque da comissão do usuario
+    Route::get('/comissao/solicitar', [ComissoesController::class, 'solicitarComissao']);
+    
+    // cadastrar cliente
+    Route::post('/cliente', [ClientesController::class, 'cadastrarCliente']);
+
+    // atualzar dados do cliente
+    Route::put('/cliente/{cliente}', [ClientesController::class, 'atualizarDados']);
+
+    // exibir um cliente
+    Route::get('/cliente/{cliente}', [ClientesController::class, 'exibir']);
+
+    // cadastrar usuario
+    Route::post('/usuario', [UsuariosController::class, 'cadastrarUsuario']);
+
+    // atualzar dados do usuario
+    Route::put('/usuario/{usuario}', [UsuariosController::class, 'atualizarUsuario']);
+
+    // exibir um usuario
+    Route::get('/usuario/{usuario}', [UsuariosController::class, 'exibirUsuario']);
+
+    Route::get('/catalogo', [CatalogosController::class, 'visualizarCatalogo']);
+
+    Route::get('/catalogo/itens/{id}', [ItensCatalogoController::class, 'visualizarItens']);
+
+    // Rota de Ação (API)
+    Route::delete('/cliente/{id}', [ClientesController::class, 'destroy']);
+});

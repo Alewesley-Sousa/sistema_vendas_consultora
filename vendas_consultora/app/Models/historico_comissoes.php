@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Models\pedidos;
-use App\Models\Tipo\tipo_movimentacao_comissao;
-use App\Models\Tipo\tipos_comissao;
+use App\Models\Tipos\tipo_movimentacao_comissao;
+use App\Models\Tipos\tipos_comissao;
 use App\Models\usuarios;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

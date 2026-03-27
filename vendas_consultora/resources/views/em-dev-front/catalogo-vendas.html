@@ -11,14 +11,14 @@
       --primary-dark: #FF1493; /* Deep Pink */
       --secondary: #FF69B4; /* Hot Pink */
       --dark-sidebar: #2C3E50; /* Azul Petróleo */
-      --dark-sidebar-end: #1a252f;
-      --background: #FFF5F7; /* Rosa Claro */
+      --dark-sidebar-end: #141E30;
+      --background: #FDFBFC;
       --gold: #FFD700; /* Dourado */
       --card-bg: #FFFFFF;
       --text: #2C3E50;
       --text-muted: #5d6d7e;
-      --radius: 15px; 
-      --shadow: 0 4px 12px rgba(0,0,0,0.08); 
+      --radius: 18px; 
+      --shadow: 0 10px 25px rgba(0,0,0,0.04); 
     }
 
     body {
@@ -35,7 +35,7 @@
       text-align: center;
       font-size: 1.8rem;
       font-weight: bold;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
       border-bottom-left-radius: var(--radius);
       border-bottom-right-radius: var(--radius);
       margin-bottom: 30px;
@@ -74,23 +74,24 @@
       background: var(--card-bg);
       border-radius: var(--radius);
       overflow: hidden;
-      box-shadow: var(--shadow);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03);
       transition: transform 0.3s ease;
       display: flex;
       flex-direction: column;
+      border: 1px solid rgba(0,0,0,0.03);
     }
 
     .product-card:hover { transform: translateY(-5px); }
 
     .product-image {
       height: 180px;
-      background: #f8f9fa;
+      background: linear-gradient(to bottom, #ffffff, #f9f9f9);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #ccc;
+      color: var(--primary);
       font-size: 3.5rem;
-      border-bottom: 1px solid #eee;
+      opacity: 0.8;
     }
 
     .product-info {

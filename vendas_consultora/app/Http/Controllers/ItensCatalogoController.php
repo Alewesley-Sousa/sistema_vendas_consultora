@@ -3,63 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\itens_catalogo;
+use App\Services\CatalogoService;
 use Illuminate\Http\Request;
 
 class ItensCatalogoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
+    protected $catalogoService;
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    public function __construct(CatalogoService $service){$this->catalogoService = $service;}
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    public function visualizarItens(Request $request, $id) {
+        $busca = $request->query('search');
+        $resultado = $this->catalogoService->trazerItens($id, $busca);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(itens_catalogo $itens_catalogo)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(itens_catalogo $itens_catalogo)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, itens_catalogo $itens_catalogo)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(itens_catalogo $itens_catalogo)
-    {
-        //
+        return response()->json($resultado);
     }
 }

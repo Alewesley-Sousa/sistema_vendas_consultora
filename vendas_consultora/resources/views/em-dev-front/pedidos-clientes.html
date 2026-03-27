@@ -223,6 +223,13 @@
 
     function finalizarPedido() {
       alert("Pedido finalizado com sucesso! Link de pagamento gerado.");
+      // Salva as quantidades atuais para carregar na tela de Venda Online
+      const inputs = document.querySelectorAll("#pedido input");
+      const quantidades = Array.from(inputs).map(i => i.value);
+      localStorage.setItem('checkout_quantities', JSON.stringify(quantidades));
+
+      // Redireciona para a finalização
+      window.location.href = "venda-on.html";
     }
   </script>
 </body>

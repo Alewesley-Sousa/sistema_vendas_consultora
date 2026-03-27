@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('telefone',20)->nullable();
             $table->string('senha');
             $table->string('cep',10);
+            $table->string('cpf', 11);
             $table->foreignId('consultora_id')->nullable()->constrained('usuarios')->nullOnDelete();
             $table->foreignId('status_id')->constrained('status_consultoras');
             $table->rememberToken();

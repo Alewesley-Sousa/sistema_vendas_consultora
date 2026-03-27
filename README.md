@@ -37,19 +37,21 @@ O projeto foi desenvolvido utilizando o framework Laravel com foco na aplicaçã
 
 ## ▶️ Como Rodar o Projeto
 
-Para executar o projeto localmente, é necessário ter instalado PHP 8.1 ou superior, Composer, MySQL e Node.js.
-
+Para executar o projeto localmente, é necessário ter instalado PHP 8.3 ou superior, Composer, MySQL e Node.js.
+alewesley1234@gmail.com (consultora)
+maria.silva@example.com (distribuidora) incompleto em termos da tabela cliente
 Primeiramente, clone o repositório:
 
 ```bash
 git clone https://github.com/Alewesley-Sousa/sistema-vendas-consultora.git
-cd sistema-vendas-cosmeticos
+cd sistema-vendas-consultora/vendas_consultora
 composer install
 npm install
+npm run dev
 cp .env.example .env
+touch database/database.sqlite
 php artisan key:generate
-php artisan migrate
-php artisan db:seed
+php artisan migrate --seed
 php artisan serve
 ```
 ---

@@ -2,19 +2,30 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <title>Meus Clientes - Sistema Consultora</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    :root {
+      --primary: #FF6F61;
+      --primary-dark: #FF1493;
+      --dark-sidebar: #2C3E50;
+      --background: #FFF5F7;
+      --card-bg: #FFFFFF;
+      --text: #2C3E50;
+      --radius: 15px;
+      --shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
     body {
       margin: 0;
-      font-family: 'Segoe UI', Arial, sans-serif; /* Using a more modern font stack */
-      background-color: #f0f2f5; /* Slightly different background */
-      color: #333;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: var(--background);
+      color: var(--text);
     }
+
     .sidebar {
       width: 80px;
-      background: linear-gradient(to bottom, #2f3640, #1c2025); /* Gradient for the sidebar */
+      background: linear-gradient(to bottom, var(--dark-sidebar), #1a252f);
       height: 100vh;
       position: fixed;
       left: 0;
@@ -23,192 +34,203 @@
       flex-direction: column;
       align-items: center;
       padding-top: 20px;
-      transition: width 0.3s; /* For potential expansion */
     }
+
     .sidebar i {
       color: #fff;
       font-size: 24px;
       margin: 20px 0;
       cursor: pointer;
-      transition: transform 0.2s ease-in-out;
+      transition: all 0.3s;
     }
+
     .sidebar i:hover {
-        transform: scale(1.2); /* Hover effect for icons */
-        color: #3498db; /* Using one of the theme colors on hover */
+      transform: scale(1.2);
+      color: var(--primary);
     }
+
     .main {
       margin-left: 100px;
-      padding: 20px;
+      padding: 40px;
     }
+
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 40px;
     }
+
+    .topbar h2 {
+      color: var(--dark-sidebar);
+      font-size: 2rem;
+    }
+
     .topbar input[type="text"] {
         border: 1px solid #ddd;
         padding: 10px;
         border-radius: 20px;
         width: 250px;
+        outline: none;
     }
-    .cards {
+
+    .customer-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
     }
-    .card {
-      background: #fff;
-      padding: 20px;
-      border-radius: 15px; /* Softer radius */
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* More subtle shadow */
-      transition: transform 0.2s;
+
+    .customer-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 25px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s;
+      border-left: 5px solid var(--primary);
     }
-    .card:hover {
-        transform: translateY(-5px); /* Add a little lift on hover */
+
+    .customer-card:hover {
+      transform: translateY(-5px);
     }
-    .charts {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
-      gap: 20px;
-      margin-top: 20px;
+
+    .customer-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
     }
-    .right-column {
-      margin-top: 20px;
-    }
-    .progress {
-      width: 100px;
-      height: 100px;
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      background: var(--background);
+      color: var(--primary);
       border-radius: 50%;
-      /* A nice gradient for the progress bar would be cool, but simple is ok */
-      border: 10px solid #3498db;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .customer-info h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--dark-sidebar);
+    }
+
+    .customer-info p {
+      margin: 2px 0 0;
+      font-size: 0.85rem;
+      color: #7f8c8d;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      border-top: 1px solid #f0f0f0;
+      padding-top: 15px;
+    }
+
+    .stat-item span {
+      display: block;
+      font-size: 0.75rem;
+      color: #95a5a6;
+      text-transform: uppercase;
+    }
+
+    .stat-item strong {
+      font-size: 0.9rem;
+      color: var(--primary-dark);
+    }
+
+    .btn-new {
+      background: var(--primary);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 25px;
+      text-decoration: none;
       font-weight: bold;
-      margin: auto;
+      transition: background 0.3s;
+    }
+
+    .btn-new:hover {
+      background: var(--primary-dark);
     }
   </style>
 </head>
 <body>
   <div class="sidebar">
-    <i class="fas fa-home"></i>
-    <i class="fas fa-chart-bar"></i>
+    <i class="fas fa-home" onclick="window.location.href='dashbord.html'"></i>
+    <i class="fas fa-users" style="color: var(--primary)"></i>
     <i class="fas fa-star"></i>
     <i class="fas fa-cog"></i>
-    <i class="fas fa-info-circle"></i>
   </div>
 
   <div class="main">
     <div class="topbar">
-      <h2></h2> <!-- Changed to Portuguese -->
-      <input type="text" placeholder="Procurar..."> <!-- Changed to Portuguese -->
-    </div>
-
-
-
-    <div class="charts">
-      <div class="card">
-        <h3></h3> <!-- Changed to Portuguese -->
-        <ul>
-       
-        </ul>
-      </div>
-      <div class="card">
-        <h3></h3> <!-- Changed to Portuguese -->
-        <canvas id="barChart"></canvas>
-      </div>
-      <div class="card">
-        <h3></h3> <!-- Changed to Portuguese -->
-        <canvas id="lineChart"></canvas>
+      <h2>Meus Clientes</h2>
+      <div style="display: flex; gap: 20px; align-items: center;">
+        <input type="text" id="searchClient" placeholder="Pesquisar por nome...">
+        <a href="register.html" class="btn-new"><i class="fas fa-plus"></i> Novo Cadastro</a>
       </div>
     </div>
 
-    <div class="right-column">
-      <div class="card">
-        <h3></h3> <!-- Changed to Portuguese -->
-        <p></p>
-        <p></p>
-      </div>
-      <div class="card">
-        <h3>F</h3> <!-- Changed to Portuguese -->
-        <div class="progress"></div>
-      </div>
+    <div class="customer-grid" id="customerContainer">
+      <!-- Cards serão injetados aqui via JS -->
     </div>
   </div>
 
   <script>
-    const chartOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false // Hiding labels from mini charts
-            }
-        },
-        scales: {
-            x: {
-                ticks: { display: false },
-                grid: { display: false }
-            },
-            y: {
-                ticks: { display: false },
-                grid: { display: false }
-            }
-        }
-    };
+    document.addEventListener('DOMContentLoaded', function() {
+      const container = document.getElementById('customerContainer');
+      const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
 
-    // Example of a simple graph
-    new Chart(document.getElementById('earningsChart'), {
-      type: 'line',
-      data: {
-        labels: ['Jan','Feb','Mar'],
-        datasets: [{ data: [10,20,30], borderColor: '#3498db', fill: false, tension: 0.4 }]
-      },
-      options: chartOptions
-    });
+      function calcularTempo(dataCadastro) {
+        if(!dataCadastro) return "Recém chegado";
+        const [dia, mes, ano] = dataCadastro.split('/');
+        const dt = new Date(ano, mes - 1, dia);
+        const hoje = new Date();
+        const diff = Math.floor((hoje - dt) / (1000 * 60 * 60 * 24));
+        
+        if(diff < 30) return `${diff} dias de casa`;
+        const meses = Math.floor(diff / 30);
+        return `${meses} mês(es) fiel`;
+      }
 
-    new Chart(document.getElementById('downloadsChart'), {
-      type: 'line',
-      data: {
-        labels: ['Jan','Feb','Mar'],
-        datasets: [{ data: [100,200,300], borderColor: '#e67e22', fill: false, tension: 0.4 }]
-      },
-      options: chartOptions
-    });
+      function renderClientes(lista) {
+        container.innerHTML = lista.map(c => `
+          <div class="customer-card">
+            <div class="customer-header">
+              <div class="avatar"><i class="fas fa-user"></i></div>
+              <div class="customer-info">
+                <h3>${c.nome}</h3>
+                <p>${c.email || 'Sem e-mail'}</p>
+              </div>
+            </div>
+            <div class="stats">
+              <div class="stat-item">
+                <span>Fidelidade</span>
+                <strong>${calcularTempo(c.dataCadastro)}</strong>
+              </div>
+              <div class="stat-item">
+                <span>Favorito</span>
+                <strong>${c.produto || 'Consultar...'}</strong>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
 
-    new Chart(document.getElementById('favoritesChart'), {
-      type: 'line',
-      data: {
-        labels: ['Jan','Feb','Mar'],
-        datasets: [{ data: [50,150,250], borderColor: '#2ecc71', fill: false, tension: 0.4 }]
-      },
-      options: chartOptions
-    });
+      renderClientes(clientes);
 
-    new Chart(document.getElementById('barChart'), {
-      type: 'bar',
-      data: {
-        labels: ['A','B','C'],
-        datasets: [
-          { label: 'Blue', data: [10,20,30], backgroundColor: '#3498db' },
-          { label: 'Orange', data: [15,25,35], backgroundColor: '#e67e22' },
-          { label: 'Yellow', data: [20,30,40], backgroundColor: '#f1c40f' }
-        ]
-      },
-      options: { responsive: true }
-    });
-
-    new Chart(document.getElementById('lineChart'), {
-      type: 'line',
-      data: {
-        labels: ['Jan','Feb','Mar'],
-        datasets: [
-          { label: 'Orange', data: [10,30,20], borderColor: '#e67e22', fill: false, tension: 0.4 },
-          { label: 'Blue', data: [20,10,40], borderColor: '#3498db', fill: false, tension: 0.4 }
-        ]
-      },
-      options: { responsive: true }
+      document.getElementById('searchClient').addEventListener('input', function(e) {
+        const termo = e.target.value.toLowerCase();
+        const filtrados = clientes.filter(c => c.nome.toLowerCase().includes(termo));
+        renderClientes(filtrados);
+      });
     });
   </script>
 </body>

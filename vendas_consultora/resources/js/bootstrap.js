@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { UIService } from './service/uiService'; // Importamos o serviço que gerencia o loader
+
 window.axios = axios;
 
 // Identifica para o Laravel que a requisição é AJAX
@@ -11,5 +13,25 @@ if (token) {
     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
 }
 
-// Opcional: Definir a URL base se sua API tiver um prefixo fixo
-// window.axios.defaults.baseURL = '/api';
+/**
+ * ADICIONANDO OS INTERCEPTORES PARA O PRELOADER
+ */
+
+// 1. Interceptor de Requisição (Mostra o loader ao iniciar qualquer chamada)
+window.axios.interceptors.request.use((config) => {
+    UIService.show(); 
+    return config;
+}, (error) => {
+    UIService.hide();
+    return Promise.reject(error);
+});
+
+// 2. Interceptor de Resposta (Esconde o loader quando a chamada termina)
+window.axios.interceptors.response.use((response) => {
+    UIService.hide();
+    return response;
+}, (error) => {
+    UIService.hide();
+    // Aqui tem possibilidade de tratamento de erros globais (ex: 401 ou 500)
+    return Promise.reject(error);
+});

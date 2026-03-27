@@ -30,6 +30,13 @@ class StatusConsultoraSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now()
             ],
+
+            [
+                'nome' => 'Pré-Cadastro', 
+                'descricao' => 'Consultora faz pré-cadastro da consultora para a distribuidora aprovar',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
         ]);
     }
 }

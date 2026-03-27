@@ -7,72 +7,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\usuarios;
-use Illuminate\Http\Request;
-use App\Services\UsuarioService;
+use App\Http\Requests\UsuarioRequest;
 use App\Http\Requests\UsuariosRequest;
+use App\Models\Status\status_consultora;
+use App\Models\usuarios;
+use App\Services\UsuarioService;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UsuariosController extends Controller
 {
+    protected $usuarioService;
 
-    public function __construct(protected UsuarioService $service) {}
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        return response()->json($this->service->listar());
+    public function __construct(protected UsuarioService $service) {$this->usuarioService = $service;}
+
+    public function formulario($id = null) {
+        $status = status_consultora::all();
+        return view('formularios.formulario-usuario', ['id' => $id, 'status' => $status]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function cadastrarUsuario(UsuarioRequest $request)
     {
-        // vai ficar o codigo que leva a pagina de criar usuarios
+            $resultado = $this->usuarioService->registrarUsuario($request);
+
+            if ($resultado['status'] === 'success') {
+                return response()->json($resultado, 200);
+            }
+
+            return response()->json($resultado, 400);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(UsuarioRequest $request): JsonResponse
+    public function exibirUsuario(usuarios $usuario): JsonResponse
     {
-        // O UsuarioRequest já validou os dados aqui
-        $usuario = $this->service->store($request->validated());
-
         return response()->json([
-            'message' => 'Usuário criado com sucesso!',
+            'status' => 'success',
             'data' => $usuario
-        ], 210);
-    }
-    /**
-     * Display the specified resource.
-     */
-    public function show(usuarios $usuarios)
-    {
-        return response()->json($user);
+        ], 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(usuarios $usuarios)
+    public function atualizarUsuario(UsuarioRequest $request, $id)
     {
-        //
-    }
+        $resultado = $this->usuarioService->atualizarRegistro($request, $id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UsuarioRequest $request, $id): JsonResponse
-    {
-        // O Request validado garante que os dados estão corretos
-        $usuario = $this->usuarioService->update($id, $request->validated());
+        if ($resultado['status'] === 'success') {
+            return response()->json($resultado, 200);
+        }
 
-        return response()->json([
-            'message' => 'Usuário atualizado com sucesso!',
-            'data' => $usuario
-        ]);
+        return response()->json($resultado, 400);
     }
 
     /**

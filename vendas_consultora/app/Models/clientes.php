@@ -8,14 +8,17 @@ use App\Models\usuarios;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class clientes extends Model
 {
+    use SoftDeletes;
+
     public $timestamps = false;
     const CREATED_AT = 'criado_em';
 
     protected $fillable = [
-        'nome', 'email', 'telefone', 'cep', 'cpf'
+        'nome', 'email', 'telefone', 'cep', 'cpf', 'consultora_id'
     ];
 
     protected $casts = [

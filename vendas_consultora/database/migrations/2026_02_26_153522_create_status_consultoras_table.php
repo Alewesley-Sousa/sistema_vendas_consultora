@@ -20,12 +20,6 @@ return new class extends Migration
             $table->text('descricao')->nullable();
             $table->timestamps();
         });
-
-        // Dados iniciais
-        DB::table('status_consultoras')->insert([
-            ['nome' => 'Ativa', 'descricao' => 'Consultora com vendas válidas no més vigente'],
-            ['nome' => 'Inativa', 'descricao' => 'Consultora que não atingiu o minimo de vendas e foi desativada'],
-        ]);
     }
 
     public function down()

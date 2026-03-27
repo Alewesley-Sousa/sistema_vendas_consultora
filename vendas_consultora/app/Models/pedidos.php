@@ -6,6 +6,7 @@ use App\Models\clientes;
 use App\Models\devolucoes;
 use App\Models\itens_pedido;
 use App\Models\pagamentos;
+use App\Models\Status\status_pedido;
 use App\Models\usuarios;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,9 +24,16 @@ class pedidos extends Model
         'cliente_id' => 'integer',
         'link' => 'string',
         'valor_total' => 'decimal:2',
-        'tipo_pagamento' => 'string'
+        'tipo_pagamento' => 'string',
+        'status_id' => 'integer'
     ];
 
+    // RELACIONAMENTO STATUS PEDIDO
+
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(status_pedido::class, 'status_id', 'id');
+    }
     //RELACIONAMENTO DEVOLUÇÕES
     public function devolucoes(): HasMany
     {

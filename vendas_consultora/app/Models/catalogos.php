@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Models\itens_catalogo;
 use App\Models\resgates;
 use App\Models\Status\status_catalogo;
-use App\Models\Tipo\tipo_catalogo;
+use App\Models\Tipos\tipo_catalogo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -25,6 +25,12 @@ class catalogos extends Model
         'data_encerramento' => 'date',
         'data_publicacao' => 'date'
     ];
+
+    //atualizar automaticante o status do catalogo para inativo quando o prazo expirar
+    public function scopeExpirados($query) { 
+        return $query->where('status_id', '1')
+                    ->where('data_encerramento', '<', now());
+    }
 
     // RELACIONAMENTO STATUS CATEGORIA
     public function categoriaStatus() {
