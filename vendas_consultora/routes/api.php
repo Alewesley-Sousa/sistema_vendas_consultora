@@ -15,46 +15,60 @@ use Inertia\Inertia;
 use App\Http\Controllers\UsuariosController;
 // agrupa todos que usam a autenticação com token
 Route::middleware('auth:sanctum')->group(function () {
-    // Pegar comissao atual do usuario autenticado
-    Route::get('/comissao', [ComissoesController::class, 'visualizar']);
+    Route::prefix('/comissao')->group( function () {
 
-    //pegar meta atual do usuario autenticado
-    Route::get('/meta', [MetasController::class, 'metaAtual']);
-
-    // pegar progresso atual da meta do usuario autenticado
-    Route::get('/meta/progresso', [MetasController::class, 'progressoMeta']);
-
-    // pegar historico de comissoes do usuarioa autenticado
-    Route::get('/comissao/historico', [HistoricoComissoesController::class, 'visualizarHistorico']);
-
-    // solicitar o saque da comissão do usuario
-    Route::get('/comissao/solicitar', [ComissoesController::class, 'solicitarComissao']);
+        // Pegar comissao atual do usuario autenticado
+        Route::get('/', [ComissoesController::class, 'visualizar']);
     
-    // cadastrar cliente
-    Route::post('/cliente', [ClientesController::class, 'cadastrarCliente']);
+        // pegar historico de comissoes do usuarioa autenticado
+        Route::get('/historico', [HistoricoComissoesController::class, 'visualizarHistorico']);
+    
+        // solicitar o saque da comissão do usuario
+        Route::get('/solicitar', [ComissoesController::class, 'solicitarComissao']);
+    });
 
-    // atualzar dados do cliente
-    Route::put('/cliente/{cliente}', [ClientesController::class, 'atualizarDados']);
+    Route::prefix('/meta')->group(function () {
+        //pegar meta atual do usuario autenticado
+        Route::get('/', [MetasController::class, 'metaAtual']);
 
-    // exibir um cliente
-    Route::get('/cliente/{cliente}', [ClientesController::class, 'exibir']);
+        // pegar progresso atual da meta do usuario autenticado
+        Route::get('/progresso', [MetasController::class, 'progressoMeta']);
+    });
 
-    // cadastrar usuario
-    Route::post('/usuario', [UsuariosController::class, 'cadastrarUsuario']);
+    Route::prefix('/cliente')->group(function () {
+        // cadastrar cliente
+        Route::post('/', [ClientesController::class, 'cadastrarCliente']);
+    
+        // atualzar dados do cliente
+        Route::put('/{cliente}', [ClientesController::class, 'atualizarDados']);
+    
+        // exibir um cliente
+        Route::get('/{cliente}', [ClientesController::class, 'exibir']);
 
-    // atualzar dados do usuario
-    Route::put('/usuario/{usuario}', [UsuariosController::class, 'atualizarUsuario']);
+        // Rota de Ação (API)
+        Route::delete('/{id}', [ClientesController::class, 'destroy']);
+    });
 
-    // exibir um usuario
-    Route::get('/usuario/{usuario}', [UsuariosController::class, 'exibirUsuario']);
+    Route::prefix('/usuario')->group(function () {
+        // cadastrar usuario
+        Route::post('/', [UsuariosController::class, 'cadastrarUsuario']);
 
-    Route::get('/catalogo', [CatalogosController::class, 'visualizarCatalogo']);
+        // atualzar dados do usuario
+        Route::put('/{usuario}', [UsuariosController::class, 'atualizarUsuario']);
+        
+        // exibir um usuario
+        Route::get('/{usuario}', [UsuariosController::class, 'exibirUsuario']);
+    });
 
-    Route::get('/catalogo/itens/{id}', [ItensCatalogoController::class, 'visualizarItensCatalogo']);
+    Route::prefix('/catalogo')->group(function () {
+        //visualiza os catalogos ativos
+        Route::get('/', [CatalogosController::class, 'visualizarCatalogo']);
+
+        //visualiza os itens do catalogo selecionado
+        Route::get('/itens/{id}', [ItensCatalogoController::class, 'visualizarItensCatalogo']);
+    });
 
     //exibir itens selecionados
     Route::get('/itens/{id}', [ItensCatalogoController::class, 'visualizarItens']);
 
-    // Rota de Ação (API)
-    Route::delete('/cliente/{id}', [ClientesController::class, 'destroy']);
 });
