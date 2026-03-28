@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Autor: Alewesley-Sousa
  * Data: 01/03/2026
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 class produtos extends Model
 {
@@ -27,7 +29,7 @@ class produtos extends Model
         'created_at',
         'updated_at'
     ];
-    
+
     protected $casts = [
         'nome' => 'string',
         'preco' => 'decimal:2',
@@ -36,6 +38,64 @@ class produtos extends Model
         'status_id' => 'integer',
         'imagem_url' => 'string'
     ];
+
+    // Adicione isso para que o JSON contenha os campos calculados
+    protected $appends = [
+        'preco_final',
+        'tem_promocao'
+    ];
+
+    /**
+     * ACCESSOR: preco_final
+     * Agora lê o desconto diretamente da tabela pivô (itens_promocao)
+     */
+    public function getPrecoFinalAttribute()
+    {
+        $valorOriginal = $this->preco;
+
+        // Buscamos o vínculo ativo que tenha uma promoção pai também ativa e no prazo
+        $vinculoPromo = $this->itensPromocao()->where('status_id', 1)->with('promocao', function ($query) {
+            $query->where('status_id', 1);
+            // ->where('data_inicio', '<=', Carbon::now())
+            // ->where('data_fim', '>=', Carbon::now());
+            })->first();
+
+        if (!$vinculoPromo) {
+            return $valorOriginal;
+        }
+
+        // IMPORTANTE: O valor e o tipo agora vêm do $vinculoPromo (itens_promocao)
+        $tipoId = $vinculoPromo->tipo_promocao_id;
+        $valorDesconto = $vinculoPromo->valor_desconto;
+
+        switch ($tipoId) {
+            case 1: // Porcentagem
+                return $valorOriginal - ($valorOriginal * ($valorDesconto / 100));
+
+            case 2: // Valor Fixo (Ajustei o ID para 2 conforme o padrão comum)
+                $resultado = $valorOriginal - $valorDesconto;
+                return $resultado > 0 ? $resultado : 0;
+
+            case 4: // Pague X Leve Y (Combo)
+                return $valorOriginal; // Desconto calculado no total do carrinho
+
+            default:
+                return $valorOriginal;
+        }
+    }
+
+    /**
+     * ACCESSOR: tem_promocao
+     */
+    public function getTemPromocaoAttribute(): bool
+    {
+        return $this->itensPromocao()->with('promocao', function ($query) {
+            $query->where('status_id', 1);
+            // ->where('data_inicio', '<=', Carbon::now())
+            // ->where('data_fim', '>=', Carbon::now());
+        })->exists();
+    }
+
 
     // RELACIONAMENTO CATEGORIA
     public function categoria(): BelongsTo
