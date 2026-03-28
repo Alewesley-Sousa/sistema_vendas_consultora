@@ -7,7 +7,7 @@
 
 namespace App\Models\Tipos;
 
-use App\Models\promocoes;
+use App\Models\itens_promocao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -17,8 +17,8 @@ class tipo_promocao extends Model
     protected $table = 'tipo_promocao';
 
     // RELACIONAMENTO PROMOÇÕES
-    public function promocoes(): HasMany
+    public function itensPromocoes(): HasMany
     {
-        return $this->hasMany(promocoes::class, 'tipo_promocao_id', 'id');
+        return $this->hasMany(itens_promocao::class, 'tipo_promocao_id', 'id');
     }
 }
