@@ -37,7 +37,7 @@ class CatalogoService {
     public function trazerItens($id, $busca = null) {
         try {
             $query = itens_catalogo::with('produto')
-                ->where('catalogo_id', $id);
+                ->where('catalogo_id', $id)->where('status_id', 1);
 
             if ($busca) {
                 $query->whereHas('produto', function($q) use ($busca) {
@@ -60,14 +60,16 @@ class CatalogoService {
         try {
             $resultado['data'] = itens_catalogo::whereIn('id', $ids)->with('produto')->get();
 
+            if ($resultado['data']) {
+                $resultado['mensagem'] = 'Item não encontrado!';
+                return response()->json($resultado);
+            }
+
             $resultado['status'] = 'success';
 
             return response()->json($resultado);
         } catch (Exception $e) {
             return ['status' => 'error', 'mensagem' => $e->getMessage()];
         }
-        $resultado = itens_catalogo::whereIn('id', explode(',', $ids))->get();
-
-        return response()->json($resultado);
     }
 }
