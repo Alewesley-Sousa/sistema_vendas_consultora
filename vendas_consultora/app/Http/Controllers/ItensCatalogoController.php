@@ -26,8 +26,12 @@ class ItensCatalogoController extends Controller
      */
     public function visualizarItens($ids) {
         $idsArray = array_map('trim', explode(',', $ids));
-        if (empty($idsArray)) 
+        if (empty($idsArray)) {
+            $resultado = ['status' => 'error', 'mensagem' => 'nenhum produto selecionado'];
+            return response()->json($resultado);
+            }
         $resultado = $this->catalogoService->visualizarItens($idsArray);
+        
 
         return response()->json($resultado);
     }
