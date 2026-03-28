@@ -13,62 +13,55 @@ class PromocoesSeeder extends Seeder
      */
     public function run(): void
     {
+        // PromocaoSeeder.php
         $promocoes = [
             [
                 'nome' => 'Promoção Carnaval 2026',
-                'desconto' => 20.00,
-                'descricao' => 'Desconto de 20% em toda a linha de maquiagem',
-                'tipo_promocao_id' => 1,
-                'data_inicio' => '2026-02-01',
-                'data_fim' => '2026-02-15',
+                'descricao' => 'Desconto em maquiagem',
+                'data_inicio' => '2026-02-01 00:00:00',
+                'data_fim' => '2026-02-15 23:59:59',
                 'status_id' => 1
             ],
             [
                 'nome' => 'Semana da Beleza',
-                'desconto' => 15.00,
-                'descricao' => 'Desconto fixo de R$15 em hidratantes faciais',
-                'tipo_promocao_id' => 2,
-                'data_inicio' => '2026-03-01',
-                'data_fim' => '2026-03-10',
+                'descricao' => 'Hidratantes faciais',
+                'data_inicio' => '2026-03-01 00:00:00',
+                'data_fim' => '2026-03-10 23:59:59',
                 'status_id' => 1
             ],
             [
                 'nome' => 'Brinde Dia das Mães',
-                'desconto' => 0.00,
-                'descricao' => 'Na compra de perfumes, leve um batom grátis',
-                'tipo_promocao_id' => 3,
-                'data_inicio' => '2026-04-20',
-                'data_fim' => '2026-05-15',
+                'descricao' => 'Campanha de Perfumes',
+                'data_inicio' => '2026-04-20 00:00:00',
+                'data_fim' => '2026-05-15 23:59:59',
                 'status_id' => 2
             ],
             [
                 'nome' => 'Frete Grátis Outono',
-                'desconto' => 0.00,
-                'descricao' => 'Frete grátis em compras acima de R$100',
-                'tipo_promocao_id' => 4,
-                'data_inicio' => '2026-03-01',
-                'data_fim' => '2026-03-31',
+                'descricao' => 'Campanha de Frete',
+                'data_inicio' => '2026-03-01 00:00:00',
+                'data_fim' => '2026-03-31 23:59:59',
                 'status_id' => 1
             ],
             [
                 'nome' => 'Black Friday 2026',
-                'desconto' => 50.00,
-                'descricao' => 'Desconto de 50% em produtos selecionados',
-                'tipo_promocao_id' => 1,
-                'data_inicio' => '2026-11-01',
-                'data_fim' => '2026-11-30',
+                'descricao' => 'Ofertas Black Friday',
+                'data_inicio' => '2026-11-01 00:00:00',
+                'data_fim' => '2026-11-30 23:59:59',
                 'status_id' => 3
             ],
             [
                 'nome' => 'Natal Encantado',
-                'desconto' => 30.00,
-                'descricao' => 'Desconto fixo de R$30 em kits de presente',
-                'tipo_promocao_id' => 2,
-                'data_inicio' => '2026-12-01',
-                'data_fim' => '2026-12-25',
+                'descricao' => 'Kits de presente',
+                'data_inicio' => '2026-12-01 00:00:00',
+                'data_fim' => '2026-12-25 23:59:59',
                 'status_id' => 1
             ]
         ];
+
+        foreach ($promocoes as $promo) {
+            \App\Models\promocoes::create($promo);
+        }
 
         foreach ($promocoes as $promocao) {
             promocoes::forceCreate($promocao);
