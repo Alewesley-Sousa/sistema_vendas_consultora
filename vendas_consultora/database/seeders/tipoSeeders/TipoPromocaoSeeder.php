@@ -21,7 +21,7 @@ class TipoPromocaoSeeder extends Seeder
         $tiposPromocao = [
             [
                 'nome' => 'desconto',
-                'descricao' => 'Promoção de desconto em produtos'
+                'descricao' => 'Promoção de desconto em porcentagem'
             ],
             [
                 'nome' => 'frete grátis',
@@ -30,6 +30,10 @@ class TipoPromocaoSeeder extends Seeder
             [
                 'nome' => 'desconto fixo',
                 'descricao' => 'Promoção que oferece um desconto fixo em reais sobre o preço do produto'
+            ],
+            [
+                'nome' => 'pague x e leve y',
+                'descricao' => 'Leve x produtos e pague apenas y produtos'
             ],
             [
                 'nome' => 'brinde',
