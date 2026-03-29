@@ -14,13 +14,18 @@ class MetaService
 {
     public function metaUsuario($idUsuario)
     {
-        return metas::where('consultora_id', $idUsuario)->where('status_id', 3)->first(); // pega o registro da meta que esta ativa do usuario longado
+        return metas::where('consultora_id', $idUsuario)->where('status_id', 3)->first(); // pega o registro da meta que esta ativa do usuario
     }
 
-    public function progressoMeta()
+    public function progressoMeta($reutilizar = false, $idConsultora = null)
     {
-        $usuario = Auth::user();
-        $idUsuario = $usuario->id;
+        if ($reutilizar) {
+            $idUsuario = $idConsultora;
+        } else {
+            $usuario = Auth::user();
+            $idUsuario = $usuario->id;
+        }
+
 
         // Usamos o método acima para pegar a meta
         $metaAtual = $this->metaUsuario($idUsuario);
@@ -39,7 +44,7 @@ class MetaService
         $totalVendido = pedidos::where('usuario_id', $idUsuario) // Importante filtrar por consultora aqui também!
             ->whereMonth('created_at', $mes)
             ->whereYear('created_at', $ano)
-            ->where('status_id', 6)
+            ->whereNotIn('status_id', [1, 7])
             ->sum('valor_total');
 
         if ($valorMeta <= 0) return 0;
@@ -60,7 +65,7 @@ class MetaService
             $idLider = $usuario->id;
 
             $consultora = usuarios::find($idConsultora);
-            
+
             if (!$consultora) {
                 throw new Exception('Usuario não identificado!');
             }
@@ -85,14 +90,46 @@ class MetaService
 
             return [
                 'status' => 'success',
-                'mensagem' => "meta atribuida com sucesso a(o) consultor(a) $consultora->nome!" 
+                'mensagem' => "meta atribuida com sucesso a(o) consultor(a) $consultora->nome!"
             ];
         } catch (Exception $e) {
             return [
                 'status' => 'error',
                 'mensagem' => 'não foi possivel atribuir a meta: ' .
-                $e->getMessage()
+                    $e->getMessage()
             ];
         }
+    }
+
+    /**
+     * ver o historico de meta de cada consultora e ver seu progresso de atigimento de meta da meta ativa
+     */
+    public function pegarHistoricoMetaProgresso () {
+        try {
+            $usuario = Auth::user();
+        if ($usuario->cargo !== 'lider') {
+            throw new Exception('Acesso negado!');
+            }
+
+            $resultado = usuarios::where('consultora_id', $usuario->id)->select('nome', 'id', 'status_id')->with('metasConsultora', function ($query) {
+                $query->whereNot('status_id', 3);
+            })->get()->map(function ($consultora) {
+                $consultora->metaAtual = $this->metaUsuario($consultora->id);
+                $consultora->progressoMeta = $this->progressoMeta(true, $consultora->id);
+                return $consultora;
+            });
+
+            return [
+                'status' => 'success',
+                'data' => $resultado
+            ];
+        } catch (Exception $e) {
+            return [
+                'status' => 'error',
+                'mensagem' => 'erro ao consultar o sistema: ' . $e->getMessage()
+            ];
+        }
+        
+        
     }
 }
