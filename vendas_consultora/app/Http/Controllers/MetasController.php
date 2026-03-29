@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MetaRequest;
 use App\Models\metas;
 use App\Services\MetaService;
 use Illuminate\Http\Request;
@@ -38,5 +39,17 @@ class MetasController extends Controller
             'status' => 'sucesso',
             'data' => $progresso
         ]);
+    }
+
+    /**
+     * Atribuir meta para consultora
+     * -> atribui uma nova meta ativa para a consultora
+     */
+
+    public function atribuirMeta(MetaRequest $request, $idConsultora) {
+        $dados = $request->validated();
+        $resultado = $this->metaService->criarMeta($idConsultora, $dados);
+        
+        return response()->json($resultado);
     }
 }
