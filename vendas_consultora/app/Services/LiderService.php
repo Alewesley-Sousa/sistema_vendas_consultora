@@ -23,6 +23,8 @@ class LiderService
 
     public function consultorasVinculadas($reutilizavel = false)
     {
+
+
         try {
             $usuario = Auth::user();
 
@@ -59,5 +61,31 @@ class LiderService
                 'mensagem' => 'erro encontrado: ' . $e->getMessage()
             ];
         }
+    }
+
+    /**
+     * desempenho das consultoras
+     */
+    public function desempenhoConsultoras() {
+        $consultoras = $this->consultorasVinculadas(true);
+
+        $resultado = $consultoras->map(function ($consultora) {
+            $totalVendido = pedidos::where('usuario_id', $consultora->id)->whereNotIn('status_id', [1, 7])->selectRaw("strftime('%m/%Y', created_at) as mes_ano, SUM(valor_total) as total_vendas")
+                                    ->groupBy('mes_ano')->orderBy('mes_ano', 'desc')->get();
+
+            $totalPedidos = pedidos::where('usuario_id', $consultora->id)->whereNotIn('status_id', [1, 7])->selectRaw("strftime('%m/%Y', created_at) as mes_ano, COUNT(id) as total_pedidos")->groupBy('mes_ano')->orderBy('mes_ano', 'desc')->get();
+
+            $comissao = $this->HistoricoComissaoService->comissaoPorMes($consultora->id);
+
+            $consultora->TotalVendido = $totalVendido;
+            $consultora->TotalPedidos = $totalPedidos;
+            $consultora->comissao = $comissao;
+
+            return $consultora;
+        });
+
+        return [
+            'data' => $resultado
+        ];
     }
 }
