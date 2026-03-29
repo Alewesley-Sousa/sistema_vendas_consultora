@@ -96,6 +96,42 @@ class HistoricoComissoesSeeder extends Seeder
                 'data_movimentacao' => '2026-04-18 10:55:02',
                 'usuario_responsavel' => 1
             ],
+                       [
+                'consultora_id' => 16,
+                'pedido_id' => 9,
+                'tipo_comissao_id' => 1,
+                'valor' => 29.97,
+                'tipo_movimentacao_id' => 1,
+                'data_movimentacao' => '2026-04-18 10:55:02',
+                'usuario_responsavel' => 1
+            ],
+                       [
+                'consultora_id' => 16,
+                'pedido_id' => 9,
+                'tipo_comissao_id' => 1,
+                'valor' => 50.00,
+                'tipo_movimentacao_id' => 1,
+                'data_movimentacao' => '2026-04-18 10:55:02',
+                'usuario_responsavel' => 1
+            ],
+                       [
+                'consultora_id' => 16,
+                'pedido_id' => 9,
+                'tipo_comissao_id' => 1,
+                'valor' => 29.97,
+                'tipo_movimentacao_id' => 1,
+                'data_movimentacao' => '2026-03-18 10:55:02',
+                'usuario_responsavel' => 1
+            ],
+                       [
+                'consultora_id' => 16,
+                'pedido_id' => 9,
+                'tipo_comissao_id' => 1,
+                'valor' => 25.00,
+                'tipo_movimentacao_id' => 1,
+                'data_movimentacao' => '2026-02-18 10:55:02',
+                'usuario_responsavel' => 1
+            ],
             [
                 'consultora_id' => 11,
                 'pedido_id' => 10,
@@ -114,6 +150,15 @@ class HistoricoComissoesSeeder extends Seeder
                 'valor' => -39.90,
                 'tipo_movimentacao_id' => 2,
                 'data_movimentacao' => '2026-04-22 09:14:10',
+                'usuario_responsavel' => 1
+            ],
+            [
+                'consultora_id' => 16,
+                'pedido_id' => 1,
+                'tipo_comissao_id' => 1,
+                'valor' => 20.00,
+                'tipo_movimentacao_id' => 2,
+                'data_movimentacao' => '2026-02-22 09:14:10',
                 'usuario_responsavel' => 1
             ],
             [

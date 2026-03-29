@@ -38,10 +38,10 @@ class UsuariosSeeder extends Seeder
 
             //lider
             ['nome' => 'Paulo Henrique', 'cargo' => 'lider', 'cpf' => '78789890910', 'email' => 'paulo.henrique@example.com', 'telefone' => '85999990017', 'senha' => Hash::make('senha123'), 'cep' => '60000016', 'consultora_id' => null, 'status_id' => 1],
-            ['nome' => 'Sofia Mendes', 'cargo' => 'consultora', 'cpf' => '34345456576', 'email' => 'sofia.mendes@example.com', 'telefone' => '85999990013', 'senha' => Hash::make('senha123'), 'cep' => '60000012', 'consultora_id' => 12, 'status_id' => 2],
-            ['nome' => 'Gabriel Fernandes', 'cargo' => 'consultora', 'cpf' => '45456567687', 'email' => 'gabriel.fernandes@example.com', 'telefone' => '85999990014', 'senha' => Hash::make('senha123'), 'cep' => '60000013', 'consultora_id' => 12, 'status_id' => 1],
-            ['nome' => 'Isabela Castro', 'cargo' => 'consultora', 'cpf' => '56567678798', 'email' => 'isabela.castro@example.com', 'telefone' => '85999990015', 'senha' => Hash::make('senha123'), 'cep' => '60000014', 'consultora_id' => 12, 'status_id' => 2],
-            ['nome' => 'Thiago Moreira', 'cargo' => 'consultora', 'cpf' => '67678789809', 'email' => 'thiago.moreira@example.com', 'telefone' => '85999990016', 'senha' => Hash::make('senha123'), 'cep' => '60000015', 'consultora_id' => 12, 'status_id' => 1],
+            ['nome' => 'Sofia Mendes', 'cargo' => 'consultora', 'cpf' => '34345456576', 'email' => 'sofia.mendes@example.com', 'telefone' => '85999990013', 'senha' => Hash::make('senha123'), 'cep' => '60000012', 'consultora_id' => 13, 'status_id' => 2],
+            ['nome' => 'Gabriel Fernandes', 'cargo' => 'consultora', 'cpf' => '45456567687', 'email' => 'gabriel.fernandes@example.com', 'telefone' => '85999990014', 'senha' => Hash::make('senha123'), 'cep' => '60000013', 'consultora_id' => 13, 'status_id' => 1],
+            ['nome' => 'Isabela Castro', 'cargo' => 'consultora', 'cpf' => '56567678798', 'email' => 'isabela.castro@example.com', 'telefone' => '85999990015', 'senha' => Hash::make('senha33'), 'cep' => '60000014', 'consultora_id' => 13, 'status_id' => 2],
+            ['nome' => 'Thiago Moreira', 'cargo' => 'consultora', 'cpf' => '67678789809', 'email' => 'thiago.moreira@example.com', 'telefone' => '85999990016', 'senha' => Hash::make('senha123'), 'cep' => '60000015', 'consultora_id' => 13, 'status_id' => 1],
 
             // Líderes
             ['nome' => 'Juliana Alves', 'cargo' => 'lider', 'cpf' => '89890901021', 'email' => 'juliana.alves@example.com', 'telefone' => '85999990018', 'senha' => Hash::make('senha123'), 'cep' => '60000017', 'consultora_id' => null, 'status_id' => 2],
