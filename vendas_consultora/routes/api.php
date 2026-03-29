@@ -42,6 +42,11 @@ Route::middleware('auth:sanctum')->group(function () {
          * criar a meta da consultora selecionada
          */
         Route::post('/atribuir/{id}', [MetasController::class, 'atribuirMeta']);
+
+        /**
+         * ver historico de meta e ver o progresso da meta atual
+         */
+        Route::get('/historico', [MetasController::class, 'historicoMetaProgresso']);
     });
 
     Route::prefix('/cliente')->group(function () {

@@ -52,4 +52,13 @@ class MetasController extends Controller
         
         return response()->json($resultado);
     }
+
+    /**
+     * Historico de meta e progresso atual das consultoras
+     */
+    public function historicoMetaProgresso () {
+        $resultado = $this->metaService->pegarHistoricoMetaProgresso();
+
+        return response()->json($resultado);
+    }
 }
