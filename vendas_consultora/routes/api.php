@@ -7,7 +7,7 @@ use App\Http\Controllers\HistoricoComissoesController;
 use App\Http\Controllers\ItensCatalogoController;
 use App\Http\Controllers\LiderController;
 use App\Http\Controllers\MetasController;
-
+use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsuariosController;
 use Illuminate\Foundation\Application;
@@ -94,6 +94,13 @@ Route::middleware('auth:sanctum')->group(function () {
          * pegar desempenho da equipe
          */
         Route::get('/equipe/desempenho', [LiderController::class, 'visualizarDesempenho']);
+    });
+
+    Route::prefix('/pedido')->group(function () {
+        /**
+         * visualizar um pedido especifico
+         */
+        Route::get('/{id}', [PedidosController::class, 'visualizarPedido']);
     });
     //exibir itens selecionados
     Route::get('/itens/{id}', [ItensCatalogoController::class, 'visualizarItens']);

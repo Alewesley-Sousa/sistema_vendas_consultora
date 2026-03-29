@@ -3,16 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\Models\pedidos;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PedidosController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * pegar dados de um pedido pelo id
      */
-    public function index()
+    public function visualizarPedido($id)
     {
-        //
+        try {
+            $usuarioLongado = Auth::check();
+            if (!$usuarioLongado) {
+                throw new Exception('Acesso negado!');
+            }
+            $resultado = pedidos::select('id', 'usuario_id', 'cliente_id', 'link', 'valor_total', 'status_id', 'tipo_pagamento')->find($id);
+            if(!$resultado) {
+                throw new Exception('Pedido não registrado no sistema!');
+            }
+
+            return [
+                'status' => 'success',
+                'data' => $resultado 
+            ];
+        } catch (Exception $e) {
+            return [
+                'status' => 'error',
+                'mensagem' => 'Erro encontrado: ' . $e->getMessage() 
+            ];
+        }
     }
 
     /**
