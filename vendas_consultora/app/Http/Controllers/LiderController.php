@@ -23,4 +23,13 @@ class LiderController extends Controller
 
         return response()->json($resultado);
     }
+
+    /**
+     * Visualizar desempenho da equipe
+     */
+    public function visualizarDesempenho() {
+        $resultado = $this->liderService->desempenhoConsultoras();
+
+        return response()->json($resultado);
+    }
 }

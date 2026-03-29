@@ -79,6 +79,11 @@ Route::middleware('auth:sanctum')->group(function () {
          * senha: senha123
          */
         Route::get('/equipe', [LiderController::class, 'visualizarEquipe']);
+
+        /**
+         * pegar desempenho da equipe
+         */
+        Route::get('/equipe/desempenho', [LiderController::class, 'visualizarDesempenho']);
     });
     //exibir itens selecionados
     Route::get('/itens/{id}', [ItensCatalogoController::class, 'visualizarItens']);
