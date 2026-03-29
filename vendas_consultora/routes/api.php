@@ -5,14 +5,18 @@ use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\ComissoesController;
 use App\Http\Controllers\HistoricoComissoesController;
 use App\Http\Controllers\ItensCatalogoController;
+use App\Http\Controllers\LiderController;
 use App\Http\Controllers\MetasController;
+
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UsuariosController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-use App\Http\Controllers\UsuariosController;
+
+
 // agrupa todos que usam a autenticação com token
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/comissao')->group( function () {
@@ -68,7 +72,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/itens/{id}', [ItensCatalogoController::class, 'visualizarItensCatalogo']);
     });
 
+    Route::prefix('/lider')->group(function () {
+        /**
+         * visualizar equipe
+         * email com dados de exemplo: paulo.henrique@example.com
+         * senha: senha123
+         */
+        Route::get('/equipe', [LiderController::class, 'visualizarEquipe']);
+    });
     //exibir itens selecionados
     Route::get('/itens/{id}', [ItensCatalogoController::class, 'visualizarItens']);
-
-});
+    
+    });
