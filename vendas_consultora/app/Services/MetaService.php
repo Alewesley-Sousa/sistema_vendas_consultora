@@ -1,22 +1,27 @@
-<?php 
+<?php
+
 namespace App\Services;
 
+use App\Http\Controllers\UsuariosController;
 use App\Models\metas;
 use App\Models\pedidos;
+use App\Models\usuarios;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class MetaService 
+class MetaService
 {
-    public function metaUsuario($idUsuario){
+    public function metaUsuario($idUsuario)
+    {
         return metas::where('consultora_id', $idUsuario)->where('status_id', 3)->first(); // pega o registro da meta que esta ativa do usuario longado
     }
 
-    public function progressoMeta() {
+    public function progressoMeta()
+    {
         $usuario = Auth::user();
         $idUsuario = $usuario->id;
-        
+
         // Usamos o método acima para pegar a meta
         $metaAtual = $this->metaUsuario($idUsuario);
 
@@ -43,9 +48,51 @@ class MetaService
         // Se eu vendi 500 e a meta é 1000, fiz 0.5 (50%)
         $progresso = ($totalVendido / $valorMeta) * 100;
         return round($progresso, 2);
-        
+    }
+
+    public function criarMeta($idConsultora, $dados)
+    {
+        try {
+            $usuario = Auth::user();
+            if ($usuario->cargo !== 'lider') {
+                throw new Exception('Acesso negado!');
+            }
+            $idLider = $usuario->id;
+
+            $consultora = usuarios::find($idConsultora);
+            
+            if (!$consultora) {
+                throw new Exception('Usuario não identificado!');
+            }
+
+            if ($consultora['consultora_id'] !== $idLider) {
+                throw new Exception('Você não tem esse nivel de permissão!');
+            }
+
+            $temMetaAtiva = metas::where('consultora_id', $consultora->id)->where('status_id', 3)->exists();
+
+            if ($temMetaAtiva) {
+                throw new Exception('Esse consultor(a) ja possui uma meta ativa!');
+            }
+
+            $meta = metas::create([
+                'consultora_id' => $idConsultora,
+                'lider_id' => $idLider,
+                'valor_meta' => $dados['valor_meta'],
+                'data_referencia' => $dados['data_referencia'] . '-01',
+                'status_id' => 3
+            ]);
+
+            return [
+                'status' => 'success',
+                'mensagem' => "meta atribuida com sucesso a(o) consultor(a) $consultora->nome!" 
+            ];
+        } catch (Exception $e) {
+            return [
+                'status' => 'error',
+                'mensagem' => 'não foi possivel atribuir a meta: ' .
+                $e->getMessage()
+            ];
+        }
     }
 }
-
-
-?>
