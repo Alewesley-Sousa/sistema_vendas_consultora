@@ -15,6 +15,7 @@ class PedidosSeeder extends Seeder
     {
         $pedidos = [
             ['usuario_id' => 2, 'cliente_id' => 1, 'link' => 'https://loja.com/pedido/1001', 'valor_total' => 199.90, 'tipo_pagamento' => 'credito', 'status_id' => 6],
+            ['usuario_id' => 14, 'cliente_id' => 1, 'link' => 'https://loja.com/pedido/1001', 'valor_total' => 1450.00, 'tipo_pagamento' => 'credito', 'status_id' => 5],
             ['usuario_id' => 3, 'cliente_id' => 2, 'link' => 'https://loja.com/pedido/1002', 'valor_total' => 89.90, 'tipo_pagamento' => 'pix', 'status_id' => 3],
             ['usuario_id' => 4, 'cliente_id' => 3, 'link' => 'https://loja.com/pedido/1003', 'valor_total' => 59.90, 'tipo_pagamento' => 'debito', 'status_id' => 1],
             ['usuario_id' => 5, 'cliente_id' => 4, 'link' => 'https://loja.com/pedido/1004', 'valor_total' => 149.90, 'tipo_pagamento' => 'credito', 'status_id' => 5],

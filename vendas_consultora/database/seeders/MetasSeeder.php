@@ -102,7 +102,7 @@ class MetasSeeder extends Seeder
                 'consultora_id' => 14,
                 'lider_id' => 17,
                 'valor_meta' => 2800.00,
-                'data_referencia' => '2026-07-31',
+                'data_referencia' => '2026-03-01',
                 'status_id' => 3
             ],
             [
