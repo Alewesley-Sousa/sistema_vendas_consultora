@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\pedidos;
+use App\Services\PedidosService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PedidosController extends Controller
 {
+    protected $pedidosService;
+
+    public function __construct(PedidosService $pedidosService)
+    {
+        $this->pedidosService = $pedidosService;
+    }
     /**
      * pegar dados de um pedido pelo id
      */
@@ -19,7 +26,9 @@ class PedidosController extends Controller
             if (!$usuarioLongado) {
                 throw new Exception('Acesso negado!');
             }
-            $resultado = pedidos::select('id', 'usuario_id', 'cliente_id', 'link', 'valor_total', 'status_id', 'tipo_pagamento')->find($id);
+            $resultado = pedidos::select('id', 'usuario_id', 'cliente_id', 'link', 'valor_total', 'status_id', 'tipo_pagamento')->where('id', $id)->with('itensPedidos', function ($query) {
+                $query->select('id', 'produto_id', 'quantidade', 'preco');
+            })->first();
             if(!$resultado) {
                 throw new Exception('Pedido não registrado no sistema!');
             }
@@ -37,6 +46,14 @@ class PedidosController extends Controller
     }
 
     /**
+     * atualizar pedido do usuario
+     */
+    public function atualizarPedido(Request $request)
+    {
+        //
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -44,13 +61,6 @@ class PedidosController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
