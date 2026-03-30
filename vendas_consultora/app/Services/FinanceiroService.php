@@ -35,9 +35,5 @@ class FinanceiroService
         }
     }
 
-    public function procurarPromocao($id)
-    {
-        $produto = itens_catalogo::where('produto_id', $id)->first();
-        
-    }
+    
 }
