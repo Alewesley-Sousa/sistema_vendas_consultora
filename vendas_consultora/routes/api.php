@@ -100,12 +100,12 @@ Route::middleware('auth:sanctum')->group(function () {
         /**
          * visualizar um pedido especifico
          */
-        Route::get('/{id}', [PedidosController::class, 'visualizarPedido']);
+        Route::get('/{pedido}', [PedidosController::class, 'visualizarPedido']);
 
         /**
          * editar pedido
          */
-        Route::put('/{id}', [PedidosController::class, 'atualizarPedido']);
+        Route::put('/{pedido}', [PedidosController::class, 'atualizarPedido']);
     });
     //exibir itens selecionados
     Route::get('/itens/{id}', [ItensCatalogoController::class, 'visualizarItens']);
