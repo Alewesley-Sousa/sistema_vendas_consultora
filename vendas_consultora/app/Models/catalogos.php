@@ -18,32 +18,36 @@ class catalogos extends Model
     ];
 
     protected $casts = [
-        'nome' => 'string',
-        'tipo_categoria_id' => 'integer',
-        'status_id' => 'integer',
-        'descricao' => 'string',
+        'nome'              => 'string',
+        'tipo_catalogo_id'  => 'integer',
+        'status_id'         => 'integer',
+        'descricao'         => 'string',
         'data_encerramento' => 'date',
-        'data_publicacao' => 'date'
+        'data_publicacao'   => 'date'
     ];
 
-    //atualizar automaticante o status do catalogo para inativo quando o prazo expirar
-    public function scopeExpirados($query) { 
+    // Retorna catálogos ativos com prazo expirado
+    public function scopeExpirados($query)
+    {
         return $query->where('status_id', '1')
-                    ->where('data_encerramento', '<', now());
+                     ->where('data_encerramento', '<', now());
     }
 
-    // RELACIONAMENTO STATUS CATEGORIA
-    public function categoriaStatus() {
+    // RELACIONAMENTO STATUS CATALOGO
+    public function categoriaStatus()
+    {
         return $this->belongsTo(status_catalogo::class, 'status_id', 'id');
     }
 
-    // RELACIONAMENTO TIPO CATEGORIA
-    public function categoriaTipo() {
-        return $this->belongsTo(tipo_catalogo::class, 'tipo_categoria_id', 'id');
+    // RELACIONAMENTO TIPO CATALOGO
+    public function categoriaTipo()
+    {
+        return $this->belongsTo(tipo_catalogo::class, 'tipo_catalogo_id', 'id');
     }
 
     // RELACIONAMENTO ITENS CATALOGO
-    public function itensCatalogo() {
+    public function itensCatalogo()
+    {
         return $this->hasMany(itens_catalogo::class, 'catalogo_id', 'id');
     }
 
