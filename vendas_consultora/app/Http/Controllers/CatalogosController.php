@@ -2,24 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\catalogos;
+use App\Http\Requests\CatalogosRequest;
 use App\Services\CatalogoService;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class CatalogosController extends Controller
 {
-    protected $catalogoService;
+    public function __construct(
+        protected CatalogoService $CatalogoService
+    ) {}
 
-    public function __construct(CatalogoService $service) {$this->catalogoService = $service;}
-    
-    public function index() {
-        return view('consultora.catalogo-produtos');
+    public function index(): JsonResponse
+    {
+        $result = $this->CatalogoService->index();
+        return response()->json($result);
     }
 
-    public function visualizarCatalogo(Request $request) {
-        $busca = $request->query('search');
-        $resultado = $this->catalogoService->trazerCatalogos($busca);
+    public function store(CatalogosRequest $request): JsonResponse
+    {
+        $result = $this->CatalogoService->store($request->validated());
+        return response()->json($result, 201);
+    }
 
-        return response()->json($resultado);
+    public function show(int $id): JsonResponse
+    {
+        $result = $this->CatalogoService->show($id);
+        return response()->json($result);
+    }
+
+    public function update(CatalogosRequest $request, int $id): JsonResponse
+    {
+        $result = $this->CatalogoService->update($request->validated(), $id);
+        return response()->json($result);
+    }
+
+    public function destroy(int $id): JsonResponse
+    {
+        $result = $this->CatalogoService->destroy($id);
+        return response()->json($result);
     }
 }
