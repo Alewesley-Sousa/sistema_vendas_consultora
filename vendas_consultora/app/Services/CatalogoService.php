@@ -1,75 +1,87 @@
-<?php 
+<?php
+
 namespace App\Services;
 
-use App\Models\catalogos;
-use App\Models\itens_catalogo;
-use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Catalogos;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
-class CatalogoService {
+class CatalogoService
+{
+    public function index()
+    {
+        return Catalogos::all();
+    }
 
-    // Catalogos
-    public function trazerCatalogos($busca = null) {
+    public function show(int $id)
+    {
+        return Catalogos::findOrFail($id);
+    }
+
+    public function store(array $data)
+    {
+        DB::beginTransaction();
         try {
-            $query = catalogos::where('status_id', 1);
+            $catalogo = Catalogos::create([
+                'nome'              => $data['nome'],
+                'tipo_catalogo_id'  => $data['tipo_catalogo_id'],
+                'status_id'         => $data['status_id'],
+                'descricao'         => $data['descricao'] ?? null,
+                'data_encerramento' => $data['data_encerramento'] ?? null,
+                'data_publicacao'   => $data['data_publicacao'] ?? null,
+            ]);
+            DB::commit();
 
-            if ($busca) {
-                $query->where(function($q) use ($busca) {
-                    $q->where('nome', 'like', "%{$busca}%")
-                    ->orWhere('descricao', 'like', "%{$busca}%");
-                });
-            }
+            Log::info('Catálogo criado', ['id' => $catalogo->id]);
 
-            $catalogos = $query->paginate(8);
-
-            return [
-                'status' => 'success',
-                'data' => $catalogos
-            ];
-        } catch (Exception $e) {
-            return ['status' => 'error', 'mensagem' => $e->getMessage()];
+            return $catalogo;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao criar catálogo', ['error' => $e->getMessage()]);
+            throw $e;
         }
     }
 
-    // Itens do Catálogo
-    public function trazerItens($id, $busca = null) {
+    public function update(array $data, int $id)
+    {
+        DB::beginTransaction();
         try {
-            $query = itens_catalogo::with('produto')
-                ->where('catalogo_id', $id)->where('status_id', 1);
+            $catalogo = Catalogos::findOrFail($id);
+            $catalogo->update([
+                'nome'              => $data['nome'],
+                'tipo_catalogo_id'  => $data['tipo_catalogo_id'],
+                'status_id'         => $data['status_id'],
+                'descricao'         => $data['descricao'] ?? null,
+                'data_encerramento' => $data['data_encerramento'] ?? null,
+                'data_publicacao'   => $data['data_publicacao'] ?? null,
+            ]);
+            DB::commit();
 
-            if ($busca) {
-                $query->whereHas('produto', function($q) use ($busca) {
-                    $q->where('nome', 'like', "%{$busca}%");
-                });
-            }
+            Log::info('Catálogo atualizado', ['id' => $catalogo->id]);
 
-            $itens = $query->paginate(6);
-
-            return [
-                'status' => 'success',
-                'data' => $itens
-            ];
-        } catch (Exception $e) {
-            return ['status' => 'error', 'mensagem' => $e->getMessage()];
+            return $catalogo;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao atualizar catálogo', ['error' => $e->getMessage()]);
+            throw $e;
         }
     }
 
-    public function visualizarItens(array $ids) {
+    public function destroy(int $id)
+    {
+        DB::beginTransaction();
         try {
-            $resultado['data'] = itens_catalogo::whereIn('id', $ids)->with('produto')->get();
+            $catalogo = Catalogos::findOrFail($id);
+            $catalogo->delete();
+            DB::commit();
 
-            if ($resultado['data']) {
-                $resultado['mensagem'] = 'Item não encontrado!';
-                return response()->json($resultado);
-            }
+            Log::info('Catálogo deletado', ['id' => $id]);
 
-            $resultado['status'] = 'success';
-
-            return response()->json($resultado);
-        } catch (Exception $e) {
-            return ['status' => 'error', 'mensagem' => $e->getMessage()];
+            return ['message' => 'Catálogo deletado com sucesso'];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao deletar catálogo', ['error' => $e->getMessage()]);
+            throw $e;
         }
     }
 }
