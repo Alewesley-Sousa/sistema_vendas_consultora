@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Catalogos;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -27,8 +28,8 @@ class CatalogoService
                 'tipo_catalogo_id'  => $data['tipo_catalogo_id'],
                 'status_id'         => $data['status_id'],
                 'descricao'         => $data['descricao'] ?? null,
-                'data_encerramento' => $data['data_encerramento'] ?? null,
-                'data_publicacao'   => $data['data_publicacao'] ?? null,
+                'data_encerramento' => Carbon::createFromFormat('d/m/Y', $data['data_encerramento'])->format('Y-m-d'),
+                'data_publicacao'   => Carbon::createFromFormat('d/m/Y', $data['data_publicacao'])->format('Y-m-d'),
             ]);
             DB::commit();
 
@@ -52,8 +53,8 @@ class CatalogoService
                 'tipo_catalogo_id'  => $data['tipo_catalogo_id'],
                 'status_id'         => $data['status_id'],
                 'descricao'         => $data['descricao'] ?? null,
-                'data_encerramento' => $data['data_encerramento'] ?? null,
-                'data_publicacao'   => $data['data_publicacao'] ?? null,
+                'data_encerramento' => Carbon::createFromFormat('d/m/Y', $data['data_encerramento'])->format('Y-m-d'),
+                'data_publicacao'   => Carbon::createFromFormat('d/m/Y', $data['data_publicacao'])->format('Y-m-d'),
             ]);
             DB::commit();
 
