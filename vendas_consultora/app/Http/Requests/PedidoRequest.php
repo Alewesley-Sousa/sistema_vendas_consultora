@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
 
 class PedidoRequest extends FormRequest
 {
@@ -35,6 +37,10 @@ class PedidoRequest extends FormRequest
             /**
              * validação da tabela itens_pedido
              */
+             'itens.*.pedido_id' => [
+        		'required',
+        		Rule::in([$pedidoId]) // garante que seja igual ao pedido atual
+    		],
             'itens' => 'required|array',
             'itens.*.produto_id' => 'required|exists:produtos,id',
             'itens.*.quantidade' => 'required|integer|min:1',
@@ -50,6 +56,9 @@ class PedidoRequest extends FormRequest
             'itens.*.quantidade.min' => 'A quantidade deve ser pelo menos 1.',
             'itens.*.preco_unitario.required' => 'é obrigatório informar o preço unitário.',
             'itens.*.preco_unitario.min' => 'O preço unitário deve ser um número positivo.',
+            'itens.*.pedido_id.required' => 'Houve um erro inesperado nos itens
+            do seu pedido.',
+            'itens.*.pedido_id.in' => "O produto não faz parte do pedido.",
 
             'cliente_id.exists' => 'O cliente selecionado não existe.',
             'status_id.exists' => 'O status selecionado não existe.',

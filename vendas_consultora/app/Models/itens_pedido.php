@@ -13,6 +13,7 @@ class itens_pedido extends Model
 {
     public $timestamps = false;
 
+	protected $table = 'itens_pedido';
     protected $guarded = [
         'id', 'subtotal', 'preco_unitario'
     ];

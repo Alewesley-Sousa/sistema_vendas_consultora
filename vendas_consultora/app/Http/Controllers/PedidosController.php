@@ -30,9 +30,13 @@ class PedidosController extends Controller
     /**
      * atualizar pedido do usuario
      */
-    public function atualizarPedido(PedidoRequest $request)
+    public function atualizarPedido(PedidoRequest $request, $id)
     {
+        $dadosValidados = $request->validated();
+        $resultado = $this->pedidosService->atualizarPedido($id,
+        $dadosValidados);
         
+        return response()->json($resultado);
     }
 
     /**
