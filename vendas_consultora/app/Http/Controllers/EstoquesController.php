@@ -1,70 +1,41 @@
 <?php
-/**
- * Autor: Alewesley-Sousa
- * Data: 01/03/2026
- * Descrição: Controler responsavel por controlar entrada e saida de dados
- */
 
 namespace App\Http\Controllers;
 
-use App\Models\estoques;
-use Illuminate\Http\Request;
+use App\Http\Requests\EstoquesRequest;
+use App\Services\EstoqueService;
+use Illuminate\Http\JsonResponse;
 
 class EstoquesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected EstoqueService $estoqueService
+    ) {}
+
+    public function index(): JsonResponse
     {
-        //
+        return response()->json($this->estoqueService->index());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(EstoquesRequest $request): JsonResponse
     {
-        //
+        $result = $this->estoqueService->store($request->validated());
+        return response()->json($result, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show(int $id): JsonResponse
     {
-        //
+        return response()->json($this->estoqueService->show($id));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(estoques $estoques)
+    public function update(EstoquesRequest $request, int $id): JsonResponse
     {
-        //
+        $result = $this->estoqueService->update($request->validated(), $id);
+        return response()->json($result);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(estoques $estoques)
+    public function destroy(int $id): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, estoques $estoques)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(estoques $estoques)
-    {
-        //
+        return response()->json($this->estoqueService->destroy($id));
     }
 }
