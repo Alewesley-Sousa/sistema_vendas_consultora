@@ -1,48 +1,55 @@
 @extends('layouts.app')
-@section('conteudo')
 
-<div class="max-w-4xl w-full flex gap-8 flex-wrap">
-  <div class="w-full md:w-1/2 bg-white rounded-2xl shadow-lg p-8 border-t-8 border-pink-600">
-    <header class="mb-4">
-      <h1 class="text-2xl font-extrabold text-slate-800">Bem-vinda, Consultora</h1>
-      <p class="text-pink-500 font-semibold">Acesse sua conta e conquiste seus objetivos!</p>
-    </header>
+@section('title', 'Login - Sistema de Vendas')
 
-    <form id="loginForm" class="flex flex-col gap-3">
-        <div id="error-message" class="hidden mb-3 p-3 bg-red-50 border border-red-200 text-red-800 rounded">
-            <ul id="error-list" class="list-disc pl-5"></ul>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/estilo.css') }}">
+<style>
+    .login-container-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
+    .form-group input { text-align: center; }
+    .form-group label { width: 100%; text-align: center; }
+</style>
+@endpush
+
+@section('content')
+<div class="login-container-wrapper">
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Sistema de Vendas</h1>
+            <p>Consultora e vendas</p>
         </div>
 
-        <label for="email" class="text-sm font-semibold text-slate-700">Email</label>
-        <input id="email" type="email" required autofocus
-              class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-4 focus:ring-pink-100" />
+        <form id="loginForm" method="POST" action="{{ route('login') }}">
+            @csrf
+            <div class="form-group">
+                <input type="email" id="email" name="email" required placeholder=" ">
+                <label for="email">E-mail</label>
+            </div>
 
-        <label for="password" class="text-sm font-semibold text-slate-700">Senha</label>
-        <input id="password" type="password" required
-              class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-4 focus:ring-yellow-100" />
+            <div class="form-group">
+                <input type="password" id="password" name="password" required placeholder=" ">
+                <label for="password">Senha</label>
+            </div>
 
-        <div class="flex items-center justify-between mt-2">
-            <label for="remember" class="inline-flex items-center text-sm text-slate-700">
-                <input id="remember" type="checkbox" 
-                      class="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded">
-                <span class="ml-2">Lembrar-me</span>
-            </label>
-            <a href="{{ route('senha-formulario') }}" class="text-sm text-slate-700 hover:text-pink-600">Esqueceu sua senha?</a>
-        </div>
-
-        <div class="mt-3">
-            <button type="submit" id="btnEntrar"
-                    class="w-full bg-gradient-to-r from-pink-600 via-pink-500 to-rose-400 text-white font-bold py-3 rounded-lg shadow-md hover:translate-y-[-2px] transition-transform">
-              Entrar
+            <button type="submit" class="btn-login" id="btnLogin">
+                Entrar
             </button>
-        </div>
-        <div class="hidden animate-bounce [animation-delay:-0.3s] [animation-delay:-0.15s] opacity-70 cursor-not-allowed"></div>
-    </form>
-  </div>
+        </form>
 
-  <aside class="w-full md:w-1/3 bg-white/80 backdrop-blur rounded-2xl p-8 flex flex-col items-center justify-center shadow-sm">
-    <div class="px-4 py-2 rounded-full bg-gradient-to-r from-rose-400 to-pink-500 text-white font-extrabold">Meta</div>
-    <p class="mt-3 text-slate-800 font-semibold">Empoderamento • Energia • Profissionalismo</p>
-  </aside>
+        <div class="auth-links">
+            <a href="{{ url('dev/cadastro-consultora') }}" id="registerLink">Criar nova conta</a>
+            <span class="separator">|</span>
+            <a href="#" id="forgotLink">Esqueceu sua senha?</a>
+        </div>
+    </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="{{ asset('js/java.js') }}"></script>
+@endpush
