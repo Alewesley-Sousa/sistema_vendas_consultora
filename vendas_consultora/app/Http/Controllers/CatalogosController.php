@@ -8,37 +8,50 @@ use Illuminate\Http\JsonResponse;
 
 class CatalogosController extends Controller
 {
-    public function __construct(
-        protected CatalogoService $CatalogoService
-    ) {}
+    protected $catalogoService;
 
-    public function index(): JsonResponse
+    public function __construct(CatalogoService $catalogoService)
     {
-        $result = $this->CatalogoService->index();
-        return response()->json($result);
+        $this->catalogoService = $catalogoService;
     }
 
-    public function store(CatalogosRequest $request): JsonResponse
+    public function listar(): JsonResponse
     {
-        $result = $this->CatalogoService->store($request->validated());
-        return response()->json($result, 201);
+        $resultado = $this->catalogoService->listarTodos();
+        return response()->json($resultado, 200);
     }
 
-    public function show(int $id): JsonResponse
+    public function exibir(int $id): JsonResponse
     {
-        $result = $this->CatalogoService->show($id);
-        return response()->json($result);
+        $resultado = $this->catalogoService->exibir($id);
+        return response()->json($resultado, 200);
     }
 
-    public function update(CatalogosRequest $request, int $id): JsonResponse
+    public function cadastrar(CatalogosRequest $request): JsonResponse
     {
-        $result = $this->CatalogoService->update($request->validated(), $id);
-        return response()->json($result);
+        $resultado = $this->catalogoService->armazenar($request);
+
+        if ($resultado['status'] === 'success') {
+            return response()->json($resultado, 201);
+        }
+
+        return response()->json($resultado, 400);
     }
 
-    public function destroy(int $id): JsonResponse
+    public function atualizar(CatalogosRequest $request, int $id): JsonResponse
     {
-        $result = $this->CatalogoService->destroy($id);
-        return response()->json($result);
+        $resultado = $this->catalogoService->editar($request, $id);
+
+        if ($resultado['status'] === 'success') {
+            return response()->json($resultado, 200);
+        }
+
+        return response()->json($resultado, 400);
+    }
+
+    public function excluir(int $id): JsonResponse
+    {
+        $resultado = $this->catalogoService->excluir($id);
+        return response()->json($resultado, $resultado['status'] === 'success' ? 200 : 400);
     }
 }

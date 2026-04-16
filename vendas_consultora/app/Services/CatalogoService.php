@@ -3,34 +3,38 @@
 namespace App\Services;
 
 use App\Models\Catalogos;
+<<<<<<< HEAD
 use App\Services\LogService; // Importando seu serviço de log
+=======
+use App\Models\itens_catalogo;
+>>>>>>> cf0d365d98a3d2fc8f1238c8f9f91e67ebfe1d08
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CatalogoService
 {
-    public function index()
+    public function listarTodos()
     {
         return Catalogos::all();
     }
 
-    public function show(int $id)
+    public function exibir(int $id)
     {
         return Catalogos::findOrFail($id);
     }
 
-    public function store(array $data)
+    public function armazenar($request)
     {
         DB::beginTransaction();
         try {
             $catalogo = Catalogos::create([
-                'nome'              => $data['nome'],
-                'tipo_catalogo_id'  => $data['tipo_catalogo_id'],
-                'status_id'         => $data['status_id'],
-                'descricao'         => $data['descricao'] ?? null,
-                'data_encerramento' => Carbon::createFromFormat('d/m/Y', $data['data_encerramento'])->format('Y-m-d'),
-                'data_publicacao'   => Carbon::createFromFormat('d/m/Y', $data['data_publicacao'])->format('Y-m-d'),
+                'nome'              => $request->nome,
+                'tipo_catalogo_id'  => $request->tipo_catalogo_id,
+                'status_id'         => $request->status_id,
+                'descricao'         => $request->descricao ?? null,
+                'data_encerramento' => Carbon::createFromFormat('d/m/Y', $request->data_encerramento)->format('Y-m-d'),
+                'data_publicacao'   => Carbon::createFromFormat('d/m/Y', $request->data_publicacao)->format('Y-m-d'),
             ]);
 
             // Registro na tabela de logs
@@ -42,6 +46,7 @@ class CatalogoService
             );
 
             DB::commit();
+<<<<<<< HEAD
             return $catalogo;
 
         } catch (\Exception $e) {
@@ -51,21 +56,38 @@ class CatalogoService
             LogService::registrarAcao('ERROR_CREATE', 'catalogos', null, $e->getMessage());
             
             throw $e;
+=======
+
+            Log::info('Catálogo criado', ['id' => $catalogo->id]);
+
+            return [
+                'status'  => 'success',
+                'message' => 'Catálogo criado com sucesso',
+                'data'    => $catalogo
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao criar catálogo', ['error' => $e->getMessage()]);
+            return [
+                'status'  => 'error',
+                'message' => 'Erro ao criar catálogo'
+            ];
+>>>>>>> cf0d365d98a3d2fc8f1238c8f9f91e67ebfe1d08
         }
     }
 
-    public function update(array $data, int $id)
+    public function editar($request, int $id)
     {
         DB::beginTransaction();
         try {
             $catalogo = Catalogos::findOrFail($id);
             $catalogo->update([
-                'nome'              => $data['nome'],
-                'tipo_catalogo_id'  => $data['tipo_catalogo_id'],
-                'status_id'         => $data['status_id'],
-                'descricao'         => $data['descricao'] ?? null,
-                'data_encerramento' => Carbon::createFromFormat('d/m/Y', $data['data_encerramento'])->format('Y-m-d'),
-                'data_publicacao'   => Carbon::createFromFormat('d/m/Y', $data['data_publicacao'])->format('Y-m-d'),
+                'nome'              => $request->nome,
+                'tipo_catalogo_id'  => $request->tipo_catalogo_id,
+                'status_id'         => $request->status_id,
+                'descricao'         => $request->descricao ?? null,
+                'data_encerramento' => Carbon::createFromFormat('d/m/Y', $request->data_encerramento)->format('Y-m-d'),
+                'data_publicacao'   => Carbon::createFromFormat('d/m/Y', $request->data_publicacao)->format('Y-m-d'),
             ]);
 
             // Registro na tabela de logs
@@ -77,6 +99,7 @@ class CatalogoService
             );
 
             DB::commit();
+<<<<<<< HEAD
             return $catalogo;
 
         } catch (\Exception $e) {
@@ -85,10 +108,27 @@ class CatalogoService
             LogService::registrarAcao('ERROR_UPDATE', 'catalogos', $id, $e->getMessage());
             
             throw $e;
+=======
+
+            Log::info('Catálogo atualizado', ['id' => $catalogo->id]);
+
+            return [
+                'status'  => 'success',
+                'message' => 'Catálogo atualizado com sucesso',
+                'data'    => $catalogo
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao atualizar catálogo', ['error' => $e->getMessage()]);
+            return [
+                'status'  => 'error',
+                'message' => 'Erro ao atualizar catálogo'
+            ];
+>>>>>>> cf0d365d98a3d2fc8f1238c8f9f91e67ebfe1d08
         }
     }
 
-    public function destroy(int $id)
+    public function excluir(int $id)
     {
         DB::beginTransaction();
         try {
@@ -104,6 +144,7 @@ class CatalogoService
             );
 
             DB::commit();
+<<<<<<< HEAD
             return ['message' => 'Catálogo deletado com sucesso'];
 
         } catch (\Exception $e) {
@@ -165,3 +206,59 @@ public function saveItem(array $data, ?int $id = null)
 }
 
 }
+=======
+
+            Log::info('Catálogo deletado', ['id' => $id]);
+
+            return [
+                'status'  => 'success',
+                'message' => 'Catálogo deletado com sucesso'
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro ao deletar catálogo', ['error' => $e->getMessage()]);
+            return [
+                'status'  => 'error',
+                'message' => 'Erro ao deletar catálogo'
+            ];
+        }
+    }
+
+    public function trazerItens(int $id, $busca = null)
+    {
+        $query = itens_catalogo::where('catalogo_id', $id);
+
+        if ($busca) {
+            $query->whereHas('produto', function ($q) use ($busca) {
+                $q->where('nome', 'like', '%' . $busca . '%');
+            });
+        }
+
+        $itens = $query->with('produto', 'status')->get();
+
+        return [
+            'status' => 'success',
+            'data'   => $itens
+        ];
+    }
+
+    public function visualizarItens(array $ids)
+    {
+        $itens = itens_catalogo::whereIn('id', $ids)
+            ->with('produto', 'status')
+            ->get();
+
+        if ($itens->isEmpty()) {
+            return [
+                'status'   => 'error',
+                'mensagem' => 'Nenhum item encontrado'
+            ];
+        }
+
+        return [
+            'status' => 'success',
+            'data'   => $itens
+        ];
+    }
+}
+>>>>>>> cf0d365d98a3d2fc8f1238c8f9f91e67ebfe1d08
