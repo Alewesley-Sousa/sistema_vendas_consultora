@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\CatalogoService;
 use Illuminate\Http\Request;
+use App\Http\Requests\ItemCatalogoRequest;
 
 class ItensCatalogoController extends Controller
 {
@@ -35,4 +36,24 @@ class ItensCatalogoController extends Controller
 
         return response()->json($resultado);
     }
+    
+    /**
+ * Adicionar novo item
+ */
+public function store(ItemCatalogoRequest $request)
+{
+    $resultado = $this->catalogoService->saveItem($request->validated());
+    return response()->json($resultado, 201);
+}
+
+/**
+ * Editar item existente
+ */
+public function update(ItemCatalogoRequest $request, $id)
+{
+    $resultado = $this->catalogoService->saveItem($request->validated(), $id);
+    
+    $statusHttp = $resultado['status'] === 'success' ? 200 : 400;
+    return response()->json($resultado, $statusHttp);
+}
 }

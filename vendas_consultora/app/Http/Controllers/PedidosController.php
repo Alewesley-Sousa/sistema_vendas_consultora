@@ -42,9 +42,11 @@ class PedidosController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function cancelarPedido($id)
     {
-        //
+        $resultado = $this->pedidosService->excluirPedido($id);
+        
+        return response()->json($resultado);
     }
 
 

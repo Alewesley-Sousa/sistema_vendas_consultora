@@ -26,7 +26,9 @@ class PedidosSeeder extends Seeder
             ['usuario_id' => 10, 'cliente_id' => 9, 'link' => 'https://loja.com/pedido/1009', 'valor_total' => 99.90, 'tipo_pagamento' => 'debito', 'status_id' => 5],
             ['usuario_id' => 11, 'cliente_id' => 10, 'link' => 'https://loja.com/pedido/1010', 'valor_total' => 59.90, 'tipo_pagamento' => 'credito', 'status_id' => 2],
             ['usuario_id' => 12, 'cliente_id' => 11, 'link' => 'https://loja.com/pedido/1011', 'valor_total' => 179.90, 'tipo_pagamento' => 'pix', 'status_id' => 4],
-            ['usuario_id' => 13, 'cliente_id' => 12, 'link' => 'https://loja.com/pedido/1012', 'valor_total' => 119.90, 'tipo_pagamento' => 'debito', 'status_id' => 6],
+            ['usuario_id' => 13, 'cliente_id' => 12, 'link' =>
+            'https://loja.com/pedido/1012', 'valor_total' => 119.90,
+            'tipo_pagamento' => 'debito', 'status_id' => 7],
             ['usuario_id' => 14, 'cliente_id' => 13, 'link' => 'https://loja.com/pedido/1013', 'valor_total' => 89.90, 'tipo_pagamento' => 'credito', 'status_id' => 3],
             ['usuario_id' => 15, 'cliente_id' => 1, 'link' => 'https://loja.com/pedido/1014', 'valor_total' => 139.90, 'tipo_pagamento' => 'pix', 'status_id' => 5],
             ['usuario_id' => 16, 'cliente_id' => 2, 'link' => 'https://loja.com/pedido/1015', 'valor_total' => 49.90, 'tipo_pagamento' => 'debito', 'status_id' => 3],

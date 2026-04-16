@@ -1,70 +1,42 @@
 <?php
-/**
- * Autor: Alewesley-Sousa
- * Data: 01/03/2026
- * Descrição: Controler responsavel por controlar entrada e saida de dados
- */
 
 namespace App\Http\Controllers;
 
-use App\Models\produtos;
+use App\Http\Requests\ProdutosRequest;
+use App\Services\ProdutoService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class ProdutosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected ProdutoService $produtoService
+    ) {}
+
+    public function index(): JsonResponse
     {
-        //
+        return response()->json($this->produtoService->index());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(ProdutosRequest $request): JsonResponse
     {
-        //
+        $result = $this->produtoService->store($request->validated());
+        return response()->json($result, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show(int $id): JsonResponse
     {
-        //
+        return response()->json($this->produtoService->show($id));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(produtos $produtos)
+    public function update(ProdutosRequest $request, int $id): JsonResponse
     {
-        //
+        $result = $this->produtoService->update($request->validated(), $id);
+        return response()->json($result);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(produtos $produtos)
+    public function destroy(int $id): JsonResponse
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, produtos $produtos)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(produtos $produtos)
-    {
-        //
+        return response()->json($this->produtoService->destroy($id));
     }
 }

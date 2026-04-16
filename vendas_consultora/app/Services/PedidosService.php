@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\itens_pedido;
 use App\Models\pedidos;
+use App\Models\pagamentos;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +30,11 @@ class PedidosService
 
             $itensPedidos = itens_pedido::where('pedido_id', $id)->get();
 
-            // apenas pode ser feita a atualização dos campos abaixo
+            if (!empty($data['ids_excluidos'])) {
+        	    itens_pedido::where('pedidoid', $id)
+                	->whereIn('produtoid', $data['id_itens_excluidos'])
+                	->delete();
+        	}
 
             //tabela pedidos
             $pedido->status_id = $data['status_id'] ?? $pedido->status_id;
@@ -109,5 +114,52 @@ class PedidosService
                 'mensagem' => 'Erro encontrado: ' . $e->getMessage()
             ];
         }
+    }
+    
+    protected function diasDesde(string $data) {
+    	$data = new DateTime($data);
+    	$hoje = new DateTime();
+    	$intervalo = $data->diff($hoje);
+    	return $intervalo->days;
+    }
+    
+    
+    public function excluirPedido($id)
+    {
+    	DB::beginTransaction();
+    	try {
+    		$pedido = pedidos::find($id);
+    		$pagamento = pagamentos::where('pedido_id', $pedido->id)->first();
+    		if ($pedido->status_id === 1) {
+    			throw new Exception('pedido náo pode ser mais cancelado.');
+    		} elseif ($pedido->status_id === 7) {
+    			throw new Exception('o pedido ja foi cancelado á ' .
+    			$this->diasDesde($pedido->created_at)) . ' dias.'
+    		}
+    		
+    		$pedido->status_id = 7;
+    		$pagamento->status = 'recusado';
+    		$pedido->save();
+    		$pagamento->save();
+    		
+    		LogService::registrarAcao(
+            	"O pedido #$pedido->id foi cancelado",
+            	"Pedidos e pagamentos",
+            	$pedido->id,
+            	"Atualizando os dados dos produtos de um pedido"
+            	);
+    		
+    		DB::commit();
+    		return [
+    			'status' => 'sucesso',
+    			'mensagem' => 'pedido cancelado com sucesso'
+    		];
+    	} catch (Exception $e) {
+    		DB::rollBack();
+    		return [
+    			'status' => 'error',
+    			'mensagem' => 'erro ao cancelar: ' . $e->getMessage()
+    		];
+    	}
     }
 }
