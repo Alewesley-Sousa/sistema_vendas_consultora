@@ -93,7 +93,6 @@ class ComissaoService
             ];
         }
     }
-}
 
 	 /**
      * Aprova ou Reprova uma comissão.
@@ -141,4 +140,5 @@ class ComissaoService
             return ['status' => 'error', 'mensagem' => $e->getMessage()];
         }
     }
+}
 ?>
