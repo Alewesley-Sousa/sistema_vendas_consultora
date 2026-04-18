@@ -14,6 +14,7 @@ class HistoricoComissaoService
     {
         $usuario = Auth::user();
         $cargo = $usuario->cargo;
+        $usuario_id = $request->usuario_id;
 
         $colunasPermitidas = ['valor', 'data_movimentacao'];
 
@@ -25,7 +26,10 @@ class HistoricoComissaoService
             ->with(
                 [
                     'tipoComissao',
-                    'tipoMovimentacao'
+                    'tipoMovimentacao',
+                    'usuario' => function ($query) {
+                        $query->select('id', 'nome'); // 'id' é obrigatório para o Eloquent ligar as tabelas
+                    }
                 ]
             )
             //Se não for distribuidora, vai mostrar apenas o historico do usuario autenticado.
@@ -34,8 +38,8 @@ class HistoricoComissaoService
             })
 
             //Se for distribuidora, vai filtrar pelo id do usuario escolhido
-            ->when($cargo === 'distribuidora' && $request->id_usuario, function ($query, $idEscolhido) {
-                return $query->where('consultora_id', $idEscolhido);
+            ->when($cargo === 'distribuidora' && $usuario_id, function ($query) use ($usuario_id) {
+                return $query->where('consultora_id', $id_usuario);
             })
             ->whereIn('tipo_movimentacao_id', [1, 2]) // Só vai pegar do tipo estorno e venda
 
@@ -57,7 +61,7 @@ class HistoricoComissaoService
             ->groupBy('mes_referencia')
             ->orderBy('mes_referencia', 'desc')
             ->get();
-            
+
         return $comissaoVenda;
     }
 }
