@@ -1,45 +1,48 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <title>{{ config('app.name', 'Sistema de Vendas') }}</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    <title>@yield('title', 'Sistema de Vendas')</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        #global-loader {
-            display: flex;
-            transition: opacity 0.3s ease;
+        :root {
+            --primary: #FF6F61;
+            --primary-dark: #FF1493;
+            --secondary: #FF69B4;
+            --dark-sidebar: #2C3E50;
+            --background: #FFF5F7;
+            --card-bg: #FFFFFF;
+            --text-muted: #5d6d7e;
+            --radius: 15px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        #global-loader.hidden {
-            display: none;
-            opacity: 0;
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--background);
+            margin: 0;
+            color: var(--dark-sidebar);
         }
+        header {
+            background: linear-gradient(135deg, var(--dark-sidebar), #1a252f);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .container-app { padding: 40px; max-width: 1200px; margin: 0 auto; }
     </style>
+    @stack('styles')
 </head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center p-6 font-sans antialiased">
+<body>
+    <header>
+        <h1><i class="@yield('header-icon')"></i> @yield('header-title')</h1>
+    </header>
 
-    <div id="global-loader" class="fixed inset-0 z-[9999] flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
-        <div class="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"></div>
-        <p class="mt-4 font-medium text-gray-700">Carregando...</p>
+    <div class="container-app">
+        @yield('content')
     </div>
 
-    <div class="min-h-screen">
-        <main class="py-10">
-            <div class="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-                @yield('conteudo')
-            </div>
-        </main>
-    </div>
-
-    <script>
-        window.addEventListener('load', () => {
-            const loader = document.getElementById('global-loader');
-            loader.classList.add('hidden');
-        });
-    </script>
+    @stack('scripts')
 </body>
 </html>
