@@ -3,6 +3,7 @@
 use App\Http\Controllers\CatalogosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\ComissoesController;
+use App\Http\Controllers\DevolucoesController;
 use App\Http\Controllers\EstoquesController;
 use App\Http\Controllers\HistoricoComissoesController;
 use App\Http\Controllers\ItensCatalogoController;
@@ -169,5 +170,17 @@ Route::middleware("auth:sanctum")->group(function () {
       Route::get("/{id}", "show");
       Route::put("/{id}", "update");
       Route::delete("/{id}", "destroy");
+    });
+
+    Route::prefix("/devolucao")
+    ->controller(DevolucoesController::class)
+    ->group(function () {
+        // Rota para Consultora/Distribuidora solicitar
+        Route::post("/solicitar", "solicitar");
+
+        // Rotas exclusivas da Gestão (Distribuidora)
+        Route::get("/pendentes", "pendentes"); // <--- NOVA ROTA
+        Route::post("/aprovar/{id}", "aprovar");
+        Route::post("/rejeitar/{id}", "rejeitar");
     });
 });
