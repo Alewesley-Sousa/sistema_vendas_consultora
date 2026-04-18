@@ -36,6 +36,12 @@ class StatusDevolucaoSeeder extends Seeder
                 'descricao' => 'Devolução rejeitada',
                 'created_at' => now(),
                 'updated_at' => now()
+            ],
+            [
+                'nome' => 'Cancelado', 
+                'descricao' => 'Devolução cancelada pelo cliente',
+                'created_at' => now(),
+                'updated_at' => now()
             ]
         ]);
     }
