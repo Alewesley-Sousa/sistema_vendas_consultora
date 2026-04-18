@@ -21,9 +21,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class produtos extends Model
 {
+	use SoftDeletes;
     protected $guarded = [
         'id',
         'created_at',

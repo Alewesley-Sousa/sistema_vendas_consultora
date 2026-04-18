@@ -134,7 +134,7 @@ class PedidosService
     			throw new Exception('pedido náo pode ser mais cancelado.');
     		} elseif ($pedido->status_id === 7) {
     			throw new Exception('o pedido ja foi cancelado á ' .
-    			$this->diasDesde($pedido->created_at)) . ' dias.'
+    			$this->diasDesde($pedido->created_at)) . ' dias.';
     		}
     		
     		$pedido->status_id = 7;

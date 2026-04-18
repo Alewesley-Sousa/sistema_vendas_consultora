@@ -3,6 +3,7 @@
 use App\Http\Controllers\CatalogosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\ComissoesController;
+use App\Http\Controllers\EstoquesController;
 use App\Http\Controllers\HistoricoComissoesController;
 use App\Http\Controllers\ItensCatalogoController;
 use App\Http\Controllers\LiderController;
@@ -19,18 +20,28 @@ use Inertia\Inertia;
 // agrupa todos que usam a autenticação com token
 Route::middleware("auth:sanctum")->group(function () {
   Route::prefix("/comissao")->group(function () {
+    // --- Rotas da Consultora ---
+    
     // Pegar comissao atual do usuario autenticado
     Route::get("/", [ComissoesController::class, "visualizar"]);
 
-    // pegar historico de comissoes do usuarioa autenticado
-    Route::get("/historico", [
-      HistoricoComissoesController::class,
-      "visualizarHistorico",
-    ]);
+    // pegar historico de comissoes do usuario autenticado
+    Route::get("/historico", [HistoricoComissoesController::class, "visualizarHistorico"]);
 
     // solicitar o saque da comissão do usuario
     Route::get("/solicitar", [ComissoesController::class, "solicitarComissao"]);
-  });
+
+
+    // --- Rotas da Distribuidora (Gestão) ---
+
+    // Listar todas as solicitações pendentes de todas as consultoras
+    Route::get("/pendentes", [ComissoesController::class, "listarPendentes"]);
+
+    // Aprovar ou Reprovar uma solicitação específica
+    // Passamos o ID da solicitação na URL e o status no corpo (ou via query)
+    Route::post("/processar/{id}", [ComissoesController::class, "processarSolicitacao"]);
+});
+
 
   Route::prefix("/meta")->group(function () {
     //pegar meta atual do usuario autenticado
@@ -140,19 +151,23 @@ Route::middleware("auth:sanctum")->group(function () {
     "visualizarItens",
   ]);
 
-  Route::prefix("/produto")->controller(ProdutosController::class)->group(function () {
-    Route::get("/", "index");
-    Route::post("/", "store");
-    Route::get("/{id}", "show");
-    Route::put("/{id}", "update");
-    Route::delete("/{id}", "destroy");
-  });
+  Route::prefix("/produto")
+    ->controller(ProdutosController::class)
+    ->group(function () {
+      Route::get("/", "index");
+      Route::post("/", "store");
+      Route::get("/{id}", "show");
+      Route::put("/{id}", "update");
+      Route::delete("/{id}", "destroy");
+    });
 
-  Route::prefix("/estoque")->controller(EstoquesController::class)->group(function () {
-    Route::get("/", "index");
-    Route::post("/", "store");
-    Route::get("/{id}", "show");
-    Route::put("/{id}", "update");
-    Route::delete("/{id}", "destroy");
-});
+  Route::prefix("/estoque")
+    ->controller(EstoquesController::class)
+    ->group(function () {
+      Route::get("/", "index");
+      Route::post("/", "store");
+      Route::get("/{id}", "show");
+      Route::put("/{id}", "update");
+      Route::delete("/{id}", "destroy");
+    });
 });

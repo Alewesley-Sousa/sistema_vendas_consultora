@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class status_item_catalogo extends Model
 {
+	
+	protected $table = 'status_item_catalogo';
     // RELACIONAMENTO ITENS CATALOGO
     public function itensCatalogo(): HasMany
     {
