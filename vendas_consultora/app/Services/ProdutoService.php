@@ -45,8 +45,10 @@ class ProdutoService
 
         } catch (\Exception $e) {
             DB::rollBack();
-            LogService::registrarAcao('ERROR_CREATE', 'produtos', null, $e->getMessage());
-            throw $e;
+            return [
+                'status'  => 'error',
+                'message' => "O produto '{$produto->nome} não foi adicionado: " . $e->getMessage()
+            ];
         }
     }
 
