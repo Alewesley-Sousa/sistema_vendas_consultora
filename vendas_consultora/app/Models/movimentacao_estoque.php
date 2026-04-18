@@ -10,8 +10,8 @@ class movimentacao_estoque extends Model
 {
     protected $table = 'movimentacao_estoque';
 
-    protected $guarded = [
-        'quantidade', 'origem_tipo', 'origem_id', 'usuario_responsavel', 'id'
+    protected $fillable = [
+        'quantidade', 'origem_tipo', 'origem_id', 'usuario_responsavel', "produto_id"
     ];
 
     protected $casts = [

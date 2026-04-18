@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use App\Models\clientes;
-use App\Models\itens_devolucao as ModelsItens_devolucao;
+use App\Models\itens_devolucao;
 use App\Models\pedidos;
 use App\Models\Status\status_devolucao;
-use App\Models\Tipo\tipo_devolucao;
-use App\Models\Itens_devolucao;
+use App\Models\Tipos\tipo_devolucao;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -17,7 +16,7 @@ class devolucoes extends Model
     public $timestamps = false;
     
     protected $fillable = [
-        'motivo', 'tipo_devolucao_id', 'status_id', 'data_decisao', 'data_solicitacao'
+        'motivo', 'tipo_devolucao_id', 'status_id', 'data_decisao', 'data_solicitacao', 'pedido_id', 'cliente_id'
     ];
     
     protected $casts = [

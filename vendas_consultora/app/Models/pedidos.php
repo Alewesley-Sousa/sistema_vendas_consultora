@@ -67,6 +67,6 @@ class pedidos extends Model
     // RELACIONAMENTO CONSULTORA
     public function consultora(): BelongsTo
     {
-        return $this->belongsTo(usuarios::class, 'consultora_id', 'id');
+        return $this->belongsTo(usuarios::class, 'usuario_id', 'id');
     }
 }
