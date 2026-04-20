@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('itens_pedido', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('produto_id')->constrained('produtos');
+            $table->foreignId('item_catalogo_id')->constrained('itens_catalogo');
             $table->foreignId('pedido_id')->constrained('pedidos');
             $table->integer('quantidade')->nullable();
             $table->decimal('subtotal', 10, 2)->nullable();
