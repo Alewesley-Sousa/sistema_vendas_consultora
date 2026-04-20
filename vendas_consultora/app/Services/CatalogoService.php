@@ -3,270 +3,233 @@
 namespace App\Services;
 
 use App\Models\catalogos;
-use App\Services\LogService; // Importando seu serviço de log
 use App\Models\itens_catalogo;
+use App\Services\LogService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class CatalogoService
 {
-  public function listarTodos()
-  {
-    return Catalogos::all();
-  }
+    /**
+     * Helper privado para formatar datas vindo do formulário (BR para Banco)
+     */
+    private function formatarData(?string $data)
+    {
+        return $data ? Carbon::createFromFormat('d/m/Y', $data)->format('Y-m-d') : null;
+    }
 
-  public function exibir(int $id)
-  {
-    return Catalogos::findOrFail($id);
-  }
+    public function listarTodos()
+    {
+        return catalogos::all();
+    }
 
-  public function armazenar($request)
-  {
+    public function exibir(int $id)
+    {
+        return catalogos::findOrFail($id);
+    }
+
+    public function armazenar($request)
+    {
+        DB::beginTransaction();
+        try {
+            $data = $request->all();
+
+            $catalogo = catalogos::create([
+                "nome"              => $data['nome'],
+                "tipo_catalogo_id"  => $data['tipo_catalogo_id'],
+                "status_id"         => $data['status_id'],
+                "descricao"         => $data['descricao'] ?? null,
+                "data_encerramento" => $this->formatarData($data['data_encerramento']),
+                "data_publicacao"   => $this->formatarData($data['data_publicacao']),
+            ]);
+
+            LogService::registrarAcao("CREATE", "catalogos", $catalogo->id, "Catálogo '{$catalogo->nome}' criado.");
+
+            DB::commit();
+            return $catalogo;
+        } catch (Exception $e) {
+            DB::rollBack();
+            return ["status" => "error", "message" => "Erro ao criar: " . $e->getMessage()];
+        }
+    }
+
+    public function editar($request, int $id)
+    {
+        DB::beginTransaction();
+        try {
+            $catalogo = catalogos::findOrFail($id);
+            $data = $request->all();
+
+            $catalogo->update([
+                "nome"              => $data['nome'],
+                "tipo_catalogo_id"  => $data['tipo_catalogo_id'],
+                "status_id"         => $data['status_id'],
+                "descricao"         => $data['descricao'] ?? null,
+                "data_encerramento" => $this->formatarData($data['data_encerramento']),
+                "data_publicacao"   => $this->formatarData($data['data_publicacao']),
+            ]);
+
+            LogService::registrarAcao("UPDATE", "catalogos", $id, "Catálogo atualizado.");
+
+            DB::commit();
+            return $catalogo;
+        } catch (Exception $e) {
+            DB::rollBack();
+            return ["status" => "error", "message" => "Erro ao atualizar: " . $e->getMessage()];
+        }
+    }
+
+    public function excluir(int $id)
+    {
+        DB::beginTransaction();
+        try {
+            $catalogo = catalogos::findOrFail($id);
+            $catalogo->delete();
+
+            LogService::registrarAcao("DELETE", "catalogos", $id, "Exclusão permanente realizada.");
+
+            DB::commit();
+            return ["status" => "success", "message" => "Deletado com sucesso"];
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+public function saveItem(array $data, ?int $id = null)
+{
     DB::beginTransaction();
     try {
-      $catalogo = Catalogos::create([
-        "nome" => $request->nome,
-        "tipo_catalogo_id" => $request->tipo_catalogo_id,
-        "status_id" => $request->status_id,
-        "descricao" => $request->descricao ?? null,
-        "data_encerramento" => Carbon::createFromFormat(
-          "d/m/Y",
-          $request->data_encerramento
-        )->format("Y-m-d"),
-        "data_publicacao" => Carbon::createFromFormat(
-          "d/m/Y",
-          $request->data_publicacao
-        )->format("Y-m-d"),
-      ]);
+        $item = $id ? itens_catalogo::findOrFail($id) : new itens_catalogo();
 
-      // Registro na tabela de logs
-      LogService::registrarAcao(
-        "CREATE",
-        "catalogos",
-        $catalogo->id,
-        "Catálogo '{$catalogo->nome}' criado com sucesso."
-      );
+        // 1. Validação de Segurança: Impede a troca de produto em atualizações
+        if ($id && isset($data['produto_id']) && $data['produto_id'] != $item->produto_id) {
+            throw new Exception("Não é permitido alterar o produto de um item de catálogo já existente. Remova o item e cadastre-o novamente.");
+        }
 
-      DB::commit();
-      return $catalogo;
-    } catch (\Exception $e) {
-      DB::rollBack();
+        // Se for uma atualização, a diferença é baseada no que já existe. Se for novo, o anterior é 0.
+        $estoqueAnterior = $id ? $item->estoque_disponivel : 0;
+        $novoEstoqueCatalogo = $data["estoque_disponivel"] ?? $estoqueAnterior;
+        $diferenca = $novoEstoqueCatalogo - $estoqueAnterior;
 
-      // Log de erro no banco
-      LogService::registrarAcao(
-        "ERROR_CREATE",
-        "catalogos",
-        null,
-        $e->getMessage()
-      );
+        // 2. Preenchimento dos dados (produto_id só é definido na criação)
+        $item->fill([
+            "pontos_necessarios" => $data["pontos_necessarios"] ?? $item->pontos_necessarios,
+            "status_id"          => $data["status_id"] ?? $item->status_id,
+            "estoque_disponivel" => $novoEstoqueCatalogo,
+            "catalogo_id"        => $data["catalogo_id"] ?? $item->catalogo_id,
+        ]);
 
-      throw $e;
+        // Define o produto_id apenas se o registro for novo
+        if (!$id) {
+            $item->produto_id = $data["produto_id"];
+        }
 
-      Log::info("Catálogo criado", ["id" => $catalogo->id]);
+        // 3. Lógica de Movimentação de Estoque Geral
+        if ($diferenca != 0) {
+            $estoqueGeral = \App\Models\estoques::where('produto_id', $item->produto_id)->first();
 
-      return [
-        "status" => "success",
-        "message" => "Catálogo criado com sucesso",
-        "data" => $catalogo,
-      ];
-    } catch (\Exception $e) {
-      DB::rollBack();
-      Log::error("Erro ao criar catálogo", ["error" => $e->getMessage()]);
-      return [
-        "status" => "error",
-        "message" => "Erro ao criar catálogo",
-      ];
-    }
-  }
+            // Validação: Tem saldo no estoque geral para essa reserva? (Se a diferença for positiva, é uma saída do estoque geral)
+            if ($diferenca > 0 && (!$estoqueGeral || $estoqueGeral->quantidade < $diferenca)) {
+                throw new Exception("Saldo insuficiente no estoque geral para realizar esta reserva no catálogo.");
+            }
 
-  public function editar($request, int $id)
-  {
-    DB::beginTransaction();
-    try {
-      $catalogo = catalogos::findOrFail($id);
-      $catalogo->update([
-        "nome" => $request->nome,
-        "tipo_catalogo_id" => $request->tipo_catalogo_id,
-        "status_id" => $request->status_id,
-        "descricao" => $request->descricao ?? null,
-        "data_encerramento" => Carbon::createFromFormat(
-          "d/m/Y",
-          $request->data_encerramento
-        )->format("Y-m-d"),
-        "data_publicacao" => Carbon::createFromFormat(
-          "d/m/Y",
-          $request->data_publicacao
-        )->format("Y-m-d"),
-      ]);
+            // Se a diferença for negativa (ex: diminuiu o estoque do catálogo), o decrement com valor negativo vira soma no estoque geral.
+            if ($estoqueGeral) {
+                $estoqueGeral->decrement('quantidade', $diferenca);
+            }
 
-      // Registro na tabela de logs
-      LogService::registrarAcao(
-        "UPDATE",
-        "catalogos",
-        $catalogo->id,
-        "Catálogo ID {$id} atualizado."
-      );
+            // Registra a movimentação
+            \App\Models\movimentacao_estoque::create([
+                'produto_id'           => $item->produto_id,
+                'quantidade'           => abs($diferenca),
+                'origem_tipo'          => 'itens_catalogo',
+                'origem_id'            => $item->id ?? null,
+                'tipo_movimentacao_id' => $diferenca > 0 ? 2 : 1, // 2 = Saída (Geral -> Catálogo), 1 = Entrada (Catálogo -> Geral)
+                'usuario_responsavel'  => auth()->id(),
+            ]);
+        }
 
-      DB::commit();
-      return $catalogo;
-    } catch (\Exception $e) {
-      DB::rollBack();
+        $item->save();
 
-      LogService::registrarAcao(
-        "ERROR_UPDATE",
-        "catalogos",
-        $id,
-        $e->getMessage()
-      );
+        // 4. Vincula o ID da movimentação ao novo item criado
+        if (!$id) {
+            \App\Models\movimentacao_estoque::where('origem_tipo', 'itens_catalogo')
+                ->whereNull('origem_id')
+                ->where('produto_id', $item->produto_id)
+                ->update(['origem_id' => $item->id]);
+        }
 
-      throw $e;
+        $acao = $id ? "UPDATE_ITEM" : "CREATE_ITEM";
+        LogService::registrarAcao($acao, "itens_catalogo", $item->id, "Item processado. Estoque ajustado: " . ($diferenca > 0 ? "Reserva" : "Retorno"));
 
-      Log::info("Catálogo atualizado", ["id" => $catalogo->id]);
-
-      return [
-        "status" => "success",
-        "message" => "Catálogo atualizado com sucesso",
-        "data" => $catalogo,
-      ];
-    } catch (\Exception $e) {
-      DB::rollBack();
-      Log::error("Erro ao atualizar catálogo", ["error" => $e->getMessage()]);
-      return [
-        "status" => "error",
-        "message" => "Erro ao atualizar catálogo",
-      ];
-    }
-  }
-
-  public function excluir(int $id)
-  {
-    DB::beginTransaction();
-    try {
-      $catalogo = catalogos::findOrFail($id);
-      $catalogo->delete();
-
-      // Registro na tabela de logs
-      LogService::registrarAcao(
-        "DELETE",
-        "catalogos",
-        $id,
-        "Catálogo deletado permanentemente."
-      );
-
-      DB::commit();
-      return ["message" => "Catálogo deletado com sucesso"];
-    } catch (\Exception $e) {
-      DB::rollBack();
-
-      LogService::registrarAcao(
-        "ERROR_DELETE",
-        "catalogos",
-        $id,
-        $e->getMessage()
-      );
-
-      throw $e;
-    }
-  }
-
-  // App\Services\CatalogoService.php
-
-  public function saveItem(array $data, ?int $id = null)
-  {
-    DB::beginTransaction();
-    try {
-      if ($id) {
-        $item = \App\Models\ItensCatalogo::findOrFail($id);
-        $acao = "UPDATE_ITEM";
-        $mensagem = "Item do catálogo atualizado com sucesso!";
-      } else {
-        $item = new \App\Models\ItensCatalogo();
-        $acao = "CREATE_ITEM";
-        $mensagem = "Item adicionado ao catálogo com sucesso!";
-      }
-
-      $item->fill([
-        "preco" => $data["preco"] ?? $item->preco,
-        "pontos_necessarios" =>
-          $data["pontos_necessarios"] ?? $item->pontos_necessarios,
-        "status_id" => $data["status_id"] ?? $item->status_id,
-        "estoque_disponivel" =>
-          $data["estoque_disponivel"] ?? $item->estoque_disponivel,
-        "produto_id" => $data["produto_id"] ?? $item->produto_id,
-        "catalogo_id" => $data["catalogo_id"] ?? $item->catalogo_id,
-      ]);
-
-      $item->save();
-
-      LogService::registrarAcao($acao, "itens_catalogo", $item->id, $mensagem);
-
-      DB::commit();
-
-      return [
-        "status" => "success",
-        "message" => $mensagem,
-        "data" => $item,
-      ];
-    } catch (\Exception $e) {
-      DB::rollBack();
-
-      return [
-        "status" => "error",
-        "message" => "Erro ao processar item do catálogo.",
-        "error" => $e->getMessage(),
-      ];
-    }
-  }
-
-  public function trazerItens(int $id, $busca = null)
-  {
-    try {
-    	if (!catalogos::find($id)) {
-    		throw new Exception("nenhum catalogo encontrada.");
-    	}
-      $query = itens_catalogo::where("catalogo_id", $id);
-
-	if (!$query) {
-		throw new Exception("nenhuma item do catalogo encontrada.");
-	}
-      if ($busca) {
-        $query->whereHas("produto", function ($q) use ($busca) {
-          $q->where("nome", "like", "%" . $busca . "%");
-        });
-      }
-
-      $itens = $query->with("produto", "status")->get();
-
-      return [
-        "status" => "success",
-        "data" => $itens,
-      ];
+        DB::commit();
+        return ["status" => "success", "data" => $item];
     } catch (Exception $e) {
-      return [
-        "status" => "error",
-        "messagem" => "erro ao trazer itens do catalogo: " . $e->getMessage(),
-      ];
+        DB::rollBack();
+        return ["status" => "error", "message" => $e->getMessage()];
     }
-  }
+}
 
-  public function visualizarItens(array $ids)
-  {
-    $itens = itens_catalogo::whereIn("id", $ids)
-      ->with("produto", "status")
-      ->get();
+    public function trazerItens(int $catalogoId, $busca = null)
+    {
+        try {
+            // Verifica existência
+            $catalogo = catalogos::findOrFail($catalogoId);
 
-    if ($itens->isEmpty()) {
-      return [
-        "status" => "error",
-        "mensagem" => "Nenhum item encontrado",
-      ];
+            $query = itens_catalogo::where("catalogo_id", $catalogoId);
+
+            if ($busca) {
+                $query->whereHas("produto", function ($q) use ($busca) {
+                    $q->where("nome", "like", "%{$busca}%");
+                });
+            }
+
+            $itens = $query->with(["produto", "status"])->get();
+
+            return ["status" => "success", "data" => $itens];
+        } catch (Exception $e) {
+            return ["status" => "error", "message" => $e->getMessage()];
+        }
     }
 
-    return [
-      "status" => "success",
-      "data" => $itens,
-    ];
-  }
+    public function excluirItem(int $id)
+    {
+        DB::beginTransaction();
+        try {
+            $item = itens_catalogo::findOrFail($id);
+            $quantidadeParaDevolver = $item->estoque_disponivel;
+
+            // 1. Devolve a quantidade para o estoque geral
+            if ($quantidadeParaDevolver > 0) {
+                $estoqueGeral = \App\Models\estoques::where('produto_id', $item->produto_id)->first();
+                
+                if ($estoqueGeral) {
+                    $estoqueGeral->increment('quantidade', $quantidadeParaDevolver);
+                }
+
+                // 2. Registra a movimentação de entrada (Retorno do catálogo)
+                \App\Models\movimentacao_estoque::create([
+                    'produto_id'           => $item->produto_id,
+                    'quantidade'           => $quantidadeParaDevolver,
+                    'origem_tipo'          => 'itens_catalogo',
+                    'origem_id'            => $item->id,
+                    'tipo_movimentacao_id' => 1, // 1 = Entrada (Retorno ao Geral)
+                    'usuario_responsavel'  => auth()->id(),
+                ]);
+            }
+
+            // 3. Deleta o item
+            $item->delete();
+
+            LogService::registrarAcao("DELETE_ITEM", "itens_catalogo", $id, "Item removido e estoque devolvido ao geral.");
+
+            DB::commit();
+            return ["status" => "success", "message" => "Item removido e estoque reajustado."];
+        } catch (Exception $e) {
+            DB::rollBack();
+            return ["status" => "error", "message" => "Erro ao excluir item: " . $e->getMessage()];
+        }
+    }
 }
