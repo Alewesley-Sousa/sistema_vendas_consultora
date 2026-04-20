@@ -1,186 +1,111 @@
 <?php
 
-use App\Http\Controllers\CatalogosController;
-use App\Http\Controllers\ClientesController;
-use App\Http\Controllers\ComissoesController;
-use App\Http\Controllers\DevolucoesController;
-use App\Http\Controllers\EstoquesController;
-use App\Http\Controllers\HistoricoComissoesController;
-use App\Http\Controllers\ItensCatalogoController;
-use App\Http\Controllers\LiderController;
-use App\Http\Controllers\MetasController;
-use App\Http\Controllers\ProdutosController;
-use App\Http\Controllers\PedidosController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UsuariosController;
-use Illuminate\Foundation\Application;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use App\Http\Controllers\{
+    CatalogosController,
+    ClientesController,
+    ComissoesController,
+    DevolucoesController,
+    EstoquesController,
+    HistoricoComissoesController,
+    ItensCatalogoController,
+    LiderController,
+    MetasController,
+    ProdutosController,
+    PedidosController,
+    UsuariosController
+};
 
-// agrupa todos que usam a autenticação com token
 Route::middleware("auth:sanctum")->group(function () {
-  Route::prefix("/comissao")->group(function () {
-    // --- Rotas da Consultora ---
-    
-    // Pegar comissao atual do usuario autenticado
-    Route::get("/", [ComissoesController::class, "visualizar"]);
 
-    // pegar historico de comissoes do usuario autenticado
-    Route::get("/historico", [HistoricoComissoesController::class, "visualizarHistorico"]);
-
-    // solicitar o saque da comissão do usuario
-    Route::get("/solicitar", [ComissoesController::class, "solicitarComissao"]);
-
-
-    // --- Rotas da Distribuidora (Gestão) ---
-
-    // Listar todas as solicitações pendentes de todas as consultoras
-    Route::get("/pendentes", [ComissoesController::class, "listarPendentes"]);
-
-    // Aprovar ou Reprovar uma solicitação específica
-    // Passamos o ID da solicitação na URL e o status no corpo (ou via query)
-    Route::post("/processar/{id}", [ComissoesController::class, "processarSolicitacao"]);
-});
-
-
-  Route::prefix("/meta")->group(function () {
-    //pegar meta atual do usuario autenticado
-    Route::get("/", [MetasController::class, "metaAtual"]);
-
-    // pegar progresso atual da meta do usuario autenticado
-    Route::get("/progresso", [MetasController::class, "progressoMeta"]);
-
-    /**
-     * criar a meta da consultora selecionada
-     */
-    Route::post("/atribuir/{id}", [MetasController::class, "atribuirMeta"]);
-
-    /**
-     * ver historico de meta e ver o progresso da meta atual
-     */
-    Route::get("/historico", [
-      MetasController::class,
-      "historicoMetaProgresso",
-    ]);
-  });
-
-  Route::prefix("/cliente")->group(function () {
-    // cadastrar cliente
-    Route::post("/", [ClientesController::class, "cadastrarCliente"]);
-
-    // atualzar dados do cliente
-    Route::put("/{cliente}", [ClientesController::class, "atualizarDados"]);
-
-    // exibir um cliente
-    Route::get("/{cliente}", [ClientesController::class, "exibir"]);
-
-    // Rota de Ação (API)
-    Route::delete("/{id}", [ClientesController::class, "destroy"]);
-  });
-
-  Route::prefix("/usuario")->group(function () {
-    // cadastrar usuario
-    Route::post("/", [UsuariosController::class, "cadastrarUsuario"]);
-
-    // atualzar dados do usuario
-    Route::put("/{usuario}", [UsuariosController::class, "atualizarUsuario"]);
-
-    // exibir um usuario
-    Route::get("/{usuario}", [UsuariosController::class, "exibirUsuario"]);
-  });
-
-  Route::prefix("/catalogo")->group(function () {
-    // Listar todos os catálogos
-    Route::get("/", [CatalogosController::class, "index"]);
-
-    // Criar um novo catálogo
-    Route::post("/", [CatalogosController::class, "store"]);
-
-    // Exibir um catálogo específico
-    Route::get("/{id}", [CatalogosController::class, "show"]);
-
-    // Atualizar um catálogo
-    Route::put("/{id}", [CatalogosController::class, "update"]);
-
-    // Deletar um catálogo
-    Route::delete("/{id}", [CatalogosController::class, "destroy"]);
-
-    // Visualizar os itens do catálogo selecionado (mantendo sua rota original)
-    Route::get("/itens/{id}", [
-      ItensCatalogoController::class,
-      "visualizarItensCatalogo",
-    ]);
-  });
-
-  Route::prefix("/lider")->group(function () {
-    /**
-     * visualizar equipe
-     * email com dados de exemplo: paulo.henrique@example.com
-     * senha: senha123
-     */
-    Route::get("/equipe", [LiderController::class, "visualizarEquipe"]);
-
-    /**
-     * pegar desempenho da equipe
-     */
-    Route::get("/equipe/desempenho", [
-      LiderController::class,
-      "visualizarDesempenho",
-    ]);
-  });
-
-  Route::prefix("/pedido")->group(function () {
-    /**
-     * visualizar um pedido especifico
-     */
-    Route::get("/{pedido}", [PedidosController::class, "visualizarPedido"]);
-
-    /**
-     * editar pedido
-     */
-    Route::put("/{pedido}", [PedidosController::class, "atualizarPedido"]);
-
-    /**
-     * apagar pedido
-     */
-    Route::delete("/{id}", [PedidosController::class, "cancelarPedido"]);
-  });
-  //exibir itens selecionados
-  Route::get("/itens/{id}", [
-    ItensCatalogoController::class,
-    "visualizarItens",
-  ]);
-
-  Route::prefix("/produto")
-    ->controller(ProdutosController::class)
-    ->group(function () {
-      Route::get("/", "index");
-      Route::post("/", "store");
-      Route::get("/{id}", "show");
-      Route::put("/{id}", "update");
-      Route::delete("/{id}", "destroy");
+    // --- COMISSÕES ---
+    Route::prefix("comissao")->controller(ComissoesController::class)->group(function () {
+        Route::get("/", "visualizar");
+        Route::get("/solicitar", "solicitarComissao");
+        Route::get("/pendentes", "listarPendentes");
+        Route::post("/processar/{id}", "processarSolicitacao");
+        Route::get("/historico", [HistoricoComissoesController::class, "visualizarHistorico"]);
     });
 
-  Route::prefix("/estoque")
-    ->controller(EstoquesController::class)
-    ->group(function () {
-      Route::get("/", "index");
-      Route::post("/", "store");
-      Route::get("/{id}", "show");
-      Route::put("/{id}", "update");
-      Route::delete("/{id}", "destroy");
+    // --- METAS ---
+    Route::prefix("meta")->controller(MetasController::class)->group(function () {
+        Route::get("/", "metaAtual");
+        Route::get("/progresso", "progressoMeta");
+        Route::get("/historico", "historicoMetaProgresso");
+        Route::post("/atribuir/{id}", "atribuirMeta");
     });
 
-    Route::prefix("/devolucao")
-    ->controller(DevolucoesController::class)
-    ->group(function () {
-        // Rota para Consultora/Distribuidora solicitar
+    // --- CLIENTES ---
+    Route::prefix("cliente")->controller(ClientesController::class)->group(function () {
+        Route::post("/", "cadastrarCliente");
+        Route::get("/{cliente}", "exibir");
+        Route::put("/{cliente}", "atualizarDados");
+        Route::delete("/{id}", "destroy");
+    });
+
+    // --- USUÁRIOS ---
+    Route::prefix("usuario")->controller(UsuariosController::class)->group(function () {
+        Route::post("/", "cadastrarUsuario");
+        Route::get("/{usuario}", "exibirUsuario");
+        Route::put("/{usuario}", "atualizarUsuario");
+    });
+
+    // --- CATÁLOGOS E ITENS ---
+    Route::prefix("catalogos")->group(function () {
+        Route::controller(CatalogosController::class)->group(function () {
+            Route::get('/', 'listar');
+            Route::post('/', 'cadastrar');
+            Route::get('/{id}', 'exibir');
+            Route::put('/{id}', 'atualizar');
+            Route::delete('/{id}', 'excluir');
+        });
+
+        Route::controller(ItensCatalogoController::class)->group(function () {
+            Route::get("/{id}/itens", "visualizarItensCatalogo"); // Itens de um catálogo
+            Route::get("/itens/{id}", "visualizarItens");         // Ver item específico
+            Route::post("/itens", "store");             // Adicionar item a um catálogo
+            Route::put("/itens/{id}", "update");        // Editar preço/estoque de um item no catálogo
+            Route::delete("/itens/{id}", "destroy");
+        });
+    });
+
+    // --- PEDIDOS ---
+    Route::prefix("pedido")->controller(PedidosController::class)->group(function () {
+        Route::get("/{pedido}", "visualizarPedido");
+        Route::put("/{pedido}", "atualizarPedido");
+        Route::delete("/{id}", "cancelarPedido");
+    });
+
+    // --- PRODUTOS ---
+    Route::prefix("produto")->controller(ProdutosController::class)->group(function () {
+        Route::get("/", "index");
+        Route::post("/", "store");
+        Route::get("/{id}", "show");
+        Route::put("/{id}", "update");
+        Route::delete("/{id}", "destroy");
+    });
+
+    // --- ESTOQUE ---
+    Route::prefix("estoque")->controller(EstoquesController::class)->group(function () {
+        Route::get("/", "index");
+        Route::post("/", "store");
+        Route::get("/{id}", "show");
+        Route::put("/{id}", "update");
+        Route::delete("/{id}", "destroy");
+    });
+
+    // --- DEVOLUÇÕES ---
+    Route::prefix("devolucao")->controller(DevolucoesController::class)->group(function () {
+        Route::get("/pendentes", "pendentes");
         Route::post("/solicitar", "solicitar");
-
-        // Rotas exclusivas da Gestão (Distribuidora)
-        Route::get("/pendentes", "pendentes"); // <--- NOVA ROTA
         Route::post("/aprovar/{id}", "aprovar");
         Route::post("/rejeitar/{id}", "rejeitar");
     });
+
+    // --- LIDERANÇA / EQUIPE ---
+    Route::prefix("lider")->controller(LiderController::class)->group(function () {
+        Route::get("/equipe", "visualizarEquipe");
+        Route::get("/equipe/desempenho", "visualizarDesempenho");
+    });
+
 });
