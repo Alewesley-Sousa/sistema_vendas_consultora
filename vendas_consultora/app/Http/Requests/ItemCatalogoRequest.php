@@ -1,3 +1,4 @@
+<?php
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -19,7 +20,6 @@ class ItemCatalogoRequest extends FormRequest
             'produto_id'         => [$isPost ? 'required' : 'sometimes', 'exists:produtos,id'],
             'status_id'          => [$isPost ? 'required' : 'sometimes', 'exists:status_item_catalogo,id'],
             
-            'preco'              => 'nullable|numeric|min:0',
             'pontos_necessarios' => 'nullable|integer|min:0',
             'estoque_disponivel' => 'integer|min:0',
         ];

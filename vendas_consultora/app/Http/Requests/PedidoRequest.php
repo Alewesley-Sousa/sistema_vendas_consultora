@@ -42,7 +42,7 @@ class PedidoRequest extends FormRequest
         		Rule::in([$pedidoId]) // garante que seja igual ao pedido atual
     		],
             'itens' => 'required|array',
-            'itens.*.produto_id' => 'required|exists:produtos,id',
+            'itens.*.item_catalogo_id' => 'required|exists:produtos,id',
             'itens.*.quantidade' => 'required|integer|min:1',
             'itens.*.preco_unitario' => 'required|numeric|min:1'
         ];
@@ -51,7 +51,7 @@ class PedidoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'itens.*.produto_id.required' => 'é obrigatório selecionar um produto.',
+            'itens.*.item_catalogo_id.required' => 'é obrigatório selecionar um produto.',
             'itens.*.quantidade.required' => 'é obrigatório informar a quantidade.',
             'itens.*.quantidade.min' => 'A quantidade deve ser pelo menos 1.',
             'itens.*.preco_unitario.required' => 'é obrigatório informar o preço unitário.',
