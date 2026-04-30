@@ -145,8 +145,21 @@ class ItensResgateSeeder extends Seeder
             ]
         ];
 
-        foreach ($itensR as $itemR) {
-            itens_resgate::forceCreate($itemR);
+                foreach ($itensR as $itemR) {
+            // 1. Verifica se o Resgate (pai) existe no banco
+            $resgateExiste = \App\Models\resgates::where('id', $itemR['resgate_id'])->exists();
+            
+            // 2. Verifica se o Item do Catálogo existe
+            // (Assumindo que o model seja ItemCatalogo ou similar)
+            $itemExiste = \App\Models\itens_catalogo::where('id', $itemR['item_catalogo_id'])->exists();
+
+            if ($resgateExiste && $itemExiste) {
+                itens_resgate::forceCreate($itemR);
+            } else {
+                // Se o resgate não foi criado (ex: resgate do ID 7), ele apenas pula este item
+                continue;
+            }
         }
+
     }
 }

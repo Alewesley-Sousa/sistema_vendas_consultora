@@ -1,16 +1,16 @@
 <?php
 /**
  * Autor: Alewesley-Sousa
- * Data: 01/03/2026
- * Descrição: seeder responsavel por criar dados iniciais da tabela referente.
+ * Data: 21/04/2026
+ * Descrição: Seeder responsável por criar a estrutura hierárquica completa para testes de desempenho de rede.
  */
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\usuarios;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UsuariosSeeder extends Seeder
 {
@@ -19,39 +19,52 @@ class UsuariosSeeder extends Seeder
      */
     public function run(): void
     {
+        // Limpa a tabela para evitar IDs bagunçados (Opcional, mas recomendado para testes)
+        // DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // usuarios::truncate();
+        // DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         $usuarios = [
             // Distribuidora
-            ['nome' => 'Maria Silva', 'cargo' => 'distribuidora', 'cpf' => '11122233344', 'email' => 'maria.silva@example.com', 'telefone' => '85999990001', 'senha' => Hash::make('senha123'), 'cep' => '60000000', 'consultora_id' => null, 'status_id' => 1],
+            ['id' => 1, 'nome' => 'Maria Silva', 'cargo' => 'distribuidora', 'cpf' => '11122233344', 'email' => 'maria.silva@example.com', 'telefone' => '85999990001', 'senha' => Hash::make('senha123'), 'cep' => '60000000', 'consultora_id' => null, 'status_id' => 1],
 
-            // Consultoras
-            ['nome' => 'João Pereira', 'cargo' => 'consultora', 'cpf' => '22233344455', 'email' => 'alewesley1234@gmail.com', 'telefone' => '85999990002', 'senha' => Hash::make('senha123'), 'cep' => '60000001', 'consultora_id' => null, 'status_id' => 1],
+            // LÍDER DA REDE EM TESTE (João Pereira)
+            ['id' => 2, 'nome' => 'João Pereira', 'cargo' => 'consultora', 'cpf' => '22233344455', 'email' => 'alewesley1234@gmail.com', 'telefone' => '85999990002', 'senha' => Hash::make('senha123'), 'cep' => '60000001', 'consultora_id' => null, 'status_id' => 1],
+
+            // Consultoras Aleatórias
             ['nome' => 'Ana Costa', 'cargo' => 'consultora', 'cpf' => '33344455566', 'email' => 'ana.costa@example.com', 'telefone' => '85999990003', 'senha' => Hash::make('senha123'), 'cep' => '60000002', 'consultora_id' => null, 'status_id' => 2],
             ['nome' => 'Carlos Souza', 'cargo' => 'consultora', 'cpf' => '44455566677', 'email' => 'carlos.souza@example.com', 'telefone' => '85999990004', 'senha' => Hash::make('senha123'), 'cep' => '60000003', 'consultora_id' => null, 'status_id' => 1],
-            ['nome' => 'Fernanda Lima', 'cargo' => 'consultora', 'cpf' => '55566677788', 'email' => 'fernanda.lima@example.com', 'telefone' => '85999990005', 'senha' => Hash::make('senha123'), 'cep' => '60000004', 'consultora_id' => null, 'status_id' => 2],
+            ['nome' => 'Fernanda Lima', 'cargo' => 'consultora', 'cpf' => '55566677788', 'email' => 'fernanda.lima@example.com', 'telefone' => '85999990005', 'senha' => Hash::make('senha123'), 'cep' => '60000004', 'consultora_id' => null, 'status_id' => 3],
             ['nome' => 'Lucas Martins', 'cargo' => 'consultora', 'cpf' => '66677788899', 'email' => 'lucas.martins@example.com', 'telefone' => '85999990006', 'senha' => Hash::make('senha123'), 'cep' => '60000005', 'consultora_id' => null, 'status_id' => 1],
-            ['nome' => 'Patrícia Gomes', 'cargo' => 'consultora', 'cpf' => '77788899900', 'email' => 'patricia.gomes@example.com', 'telefone' => '85999990007', 'senha' => Hash::make('senha123'), 'cep' => '60000006', 'consultora_id' => null, 'status_id' => 2],
-            ['nome' => 'Ricardo Nunes', 'cargo' => 'consultora', 'cpf' => '88899900011', 'email' => 'ricardo.nunes@example.com', 'telefone' => '85999990008', 'senha' => Hash::make('senha123'), 'cep' => '60000007', 'consultora_id' => null, 'status_id' => 1],
-            ['nome' => 'Beatriz Melo', 'cargo' => 'consultora', 'cpf' => '99900011122', 'email' => 'beatriz.melo@example.com', 'telefone' => '85999990009', 'senha' => Hash::make('senha123'), 'cep' => '60000008', 'consultora_id' => null, 'status_id' => 2],
-            ['nome' => 'Felipe Araújo', 'cargo' => 'consultora', 'cpf' => '00011122233', 'email' => 'felipe.araujo@example.com', 'telefone' => '85999990010', 'senha' => Hash::make('senha123'), 'cep' => '60000009', 'consultora_id' => null, 'status_id' => 1],
-            ['nome' => 'Larissa Monteiro', 'cargo' => 'consultora', 'cpf' => '12123234354', 'email' => 'larissa.monteiro@example.com', 'telefone' => '85999990011', 'senha' => Hash::make('senha123'), 'cep' => '60000010', 'consultora_id' => null, 'status_id' => 2],
-            ['nome' => 'Daniel Ribeiro', 'cargo' => 'consultora', 'cpf' => '23234345465', 'email' => 'daniel.ribeiro@example.com', 'telefone' => '85999990012', 'senha' => Hash::make('senha123'), 'cep' => '60000011', 'consultora_id' => null, 'status_id' => 1],
 
-            //lider
-            ['nome' => 'Paulo Henrique', 'cargo' => 'lider', 'cpf' => '78789890910', 'email' => 'paulo.henrique@example.com', 'telefone' => '85999990017', 'senha' => Hash::make('senha123'), 'cep' => '60000016', 'consultora_id' => null, 'status_id' => 1],
-            ['nome' => 'Sofia Mendes', 'cargo' => 'consultora', 'cpf' => '34345456576', 'email' => 'sofia.mendes@example.com', 'telefone' => '85999990013', 'senha' => Hash::make('senha123'), 'cep' => '60000012', 'consultora_id' => 13, 'status_id' => 2],
+            // Líder Paulo e sua rede (ID 13)
+            ['id' => 13, 'nome' => 'Paulo Henrique', 'cargo' => 'lider', 'cpf' => '78789890910', 'email' => 'paulo.henrique@example.com', 'telefone' => '85999990017', 'senha' => Hash::make('senha123'), 'cep' => '60000016', 'consultora_id' => null, 'status_id' => 1],
+            ['nome' => 'Sofia Mendes', 'cargo' => 'consultora', 'cpf' => '34345456576', 'email' => 'sofia.mendes@example.com', 'telefone' => '85999990013', 'senha' => Hash::make('senha123'), 'cep' => '60000012', 'consultora_id' => 13, 'status_id' => 1],
             ['nome' => 'Gabriel Fernandes', 'cargo' => 'consultora', 'cpf' => '45456567687', 'email' => 'gabriel.fernandes@example.com', 'telefone' => '85999990014', 'senha' => Hash::make('senha123'), 'cep' => '60000013', 'consultora_id' => 13, 'status_id' => 1],
-            ['nome' => 'Isabela Castro', 'cargo' => 'consultora', 'cpf' => '56567678798', 'email' => 'isabela.castro@example.com', 'telefone' => '85999990015', 'senha' => Hash::make('senha33'), 'cep' => '60000014', 'consultora_id' => 13, 'status_id' => 2],
-            ['nome' => 'Thiago Moreira', 'cargo' => 'consultora', 'cpf' => '67678789809', 'email' => 'thiago.moreira@example.com', 'telefone' => '85999990016', 'senha' => Hash::make('senha123'), 'cep' => '60000015', 'consultora_id' => 13, 'status_id' => 1],
 
-            // Líderes
+            // OUTROS LÍDERES
             ['nome' => 'Juliana Alves', 'cargo' => 'lider', 'cpf' => '89890901021', 'email' => 'juliana.alves@example.com', 'telefone' => '85999990018', 'senha' => Hash::make('senha123'), 'cep' => '60000017', 'consultora_id' => null, 'status_id' => 2],
             ['nome' => 'Roberto Dias', 'cargo' => 'lider', 'cpf' => '90901012132', 'email' => 'roberto.dias@example.com', 'telefone' => '85999990019', 'senha' => Hash::make('senha123'), 'cep' => '60000018', 'consultora_id' => null, 'status_id' => 1],
-            ['nome' => 'Camila Rocha', 'cargo' => 'lider', 'cpf' => '01012123243', 'email' => 'camila.rocha@example.com', 'telefone' => '85999990020', 'senha' => Hash::make('senha123'), 'cep' => '60000019', 'consultora_id' => null, 'status_id' => 2],
+
+            // ===============================================================
+            // REFEITURA DA REDE DO JOÃO PEREIRA (ID 2) - PROFUNDIDADE
+            // ===============================================================
+
+            // NÍVEL 1: Diretos do João
+            ['id' => 21, 'nome' => 'Consultora Nivel 1 - A', 'cargo' => 'consultora', 'cpf' => '99911122233', 'email' => 'teste1.rede@example.com', 'telefone' => '85999990121', 'senha' => Hash::make('senha123'), 'cep' => '60000121', 'consultora_id' => 2, 'status_id' => 1],
+            ['id' => 22, 'nome' => 'Consultora Nivel 1 - B', 'cargo' => 'consultora', 'cpf' => '99922233344', 'email' => 'teste2.rede@example.com', 'telefone' => '85999990122', 'senha' => Hash::make('senha123'), 'cep' => '60000122', 'consultora_id' => 2, 'status_id' => 1],
+            ['id' => 23, 'nome' => 'Consultora Nivel 1 - C', 'cargo' => 'consultora', 'cpf' => '99933344455', 'email' => 'teste3.rede@example.com', 'telefone' => '85999990123', 'senha' => Hash::make('senha123'), 'cep' => '60000123', 'consultora_id' => 2, 'status_id' => 1],
+
+            // NÍVEL 2: Indiretos (Filhos da Consultora A)
+            ['id' => 24, 'nome' => 'Consultora Nivel 2 - Sub A1', 'cargo' => 'consultora', 'cpf' => '88811122233', 'email' => 'sub1.rede@example.com', 'telefone' => '85999990124', 'senha' => Hash::make('senha123'), 'cep' => '60000124', 'consultora_id' => 21, 'status_id' => 1],
+            ['id' => 25, 'nome' => 'Consultora Nivel 2 - Sub A2', 'cargo' => 'consultora', 'cpf' => '88822233344', 'email' => 'sub2.rede@example.com', 'telefone' => '85999990125', 'senha' => Hash::make('senha123'), 'cep' => '60000125', 'consultora_id' => 21, 'status_id' => 1],
+
+            // NÍVEL 3: Bisneto do João (Filho da Sub A1)
+            ['id' => 26, 'nome' => 'Consultora Nivel 3 - Bisneta', 'cargo' => 'consultora', 'cpf' => '77711122233', 'email' => 'bisneta@example.com', 'telefone' => '85999990126', 'senha' => Hash::make('senha123'), 'cep' => '60000126', 'consultora_id' => 24, 'status_id' => 1],
         ];
 
         foreach ($usuarios as $user) {
-            // Usamos forceCreate porque 'cargo' está no seu $guarded.
-            // O forceCreate ignora o guarded apenas nesta execução.
+            // forceCreate ignora proteção de $guarded para o campo 'cargo'
             usuarios::forceCreate($user);
         }
     }

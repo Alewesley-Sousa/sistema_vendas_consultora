@@ -246,8 +246,24 @@ class HistoricoComissoesSeeder extends Seeder
             ]
         ];
         
-        foreach ($historicosComissoes as $HC) {
-            historico_comissoes::forceCreate($HC);
+                foreach ($historicosComissoes as $HC) {
+            // 1. Verifica se a consultora existe
+            $usuarioExiste = \App\Models\usuarios::where('id', $HC['consultora_id'])->exists();
+            
+            // 2. Verifica se o pedido existe (se não for nulo)
+            $pedidoExiste = true;
+            if ($HC['pedido_id'] !== null) {
+                $pedidoExiste = \App\Models\pedidos::where('id', $HC['pedido_id'])->exists();
+            }
+
+            // 3. Só insere se ambos forem válidos para o banco
+            if ($usuarioExiste && $pedidoExiste) {
+                historico_comissoes::forceCreate($HC);
+            } else {
+                // Opcional: logar ou ignorar os IDs que não existem no seu UsuariosSeeder atual
+                continue; 
+            }
         }
+
     }
 }

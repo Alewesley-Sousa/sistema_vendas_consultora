@@ -59,14 +59,14 @@ class ItensCatalogoSeeder extends Seeder
                 'catalogo_id' => 2,
                 'produto_id' => 2
             ],
-            [,
+            [
                 'pontos_necessarios' => 1300,
                 'status_id' => 1,
                 'estoque_disponivel' => 40,
                 'catalogo_id' => 2,
                 'produto_id' => 7
             ],
-            [,
+            [
                 'pontos_necessarios' => 1400,
                 'status_id' => 2,
                 'estoque_disponivel' => 0,

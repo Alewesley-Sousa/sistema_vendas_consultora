@@ -45,9 +45,15 @@ Route::middleware("auth:sanctum")->group(function () {
 
     // --- USUÁRIOS ---
     Route::prefix("usuario")->controller(UsuariosController::class)->group(function () {
-        Route::post("/", "cadastrarUsuario");
-        Route::get("/{usuario}", "exibirUsuario");
-        Route::put("/{usuario}", "atualizarUsuario");
+Route::post("/", "cadastrarUsuario");
+    
+    // 1º: Rotas de texto fixo (específicas)
+    Route::get('/pre-cadastros', "listarPreCadastros");
+    
+    // 2º: Rotas com parâmetros (genéricas)
+    Route::get("/{usuario}", "exibirUsuario");
+    Route::put("/{usuario}", "atualizarUsuario");
+    Route::post('/{id}/aprovacao', "aprovarOuRecusar");
     });
 
     // --- CATÁLOGOS E ITENS ---
@@ -100,6 +106,19 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::post("/solicitar", "solicitar");
         Route::post("/aprovar/{id}", "aprovar");
         Route::post("/rejeitar/{id}", "rejeitar");
+    });
+
+    // --- RELATÓRIOS ---
+    Route::prefix("relatorios")->controller(\App\Http\Controllers\RelatorioController::class)->group(function () {
+        Route::get("/vendas-pessoais", "vendasPessoais");
+        Route::get("/comissoes-detalhadas", "comissoesDetalhadas");
+        Route::get("/desempenho-rede", "desempenhoRede");
+        Route::get("/ranking-consultoras", "rankingConsultoras");
+        Route::get("/analise-produtos", "analiseProdutos");
+        Route::get("/metas-bonificacoes", "metasBonificacoes");
+        Route::get("/retencao-clientes", "retencaoClientes");
+        Route::get("/crescimento-rede", "crescimentoRede");
+        Route::get("/financeiro-consolidado", "financeiroConsolidado");
     });
 
     // --- LIDERANÇA / EQUIPE ---

@@ -379,8 +379,12 @@ class LogsSeeder extends Seeder
             ]
         ];
 
-        foreach ($logs as $log) {
-            logs::forceCreate($log);
+                foreach ($logs as $log) {
+            // Verifica se o usuário que realizou a ação existe
+            if (\App\Models\usuarios::where('id', $log['usuario_id'])->exists()) {
+                logs::forceCreate($log);
+            }
         }
+
     }
 }

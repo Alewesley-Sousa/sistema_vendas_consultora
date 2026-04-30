@@ -1,34 +1,71 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Services;
 
-return new class extends Migration
+use App\Models\pagamentos;
+use App\Models\pedidos;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use App\Services\LogService;
+use Illuminate\Support\Str;
+
+class FinanceiroService
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function confirmarPagamentoSimulado($pedidoId)
     {
-        Schema::create('pagamentos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('pedido_id')->constrained('pedidos')->cascadeOnDelete();
-            $table->enum('tipo_pagamento',['credito', 'debito', 'pix']);
-            $table->decimal('valor', 10, 2);
-            $table->enum('status', ['pendente', 'recusado', 'aprovado', 'estornado', 'em_analise']);
-            $table->string('codigo_transacao', 100);
-            $table->timestamp('data_solicitacao')->useCurrent();
-            $table->timestamp('data_confirmacao')->nullable();
-            $table->foreignId('usuario_responsavel')->nullable()->constrained('usuarios');
-        });
-    }
+        DB::beginTransaction();
+        try {
+            $pedido = pedidos::find($pedidoId);
+            if (!$pedido) {
+                throw new Exception("Pedido não encontrado.");
+            }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('pagamentos');
+            // Evitar pagar um pedido que já foi cancelado ou já está pago
+            if ($pedido->status_id === 7) {
+                throw new Exception("Este pedido já foi cancelado e não pode ser pago.");
+            }
+            if ($pedido->status_id === 2) {
+                throw new Exception("Este pedido já consta como pago.");
+            }
+
+            // 1. Criar ou Atualizar o registro seguindo sua MIGRATION
+            $pagamento = pagamentos::updateOrCreate(
+                ['pedido_id' => $pedido->id],
+                [
+                    'tipo_pagamento'    => $pedido->tipo_pagamento, // credito, debito, pix
+                    'valor'             => $pedido->valor_total,
+                    'status'            => 'aprovado',
+                    'codigo_transacao'  => 'SIMULADO-' . strtoupper(Str::random(10)),
+                    'data_confirmacao'  => now(),
+                    // 'usuario_responsavel' ficaria null pois foi via sistema (cliente)
+                ]
+            );
+
+            // 2. Atualizar o status do Pedido para "Pago/Aprovado" (status_id 2)
+            $pedido->status_id = 2; 
+            $pedido->save();
+
+            LogService::registrarAcao(
+                "Simulação de pagamento aprovada para o pedido #$pedido->id",
+                "Pagamentos",
+                $pedido->id,
+                "O cliente clicou no botão de simulação de pagamento"
+            );
+
+            DB::commit();
+
+            return [
+                'status' => 'success', 
+                'mensagem' => 'Pagamento simulado com sucesso!',
+                'transacao' => $pagamento->codigo_transacao
+            ];
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return [
+                'status' => 'error', 
+                'mensagem' => $e->getMessage()
+            ];
+        }
     }
-};
+}

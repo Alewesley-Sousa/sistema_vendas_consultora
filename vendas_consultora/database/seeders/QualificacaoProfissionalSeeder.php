@@ -136,8 +136,12 @@ class QualificacaoProfissionalSeeder extends Seeder
             ]
         ];
 
-        foreach ($qualificacoes as $qualificacao) {
-            qualificacao_profissional::forceCreate($qualificacao);
+                foreach ($qualificacoes as $qualificacao) {
+            // Verifica se a consultora existe antes de tentar inserir a qualificação
+            if (\App\Models\usuarios::where('id', $qualificacao['consultora_id'])->exists()) {
+                qualificacao_profissional::forceCreate($qualificacao);
+            }
         }
+
     }
 }

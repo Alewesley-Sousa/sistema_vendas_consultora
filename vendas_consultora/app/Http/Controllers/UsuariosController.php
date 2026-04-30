@@ -63,9 +63,24 @@ class UsuariosController extends Controller
     public function destroy($id): JsonResponse
     {
         $this->usuarioService->destroy($id);
-    
+  
         return response()->json([
             'message' => 'Usuário removido com sucesso!'
         ], 200);
+    }
+
+    public function listarPreCadastros(): JsonResponse
+    {
+        $resultado = $this->usuarioService->visualizarSolicitacoesDeNovasConsultora();
+        
+        return response()->json($resultado, $resultado['status'] === 'success' ? 200 : 400);
+    }
+
+    public function aprovarOuRecusar($id, Request $request): JsonResponse
+    {
+        $decisao = $request->input('decisao', 0); // 1=aprovar, 0=recusar
+        $resultado = $this->usuarioService->aprovarOuRecusarCadastro((int)$id, (int)$decisao);
+        
+        return response()->json($resultado, $resultado['status'] === 'success' ? 200 : 400);
     }
 }

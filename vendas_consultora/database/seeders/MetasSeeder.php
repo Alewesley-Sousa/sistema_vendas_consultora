@@ -14,6 +14,15 @@ class MetasSeeder extends Seeder
     public function run(): void
     {
         $metas = [
+            // Adicionando uma meta específica para ABRIL de 2026 
+            // para garantir que o dashboard mostre dados agora
+            [
+                'consultora_id' => 2,
+                'lider_id' => 14,
+                'valor_meta' => 10000.00,
+                'data_referencia' => '2026-04-30',
+                'status_id' => 1
+            ],
             [
                 'consultora_id' => 2,
                 'lider_id' => 17,
@@ -48,13 +57,6 @@ class MetasSeeder extends Seeder
                 'valor_meta' => 2500.00,
                 'data_referencia' => '2026-03-31',
                 'status_id' => 2
-            ],
-            [
-                'consultora_id' => 7,
-                'lider_id' => 19,
-                'valor_meta' => 1200.00,
-                'data_referencia' => '2026-03-31',
-                'status_id' => 1
             ],
             [
                 'consultora_id' => 8,
@@ -118,11 +120,45 @@ class MetasSeeder extends Seeder
                 'valor_meta' => 2400.00,
                 'data_referencia' => '2026-08-31',
                 'status_id' => 1
+            ],
+            [
+                'consultora_id' => 2,
+                'lider_id' => 14,
+                'valor_meta' => 3000.00,
+                'data_referencia' => '2026-10-31',
+                'status_id' => 2
+            ],
+            [
+                'consultora_id' => 21,
+                'lider_id' => 14,
+                'valor_meta' => 500.00,
+                'data_referencia' => '2026-10-31',
+                'status_id' => 2
+            ],
+            [
+                'consultora_id' => 22,
+                'lider_id' => 14,
+                'valor_meta' => 2000.00,
+                'data_referencia' => '2026-10-31',
+                'status_id' => 2
+            ],
+            [
+                'consultora_id' => 23,
+                'lider_id' => 14,
+                'valor_meta' => 2200.00,
+                'data_referencia' => '2026-10-31',
+                'status_id' => 2
             ]
         ];
 
         foreach ($metas as $meta) {
-            metas::forceCreate($meta);
+            // Verifica existência de ambos para evitar erros de Foreign Key no SQLite
+            $consultoraExiste = \App\Models\usuarios::where('id', $meta['consultora_id'])->exists();
+            $liderExiste = \App\Models\usuarios::where('id', $meta['lider_id'])->exists();
+
+            if ($consultoraExiste && $liderExiste) {
+                metas::forceCreate($meta);
+            }
         }
     }
 }

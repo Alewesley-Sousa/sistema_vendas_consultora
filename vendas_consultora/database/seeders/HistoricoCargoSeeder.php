@@ -99,8 +99,18 @@ class HistoricoCargoSeeder extends Seeder
             ]
         ];
 
-        foreach ($historicos as $historico) {
-            historico_cargo::forceCreate($historico);
+                foreach ($historicos as $historico) {
+            // Verifica se a consultora existe
+            $consultoraExiste = \App\Models\usuarios::where('id', $historico['consultora_id'])->exists();
+            
+            // Verifica se a qualificação profissional existe
+            $qualificacaoExiste = \App\Models\qualificacao_profissional::where('id', $historico['qualificacao_profissional_id'])->exists();
+
+            if ($consultoraExiste && $qualificacaoExiste) {
+                historico_cargo::forceCreate($historico);
+            }
+            // Se um dos dois não existir (como o caso do ID 7), ele apenas ignora e continua
         }
+
     }
 }

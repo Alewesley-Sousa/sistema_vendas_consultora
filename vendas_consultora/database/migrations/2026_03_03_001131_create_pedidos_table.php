@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('usuario_id')->constrained('usuarios');
             $table->foreignId('cliente_id')->constrained('clientes');
             $table->string('link')->nullable();
