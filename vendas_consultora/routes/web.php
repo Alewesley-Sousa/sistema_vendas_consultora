@@ -74,3 +74,7 @@ Route::get('/usuario/edicao/{id}', [UsuariosController::class, 'formulario'])->n
 Route::get('/catalogo', [CatalogosController::class, 'index'])->middleware('auth')->name('catalogo.visualizar');
 
 Route::get('/clientes', [ClientesController::class, 'listar'])->name('cliente.listar')->middleware(['auth', 'cargo:distribuidora']);
+
+// Rota pública para o cliente visualizar o pedido via link/UUID
+Route::get('/pedido/rastreio/{uuid}', [App\Http\Controllers\PedidosController::class, 'exibirPedidoCliente'])
+    ->name('cliente.pedido.montado');

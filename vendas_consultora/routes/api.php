@@ -77,9 +77,11 @@ Route::post("/", "cadastrarUsuario");
 
     // --- PEDIDOS ---
     Route::prefix("pedido")->controller(PedidosController::class)->group(function () {
+    	Route::post("/", "store");
         Route::get("/{pedido}", "visualizarPedido");
         Route::put("/{pedido}", "atualizarPedido");
         Route::delete("/{id}", "cancelarPedido");
+        Route::get("/{id}/link", "gerarLink");
     });
 
     // --- PRODUTOS ---

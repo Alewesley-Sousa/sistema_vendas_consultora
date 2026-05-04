@@ -38,202 +38,214 @@ public function listarPendentes()
      * Solicita uma nova devolução com validações de status e prazo
      */
     public function solicitarDevolucao(array $data)
-    {
-        DB::beginTransaction();
-        try {
-            $pedidoId = $data['pedido_id'];
-            $existePendente = devolucoes::where('pedido_id', $pedidoId)
-                ->where('status_id', 1)
-                ->exists();
+{
+    DB::beginTransaction();
+    try {
+        $pedidoId = $data['pedido_id'];
+        
+        // 1. Busca o pedido para validar status e data
+        $pedido = pedidos::find($pedidoId);
 
-            // 1. Busca o pedido para validar status e data
-            $pedido = pedidos::find($pedidoId);
+        if (!$pedido) {
+            throw new Exception('Pedido não encontrado.');
+        }
 
-            if (!$pedido) {
-                return [
-                    'status'  => 'error',
-                    'message' => 'Pedido não encontrado.'
-                ];
-            }
+        // 2. Validação: Status deve ser 6 (Entregue)
+        if ($pedido->status_id !== 6) {
+            throw new Exception('Apenas pedidos com status "Entregue" podem ter devolução solicitada.');
+        }
 
-            // 2. Validação: Status deve ser 6 (Entregue)
-            if ($pedido->status_id !== 6) {
-                return [
-                    'status'  => 'error',
-                    'message' => 'Apenas pedidos com status "Entregue" podem ter devolução solicitada.'
-                ];
-            }
+        // 3. Validação: Prazo de 7 dias
+        $diasPassados = $pedido->updated_at->diffInDays(now());
+        if ($diasPassados > 7) {
+            throw new Exception('O prazo para solicitação de devolução (7 dias) expirou.');
+        }
 
-            // 3. Validação: Prazo de 7 dias após a entrega (updated_at do status 6)
-            // diffInDays compara a data atual com a data da última atualização
-            if ($pedido->updated_at->diffInDays(now()) > 7) {
-                return [
-                    'status'  => 'error',
-                    'message' => 'O prazo para solicitação de devolução (7 dias após a entrega) expirou.'
-                ];
-            }
+        // 4. Verificando se já existe solicitação pendente
+        $existePendente = devolucoes::where('pedido_id', $pedidoId)
+            ->where('status_id', 1)
+            ->exists();
 
-            // 4. Validação: Verificando se já existe solicitação pendente
-            if ($existePendente) {
-                return [
-                    'status'  => 'error',
-                    'message' => 'Já existe uma solicitação de devolução pendente para este pedido.'
-                ];
-            }
+        if ($existePendente) {
+            throw new Exception('Já existe uma solicitação de devolução pendente para este pedido.');
+        }
 
-            // 5. Criação da Devolução Pai
-            $devolucao = devolucoes::create([
-                'pedido_id'           => $pedidoId,
-                'cliente_id'          => $data['cliente_id'],
-                'motivo'              => $data['motivo'] ?? null,
-                'tipo_devolucao_id'   => $data['tipo_devolucao_id'],
-                'status_id'           => 1, // Pendente
-                'data_solicitacao'    => now(),
-                'usuario_responsavel' => null, // Será preenchido na aprovação
-            ]);
+        // 5. Criação da Devolução
+        $devolucao = devolucoes::create([
+            'pedido_id'           => $pedidoId,
+            'cliente_id'          => $data['cliente_id'],
+            'motivo'              => $data['motivo'] ?? 'Devolução Automática (Dentro do prazo)',
+            'tipo_devolucao_id'   => $data['tipo_devolucao_id'],
+            'status_id'           => 1, // Começa pendente para o registro
+            'data_solicitacao'    => now(),
+        ]);
 
-            // 6. Lógica de Itens Parciais (tipo_devolucao_id = 1)
-            if ($data['tipo_devolucao_id'] == 1 && isset($data['itens'])) {
-                foreach ($data['itens'] as $item) {
-                    $itemPedido = itens_pedido::where('pedido_id', $pedidoId)
-                        ->where('id', $item['item_pedido_id'])
-                        ->firstOrFail();
+        // 6. Lógica de Itens Parciais
+        if ($data['tipo_devolucao_id'] == 1 && isset($data['itens'])) {
+            foreach ($data['itens'] as $item) {
+                $itemPedido = itens_pedido::where('pedido_id', $pedidoId)
+                    ->where('id', $item['item_pedido_id'])
+                    ->firstOrFail();
 
-                    if ($item['quantidade'] > $itemPedido->quantidade) {
-                        throw new Exception("Quantidade excedente no item #{$item['item_pedido_id']}.");
-                    }
-
-                    itens_devolucao::create([
-                        'item_pedido_id' => $item['item_pedido_id'],
-                        'devolucao_id'   => $devolucao->id,
-                        'quantidade'     => $item['quantidade'],
-                        'subtotal'       => $item['quantidade'] * $itemPedido->preco_unitario,
-                    ]);
+                if ($item['quantidade'] > $itemPedido->quantidade) {
+                    throw new Exception("Quantidade excedente no item #{$item['item_pedido_id']}.");
                 }
+
+                itens_devolucao::create([
+                    'item_pedido_id' => $item['item_pedido_id'],
+                    'devolucao_id'   => $devolucao->id,
+                    'quantidade'     => $item['quantidade'],
+                    'subtotal'       => $item['quantidade'] * $itemPedido->preco_unitario,
+                ]);
             }
+        }
 
-            // 7. Registro de Log
-            LogService::registrarAcao(
-                'CREATE',
-                'devolucoes',
-                $devolucao->id,
-                "Solicitação de devolução criada para o pedido #{$pedidoId} (Status: Entregue)."
-            );
+        // 7. Registro de Log da Solicitação
+        LogService::registrarAcao(
+            'CREATE',
+            'devolucoes',
+            $devolucao->id,
+            "Solicitação de devolução criada para o pedido #{$pedidoId}."
+        );
 
-            DB::commit();
+        // FINALIZA A CRIAÇÃO
+        DB::commit();
 
+        // --- APROVAÇÃO AUTOMÁTICA ---
+        // Como está no prazo de 7 dias, chamamos o método de aprovação imediatamente.
+        // Usamos o ID do próprio usuário logado (consultora/lider) ou um ID de sistema (null).
+        $resultadoAprovacao = $this->aprovarDevolucao($devolucao->id, -1;
+
+        if ($resultadoAprovacao['status'] === 'success') {
             return [
                 'status'  => 'success',
-                'message' => 'Solicitação enviada! Analisaremos o seu pedido em breve.'
-            ];
-        } catch (Exception $e) {
-            DB::rollBack();
-            return [
-                'status'  => 'error',
-                'message' => 'Falha ao processar devolução: ' . $e->getMessage()
+                'message' => 'Devolução solicitada e aprovada automaticamente por estar dentro do prazo!'
             ];
         }
+
+        return $resultadoAprovacao;
+
+    } catch (Exception $e) {
+        DB::rollBack();
+        return [
+            'status'  => 'error',
+            'message' => 'Falha ao processar devolução: ' . $e->getMessage()
+        ];
     }
+}
+
 
     /**
      * Aprova uma devolução e retorna os itens ao estoque
      */
-    public function aprovarDevolucao(int $id, int $usuarioResponsavelId)
-    {
-        DB::beginTransaction();
-        try {
-            // 1. Carrega a devolução com os itens e o pedido (e seus itens)
-            $devolucao = devolucoes::with(['itensDevolucao.itemPedido', 'pedido.itensPedidos'])->findOrFail($id);
+    public function aprovarDevolucao(int $id, int $usuarioResponsavelId = -1)
+{
+    DB::beginTransaction();
+    try {
+        // 1. Carrega a devolução com os itens e o pedido
+        $devolucao = devolucoes::with(['itensDevolucao.itemPedido', 'pedido.itensPedidos'])->findOrFail($id);
 
-            if (Auth::user()->cargo !== 'distribuidora') {
-                return [
-                    'status'  => 'error',
-                    'message' => 'Acesso negado. Apenas distribuidoras podem aprovar devoluções.'
-                ];
-            }
-
-            if ($devolucao->status_id !== 1) {
-                return [
-                    'status'  => 'error',
-                    'message' => 'Esta devolução já foi processada ou não está mais pendente.'
-                ];
-            }
-
-            // 2. Determinar quais itens devolver ao estoque
-            $itensParaEstornar = [];
-
-            if ($devolucao->tipo_devolucao_id == 2) {
-                // DEVOLUÇÃO TOTAL: Pega todos os itens do pedido original
-                foreach ($devolucao->pedido->itensPedidos as $itemPedido) {
-                    $itensParaEstornar[] = [
-                        'produto_id' => $itemPedido->produto_id,
-                        'quantidade' => $itemPedido->quantidade
-                    ];
-                }
-            } else {
-                // DEVOLUÇÃO PARCIAL: Pega apenas os itens registrados na devolução
-                foreach ($devolucao->itensDevolucao as $itemDevolucao) {
-                    $itensParaEstornar[] = [
-                        'produto_id' => $itemDevolucao->itemPedido->produto_id,
-                        'quantidade' => $itemDevolucao->quantidade
-                    ];
-                }
-            }
-
-            // 3. Processar a entrada no estoque para cada item
-            foreach ($itensParaEstornar as $item) {
-                // Atualiza o saldo na tabela 'estoques'
-                $estoque = \App\Models\estoques::where('produto_id', $item['produto_id'])->first();
-
-                if ($estoque) {
-                    $estoque->increment('quantidade', $item['quantidade']);
-                } else {
-                    // Caso o produto não tenha registro no estoque, cria um
-                    \App\Models\estoques::create([
-                        'produto_id' => $item['produto_id'],
-                        'quantidade' => $item['quantidade']
-                    ]);
-                }
-
-                // Registra a movimentação de entrada (Histórico)
-                \App\Models\movimentacao_estoque::create([
-                    'produto_id'           => $item['produto_id'],
-                    'quantidade'           => $item['quantidade'],
-                    'origem_tipo'          => 'devolucoes',
-                    'origem_id'            => $devolucao->id,
-                    'tipo_movimentacao_id' => 1, // 1 = entrada (conforme seu seeder)
-                    'usuario_responsavel'  => $usuarioResponsavelId,
-                ]);
-            }
-
-            // 4. Atualização do status da devolução
-            $devolucao->update([
-                'status_id'           => 2, // Aprovada
-                'data_decisao'        => now(),
-                'usuario_responsavel' => $usuarioResponsavelId
-            ]);
-
-            // 5. Registro de Log de Auditoria
-            LogService::registrarAcao(
-                'UPDATE',
-                'devolucoes',
-                $devolucao->id,
-                "Devolução #{$id} aprovada. Itens retornados ao estoque."
-            );
-
-            DB::commit();
-            return [
-                'status'  => 'success',
-                'message' => 'Devolução aprovada e estoque atualizado com sucesso.'
-            ];
-        } catch (Exception $e) {
-            DB::rollBack();
-            return [
-                'status'  => 'error',
-                'message' => 'Erro ao aprovar devolução: ' . $e->getMessage()
-            ];
+        if (Auth::user()->cargo !== 'distribuidora' && $usuarioResponsavelId != -1) {
+            throw new Exception('Acesso negado. Apenas distribuidoras aprovam devoluções.');
         }
+
+        if ($devolucao->status_id !== 1) {
+            throw new Exception('Esta devolução já foi processada.');
+        }
+
+        // --- PARTE 1: ESTOQUE ---
+        $itensParaEstornar = [];
+        if ($devolucao->tipo_devolucao_id == 2) {
+            foreach ($devolucao->pedido->itensPedidos as $itemPedido) {
+                $itensParaEstornar[] = ['produto_id' => $itemPedido->produto_id, 'quantidade' => $itemPedido->quantidade];
+            }
+        } else {
+            foreach ($devolucao->itensDevolucao as $itemDevolucao) {
+                $itensParaEstornar[] = ['produto_id' => $itemDevolucao->itemPedido->produto_id, 'quantidade' => $itemDevolucao->quantidade];
+            }
+        }
+
+        foreach ($itensParaEstornar as $item) {
+            $estoque = \App\Models\estoques::firstOrCreate(['produto_id' => $item['produto_id']], ['quantidade' => 0]);
+            $estoque->increment('quantidade', $item['quantidade']);
+
+            \App\Models\movimentacao_estoque::create([
+                'produto_id' => $item['produto_id'],
+                'quantidade' => $item['quantidade'],
+                'origem_tipo' => 'devolucoes',
+                'origem_id' => $devolucao->id,
+                'tipo_movimentacao_id' => 1, // Entrada
+                'usuario_responsavel' => $usuarioResponsavelId,
+            ]);
+        }
+
+        // --- PARTE 2: ESTORNO DE COMISSÕES E PONTOS (Novo) ---
+        
+        // 2.1 Estorno de Pontos do Vendedor (1 real = 1 ponto conforme seu FinanceiroService)
+        $vendedor = \App\Models\usuarios::find($devolucao->pedido->usuario_id);
+        if ($vendedor) {
+            // Se for devolução total, tira tudo. Se parcial, precisaria calcular o valor dos itens.
+            // Para simplificar seguindo sua lógica de multinível:
+            $valorEstorno = ($devolucao->tipo_devolucao_id == 2) 
+                ? $devolucao->pedido->valor_total 
+                : $devolucao->itensDevolucao->sum('subtotal');
+
+            $vendedor->decrement('pontos', (int) $valorEstorno);
+        }
+
+        // 2.2 Estorno das Comissões no Histórico
+        // Buscamos todas as comissões geradas por este pedido (Venda direta e Multinível)
+        $comissoesOriginais = \App\Models\historico_comissoes::where('pedido_id', $devolucao->pedido_id)
+            ->where('tipo_movimentacao_id', 1) // Apenas o que foi Crédito original
+            ->get();
+
+        foreach ($comissoesOriginais as $comissao) {
+            // Calculamos o valor proporcional ao estorno
+            // Se a devolução for TOTAL, o fator é 1. Se for parcial, é a proporção do valor.
+            $fatorEstorno = ($devolucao->tipo_devolucao_id == 2) ? 1 : ($valorEstorno / $devolucao->pedido->valor_total);
+            $valorParaDebitar = $comissao->valor * $fatorEstorno;
+
+            // Retira do saldo líquido da consultora
+            $saldo = \App\Models\comissoes::where('consultora_id', $comissao->consultora_id)->first();
+            if ($saldo) {
+                $saldo->decrement('saldo_liquido', $valorParaDebitar);
+            }
+
+            // Registra o movimento negativo no histórico (Saída/Estorno)
+            \App\Models\historico_comissoes::create([
+                'consultora_id' => $comissao->consultora_id,
+                'pedido_id' => $devolucao->pedido_id,
+                'tipo_comissao_id' => $comissao->tipo_comissao_id,
+                'valor' => $valorParaDebitar,
+                'tipo_movimentacao_id' => 2, // Assumindo 2 como 'Estorno' ou 'Saída'
+                'data_movimentacao' => now(),
+                'usuario_responsavel' => $usuarioResponsavelId,
+            ]);
+        }
+
+        // --- PARTE 3: FINALIZAÇÃO ---
+        $devolucao->update([
+            'status_id'           => 2, // Aprovada
+            'data_decisao'        => now(),
+            'usuario_responsavel' => $usuarioResponsavelId
+        ]);
+
+        LogService::registrarAcao(
+            'UPDATE',
+            'devolucoes',
+            $devolucao->id,
+            "Devolução #{$id} aprovada. Estoque, Pontos e Comissões Multinível estornados."
+        );
+
+        DB::commit();
+        return ['status' => 'success', 'message' => 'Devolução aprovada, estoque e financeiro atualizados.'];
+
+    } catch (Exception $e) {
+        DB::rollBack();
+        return ['status' => 'error', 'message' => 'Erro ao aprovar devolução: ' . $e->getMessage()];
     }
+}
+
 
     /**
      * Rejeita uma devolução pendente

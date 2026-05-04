@@ -33,11 +33,6 @@ class TiposComissaoSeeder extends Seeder
                 'nome' => 'nivel 2',
                 'descricao' => 'Comissão gerada por venda da rede da sua rede (2º nível)',
                 'taxa' => 0.02
-            ],
-            [
-                'nome' => 'administrativa',
-                'descricao' => 'taxa administrativa sobre cada venda',
-                'taxa' => 0.02
             ]
         ];
 
