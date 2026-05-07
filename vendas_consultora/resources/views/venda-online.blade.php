@@ -83,6 +83,29 @@
       text-align: center;
       font-family: inherit;
     }
+    
+    .btn {
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.9rem;
+    }
+    
+    .btn-danger {
+      background: #FF6F61;
+      color: white;
+      border: none;
+    }
+    
+    .btn-danger:hover {
+      background: #FF1493;
+    }
 
     .frete-section {
       margin-top: 25px;
@@ -166,43 +189,16 @@
 
 @section('content')
 <div class="container">
-    <a href="{{ url('dashboard') }}" class="back-btn"><i class="fas fa-arrow-left"></i> Voltar ao Dashboard</a>
+    <a href="{{ url('catalogo-vendas') }}" class="back-btn"><i class="fas fa-arrow-left"></i> Voltar ao Catálogo</a>
 
-    <!-- Produtos -->
+    <!-- Carrinho -->
     <div class="card">
-        <h2><i class="fas fa-cart-arrow-down"></i> Seleção de Produtos</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Produto</th>
-                    <th>Preço</th>
-                    <th>Quantidade</th>
-                    <th>Subtotal</th>
-                </tr>
-            </thead>
-            <tbody id="pedido">
-                <tr>
-                    <td>Perfume Essencial</td>
-                    <td>120.00</td>
-                    <td><input type="number" value="1" min="0" onchange="atualizarTotal()"></td>
-                    <td class="subtotal">120.00</td>
-                </tr>
-                <tr>
-                    <td>Creme Hidratante</td>
-                    <td>45.00</td>
-                    <td><input type="number" value="2" min="0" onchange="atualizarTotal()"></td>
-                    <td class="subtotal">90.00</td>
-                </tr>
-                <tr>
-                    <td>Shampoo Revitalizante</td>
-                    <td>35.00</td>
-                    <td><input type="number" value="1" min="0" onchange="atualizarTotal()"></td>
-                    <td class="subtotal">35.00</td>
-                </tr>
-            </tbody>
-        </table>
+        <h2><i class="fas fa-shopping-cart"></i> Carrinho de Compras</h2>
+        <div id="cartContainer">
+            <div class="text-center py-4">⏳ Carregando carrinho...</div>
+        </div>
 
-        <div class="frete-section">
+        <div class="frete-section" id="freteSection" style="display: none;">
             <label for="estadoDestino"><strong><i class="fas fa-truck"></i> Calcular Frete (Destino):</strong></label>
             <select id="estadoDestino" onchange="atualizarTotal()">
                 <option value="0">Selecione o estado...</option>
@@ -214,60 +210,178 @@
             </select>
         </div>
 
-        <div class="total" id="detalhamentoTotal">
-            <small id="subtotalProdutos">Produtos: R$ 245,00</small>
+        <div class="total" id="detalhamentoTotal" style="display: none;">
+            <small id="subtotalProdutos">Produtos: R$ 0,00</small>
             <small id="valorFrete">Frete: R$ 0,00</small>
-            <span id="valorTotalFinal">Total: R$ 245,00</span>
+            <span id="valorTotalFinal">Total: R$ 0,00</span>
         </div>
 
-        <div class="codigo" id="codigoPedido">Link/Código de Pagamento: Aguardando...</div>
-        <button onclick="finalizarPedido()">
-            <i class="fas fa-paper-plane"></i> Gerar Link de Pagamento
+        <button id="finalizarBtn" onclick="finalizarPedido()" style="display: none;">
+            <i class="fas fa-paper-plane"></i> Finalizar Pedido
         </button>
+    </div>
+
+    <!-- Formulário de Cliente -->
+    <div class="card" id="clienteForm" style="display: none;">
+        <h2><i class="fas fa-user"></i> Dados do Cliente</h2>
+        <form id="checkoutForm">
+            <div class="mb-3">
+                <label>Nome:</label>
+                <input type="text" class="form-control" id="clienteNome" required>
+            </div>
+            <div class="mb-3">
+                <label>Email:</label>
+                <input type="email" class="form-control" id="clienteEmail" required>
+            </div>
+            <div class="mb-3">
+                <label>CPF:</label>
+                <input type="text" class="form-control" id="clienteCpf" required>
+            </div>
+            <div class="mb-3">
+                <label>Telefone:</label>
+                <input type="text" class="form-control" id="clienteTelefone" required>
+            </div>
+            <div class="mb-3">
+                <label>Endereço:</label>
+                <textarea class="form-control" id="clienteEndereco" required></textarea>
+            </div>
+        </form>
     </div>
 </div>
 @endsection
 
 @push('scripts')
+<script src="{{ asset('js/modern.js') }}"></script>
 <script>
-    function atualizarTotal() {
-        let linhas = document.querySelectorAll("#pedido tr");
-        let somaSubtotal = 0;
+let cartItems = [];
 
-        linhas.forEach(linha => {
-            let preco = parseFloat(linha.cells[1].innerText);
-            let qtdInput = linha.cells[2].querySelector("input").value;
-            let qtd = parseInt(qtdInput) || 0;
-            let subtotalItem = preco * qtd;
-            linha.cells[3].innerText = subtotalItem.toFixed(2);
-            somaSubtotal += subtotalItem;
+function carregarCarrinho() {
+    cartItems = cart.getItems();
+    const container = document.getElementById('cartContainer');
+    
+    if (cartItems.length === 0) {
+        container.innerHTML = '<div class="text-center py-4">Seu carrinho está vazio. <a href="{{ url("catalogo-vendas") }}">Voltar ao catálogo</a></div>';
+        return;
+    }
+
+    let html = '<table><thead><tr><th>Produto</th><th>Preço</th><th>Quantidade</th><th>Subtotal</th><th>Ações</th></tr></thead><tbody>';
+    
+    cartItems.forEach((item, index) => {
+        const subtotal = item.preco * item.quantity;
+        html += `
+            <tr>
+                <td>${item.nome}</td>
+                <td>R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}</td>
+                <td><input type="number" value="${item.quantity}" min="1" onchange="atualizarQuantidade(${index}, this.value)"></td>
+                <td class="subtotal">R$ ${subtotal.toFixed(2).replace('.', ',')}</td>
+                <td><button onclick="removerItem(${index})" class="btn btn-sm btn-danger">Remover</button></td>
+            </tr>
+        `;
+    });
+    
+    html += '</tbody></table>';
+    container.innerHTML = html;
+    
+    document.getElementById('freteSection').style.display = 'block';
+    document.getElementById('detalhamentoTotal').style.display = 'block';
+    document.getElementById('finalizarBtn').style.display = 'block';
+    document.getElementById('clienteForm').style.display = 'block';
+    
+    atualizarTotal();
+}
+
+function atualizarQuantidade(index, novaQtd) {
+    cart.updateQuantity(cartItems[index].id, parseInt(novaQtd));
+    carregarCarrinho();
+}
+
+function removerItem(index) {
+    cart.removeItem(cartItems[index].id);
+    carregarCarrinho();
+}
+
+function atualizarTotal() {
+    const subtotalProdutos = cart.getTotal();
+    const frete = parseFloat(document.getElementById("estadoDestino").value) || 0;
+    const totalFinal = subtotalProdutos + frete;
+
+    document.getElementById("subtotalProdutos").innerText = "Produtos: R$ " + subtotalProdutos.toFixed(2).replace(".", ",");
+    document.getElementById("valorFrete").innerText = "Frete: R$ " + frete.toFixed(2).replace(".", ",");
+    document.getElementById("valorTotalFinal").innerText = "Total: R$ " + totalFinal.toFixed(2).replace(".", ",");
+}
+
+async function finalizarPedido() {
+    const frete = parseFloat(document.getElementById("estadoDestino").value);
+    if (frete === 0) {
+        showToast("Por favor, selecione um estado para calcular o frete.", "warning");
+        return;
+    }
+
+    // Validar formulário
+    const nome = document.getElementById('clienteNome').value.trim();
+    const email = document.getElementById('clienteEmail').value.trim();
+    const cpf = document.getElementById('clienteCpf').value.trim();
+    const telefone = document.getElementById('clienteTelefone').value.trim();
+    const endereco = document.getElementById('clienteEndereco').value.trim();
+
+    if (!nome || !email || !cpf || !telefone || !endereco) {
+        showToast("Preencha todos os dados do cliente.", "warning");
+        return;
+    }
+
+    if (!isValidEmail(email)) {
+        showToast("Email inválido.", "error");
+        return;
+    }
+
+    if (!isValidCPF(cpf)) {
+        showToast("CPF inválido.", "error");
+        return;
+    }
+
+    // Preparar dados do pedido
+    const itens = cartItems.map(item => ({
+        produto_id: item.id,
+        quantidade: item.quantity,
+        preco_unitario: item.preco
+    }));
+
+    const pedidoData = {
+        cliente_nome: nome,
+        cliente_email: email,
+        cliente_cpf: cpf,
+        cliente_telefone: telefone,
+        cliente_endereco: endereco,
+        valor_frete: frete,
+        itens: itens
+    };
+
+    try {
+        const response = await fetch('/api/pedidos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(pedidoData)
         });
 
-        const frete = parseFloat(document.getElementById("estadoDestino").value) || 0;
-        const totalFinal = somaSubtotal + frete;
-
-        document.getElementById("subtotalProdutos").innerText = "Produtos: R$ " + somaSubtotal.toFixed(2).replace(".", ",");
-        document.getElementById("valorFrete").innerText = "Frete: R$ " + frete.toFixed(2).replace(".", ",");
-        document.getElementById("valorTotalFinal").innerText = "Total: R$ " + totalFinal.toFixed(2).replace(".", ",");
-    }
-
-    function gerarCodigoUnico() {
-        const prefixo = "PAY-";
-        const aleatorio = Math.random().toString(36).substr(2, 9).toUpperCase();
-        return prefixo + aleatorio;
-    }
-
-    function finalizarPedido() {
-        const frete = parseFloat(document.getElementById("estadoDestino").value);
-        if (frete === 0) {
-            alert("Por favor, selecione um estado para calcular o frete antes de finalizar.");
-            return;
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            showToast("Pedido criado com sucesso!", "success");
+            cart.clear();
+            setTimeout(() => {
+                window.location.href = "{{ url('pedidos-clientes') }}";
+            }, 2000);
+        } else {
+            showToast(data.mensagem || "Erro ao criar pedido.", "error");
         }
-
-        let codigo = gerarCodigoUnico();
-        document.getElementById("codigoPedido").innerHTML = `<strong>Código de Transação:</strong> ${codigo}<br><small>Link gerado: https://pagamento.consultora.com/${codigo}</small>`;
-
-        alert("Link de pagamento gerado com sucesso!\nO valor inclui R$ " + frete.toFixed(2) + " de frete.");
+    } catch (error) {
+        showToast("Erro ao processar pedido: " + error.message, "error");
     }
+}
+
+document.addEventListener('DOMContentLoaded', carregarCarrinho);
 </script>
 @endpush

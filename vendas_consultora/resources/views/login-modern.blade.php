@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app-modern')
 
 @section('title', 'Login Moderno - Sistema de Vendas')
 
@@ -328,7 +328,7 @@
             </form>
 
             <div class="auth-links">
-                <a href="{{ route('dev.register') }}">Criar nova conta</a>
+                
                 <span class="separator">|</span>
                 <a href="{{ route('senha-formulario') }}">Esqueceu sua senha?</a>
             </div>

@@ -16,6 +16,10 @@ class CatalogosController extends Controller
         $this->catalogoService = $catalogoService;
     }
 
+    public function index() {
+        return view('consultora.catalogo-vendas');
+    }
+
     public function listar(): JsonResponse
     {
         $resultado = $this->catalogoService->listarTodos();

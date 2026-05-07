@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('senha');
             $table->string('cep',10);
             $table->string('cpf', 11);
-            $table->int("pontos")->default(0);
+            $table->integer("pontos")->default(0);
             $table->foreignId('consultora_id')->nullable()->constrained('usuarios')->nullOnDelete();
             $table->foreignId('status_id')->constrained('status_consultoras');
             $table->rememberToken();
