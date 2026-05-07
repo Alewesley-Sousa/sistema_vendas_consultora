@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedidos de Clientes</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --primary: #FF6F61; /* Coral */
+      --primary-dark: #FF1493; /* Deep Pink */
+      --secondary: #FF69B4; /* Hot Pink */
+      --dark-sidebar: #2C3E50; /* Azul Petróleo */
+      --dark-sidebar-end: #1a252f;
+      --background: #FFF5F7; /* Rosa Claro */
+      --gold: #FFD700; /* Dourado */
+      --card-bg: #FFFFFF;
+      --text: #2C3E50;
+      --text-muted: #5d6d7e;
+      --radius: 15px; 
+      --shadow: 0 4px 12px rgba(0,0,0,0.08); 
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--background);
+      margin: 0;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--dark-sidebar), var(--dark-sidebar-end));
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      border-bottom-left-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    header i {
+      margin-right: 15px;
+      color: var(--gold);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      color: var(--dark-sidebar);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 25px;
+      border-bottom: 2px solid var(--background);
+      padding-bottom: 15px;
+    }
+
+    h2 i {
+      color: var(--secondary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background-color: #f8f9fa;
+      color: var(--dark-sidebar);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+
+    tr:hover {
+      background-color: rgba(52, 152, 219, 0.02);
+    }
+
+    input[type="number"] {
+      width: 60px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .total {
+      text-align: right;
+      font-weight: bold;
+      margin-top: 25px;
+      font-size: 1.4rem;
+      color: var(--primary-dark);
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    button {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      margin-top: 25px;
+      width: 100%;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <i class="fas fa-shopping-basket"></i> Pedidos de Clientes
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2><i class="fas fa-list-ul"></i> Seleção de Produtos</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Preço</th>
+            <th>Quantidade</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody id="pedido">
+          <tr>
+            <td>Perfume Essencial</td>
+            <td>R$ 120,00</td>
+            <td><input type="number" value="1" min="0" onchange="atualizarTotal()"></td>
+            <td class="subtotal">R$ 120,00</td>
+          </tr>
+          <tr>
+            <td>Creme Hidratante</td>
+            <td>R$ 45,00</td>
+            <td><input type="number" value="2" min="0" onchange="atualizarTotal()"></td>
+            <td class="subtotal">R$ 90,00</td>
+          </tr>
+          <tr>
+            <td>Shampoo Revitalizante</td>
+            <td>R$ 35,00</td>
+            <td><input type="number" value="1" min="0" onchange="atualizarTotal()"></td>
+            <td class="subtotal">R$ 35,00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="total" id="valorTotal">Total: R$ 245,00</div>
+      <button onclick="finalizarPedido()">
+        <i class="fas fa-check-circle"></i> Finalizar Pedido
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function atualizarTotal() {
+      let linhas = document.querySelectorAll("#pedido tr");
+      let total = 0;
+
+      linhas.forEach(linha => {
+        let preco = parseFloat(linha.cells[1].innerText.replace("R$", "").replace(",", "."));
+        let qtd = parseInt(linha.cells[2].querySelector("input").value);
+        let subtotal = preco * qtd;
+        linha.cells[3].innerText = "R$ " + subtotal.toFixed(2).replace(".", ",");
+        total += subtotal;
+      });
+
+      document.getElementById("valorTotal").innerText = "Total: R$ " + total.toFixed(2).replace(".", ",");
+    }
+
+    function finalizarPedido() {
+      alert("Pedido finalizado com sucesso! Link de pagamento gerado.");
+      // Salva as quantidades atuais para carregar na tela de Venda Online
+      const inputs = document.querySelectorAll("#pedido input");
+      const quantidades = Array.from(inputs).map(i => i.value);
+      localStorage.setItem('checkout_quantities', JSON.stringify(quantidades));
+
+      // Redireciona para a finalização
+      window.location.href = "venda-on.html";
+    }
+  </script>
+</body>
+</html>

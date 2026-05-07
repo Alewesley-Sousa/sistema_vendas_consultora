@@ -111,3 +111,15 @@ public function calcularTotal(array $itens): float
 |[**DOC**] | Alteração ou criação de documentação |
 |[**STYLE**] | Ajustes visuais ou formatação |
 |[**TEST**] | Implementação ou modificação de testes |
+
+---
+# Sincronização de Ambiente
+Sempre ao baixar atualizações (`git pull`), siga esta ordem para garantir a integridade do sistema:
+
+# Sincronização de Ambiente
+Sempre ao baixar atualizações (`git pull`), execute o checklist:
+1. `composer install` (Dependências PHP)
+2. `php artisan migrate` (Banco de dados)
+3. `npm install && npm run dev` (Assets frontend)
+
+*Dica: Se houver conflitos locais, use `git stash` antes do pull e `git stash pop` após a sincronização.*

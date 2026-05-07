@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Meus Clientes - Sistema Consultora</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --primary: #FF6F61;
+      --primary-dark: #FF1493;
+      --dark-sidebar: #2C3E50;
+      --background: #FFF5F7;
+      --card-bg: #FFFFFF;
+      --text: #2C3E50;
+      --radius: 15px;
+      --shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+    }
+
+    .sidebar {
+      width: 80px;
+      background: linear-gradient(to bottom, var(--dark-sidebar), #1a252f);
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+    }
+
+    .sidebar i {
+      color: #fff;
+      font-size: 24px;
+      margin: 20px 0;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .sidebar i:hover {
+      transform: scale(1.2);
+      color: var(--primary);
+    }
+
+    .main {
+      margin-left: 100px;
+      padding: 40px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .topbar h2 {
+      color: var(--dark-sidebar);
+      font-size: 2rem;
+    }
+
+    .topbar input[type="text"] {
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 20px;
+        width: 250px;
+        outline: none;
+    }
+
+    .customer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+    }
+
+    .customer-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 25px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s;
+      border-left: 5px solid var(--primary);
+    }
+
+    .customer-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .customer-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      background: var(--background);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .customer-info h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--dark-sidebar);
+    }
+
+    .customer-info p {
+      margin: 2px 0 0;
+      font-size: 0.85rem;
+      color: #7f8c8d;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      border-top: 1px solid #f0f0f0;
+      padding-top: 15px;
+    }
+
+    .stat-item span {
+      display: block;
+      font-size: 0.75rem;
+      color: #95a5a6;
+      text-transform: uppercase;
+    }
+
+    .stat-item strong {
+      font-size: 0.9rem;
+      color: var(--primary-dark);
+    }
+
+    .btn-new {
+      background: var(--primary);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .btn-new:hover {
+      background: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <i class="fas fa-home" onclick="window.location.href='dashbord.html'"></i>
+    <i class="fas fa-users" style="color: var(--primary)"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-cog"></i>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h2>Meus Clientes</h2>
+      <div style="display: flex; gap: 20px; align-items: center;">
+        <input type="text" id="searchClient" placeholder="Pesquisar por nome...">
+        <a href="register.html" class="btn-new"><i class="fas fa-plus"></i> Novo Cadastro</a>
+      </div>
+    </div>
+
+    <div class="customer-grid" id="customerContainer">
+      <!-- Cards serão injetados aqui via JS -->
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const container = document.getElementById('customerContainer');
+      const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+
+      function calcularTempo(dataCadastro) {
+        if(!dataCadastro) return "Recém chegado";
+        const [dia, mes, ano] = dataCadastro.split('/');
+        const dt = new Date(ano, mes - 1, dia);
+        const hoje = new Date();
+        const diff = Math.floor((hoje - dt) / (1000 * 60 * 60 * 24));
+        
+        if(diff < 30) return `${diff} dias de casa`;
+        const meses = Math.floor(diff / 30);
+        return `${meses} mês(es) fiel`;
+      }
+
+      function renderClientes(lista) {
+        container.innerHTML = lista.map(c => `
+          <div class="customer-card">
+            <div class="customer-header">
+              <div class="avatar"><i class="fas fa-user"></i></div>
+              <div class="customer-info">
+                <h3>${c.nome}</h3>
+                <p>${c.email || 'Sem e-mail'}</p>
+              </div>
+            </div>
+            <div class="stats">
+              <div class="stat-item">
+                <span>Fidelidade</span>
+                <strong>${calcularTempo(c.dataCadastro)}</strong>
+              </div>
+              <div class="stat-item">
+                <span>Favorito</span>
+                <strong>${c.produto || 'Consultar...'}</strong>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      renderClientes(clientes);
+
+      document.getElementById('searchClient').addEventListener('input', function(e) {
+        const termo = e.target.value.toLowerCase();
+        const filtrados = clientes.filter(c => c.nome.toLowerCase().includes(termo));
+        renderClientes(filtrados);
+      });
+    });
+  </script>
+</body>
+</html>
