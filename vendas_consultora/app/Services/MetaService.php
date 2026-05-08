@@ -25,10 +25,9 @@ class MetaService
     /**
      * Calcula o percentual de atingimento da meta ativa.
      */
-    public function progressoMeta($reutilizar = false, $idConsultora = null)
+    public function progressoMeta($idConsultora = null)
     {
-        $idUsuario = $reutilizar ? $idConsultora : Auth::id();
-
+        $idUsuario = $idConsultora;
         // Obtém a meta ativa usando o método da própria classe
         $metaAtual = $this->metaUsuario($idUsuario);
 
@@ -54,6 +53,7 @@ class MetaService
         }
 
         $progresso = ($totalVendido / $valorMeta) * 100;
+
         return round($progresso, 2);
     }
 

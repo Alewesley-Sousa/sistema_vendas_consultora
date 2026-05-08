@@ -58,7 +58,7 @@
                 <span id="meta-restante" class="text-gray-400 font-serif italic">Carregando...</span>
             </div>
             <div class="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
-                <div id="barra-meta" class="bg-gradient-to-r from-[#FF7665] to-[#ffb3a9] h-0 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                <div id="barra-meta" class="bg-gradient-to-r from-[#FF7665] to-[#ffb3a9] h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
             </div>
             <p class="text-[11px] text-gray-400 mt-4 italic">Dados atualizados em tempo real.</p>
         </div>
@@ -105,30 +105,40 @@
 
     // 2. Metas (Sincronizado)
     Promise.all([
-        axios.get('/api/meta'),           // Pega valor_meta
-        axios.get('/api/meta/progresso')  // Pega o número do %
+        axios.get('/api/meta'),           
+        axios.get('/api/meta/progresso')  
     ]).then(([resMeta, resProgresso]) => {
         
         if (resMeta.data.status === 'sucesso' && resProgresso.data.status === 'sucesso') {
+            // Garantir que os dados da API sejam tratados como números
             const valorTotal = parseFloat(resMeta.data.data) || 0;
             const percentual = parseFloat(resProgresso.data.data) || 0;
 
-            // Cálculo: Valor atingido = (Total * %) / 100
+            // Cálculo: Valor atingido baseado no percentual
             const valorAtingido = (valorTotal * percentual) / 100;
             const valorFalta = valorTotal - valorAtingido;
 
-            // Injetar no HTML
+            // Atualizar textos no HTML
             document.getElementById('valor-meta').innerText = formatMoney(valorTotal);
             document.getElementById('porcentagem-meta').innerText = Math.round(percentual) + '%';
             document.getElementById('meta-atingida').innerText = formatMoney(valorAtingido) + ' atingidos';
-            document.getElementById('meta-restante').innerText = 'Faltam ' + formatMoney(valorFalta > 0 ? valorFalta : 0);
+            
+            const txtRestante = document.getElementById('meta-restante');
+            if (valorFalta <= 0) {
+                txtRestante.innerText = "Meta Concluída!";
+                txtRestante.classList.replace('text-gray-400', 'text-green-500');
+            } else {
+                txtRestante.innerText = 'Faltam ' + formatMoney(valorFalta);
+            }
 
-            // Barra de progresso
+            // Atualizar Barra de Progresso com animação
             const barra = document.getElementById('barra-meta');
             if (barra) {
                 setTimeout(() => {
-                    barra.style.width = (percentual > 100 ? 100 : percentual) + '%';
-                }, 100);
+                    // Limita a barra em 100% visualmente se ultrapassar a meta
+                    const larguraBarra = percentual > 100 ? 100 : percentual;
+                    barra.style.width = larguraBarra + '%';
+                }, 200);
             }
         }
     }).catch(error => console.error('Erro Metas:', error));
