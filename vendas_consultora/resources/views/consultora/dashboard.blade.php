@@ -1,254 +1,137 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <style>
-    :root {
-      --primary: #FF6F61; /* Coral */
-      --primary-dark: #FF1493; /* Deep Pink */
-      --secondary: #FF69B4; /* Hot Pink */
-      --dark-sidebar: #2C3E50; /* Azul Petr├│leo */
-      --dark-sidebar-end: #141E30;
-      --background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%); /* Fundo mais sofisticado */
-      --gold: #FFD700; /* Dourado */
-      --card-bg: #FFFFFF;
-      --text: #2C3E50;
-      --text-muted: #5d6d7e;
-      --radius: 20px; 
-      --shadow: 0 10px 30px rgba(0,0,0,0.05); 
-      --hover-lift: translateY(-5px); 
-    }
+@extends('layouts.app')
 
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f8f9fa;
-      background-image: radial-gradient(#FF6F6110 1px, transparent 1px);
-      background-size: 20px 20px;
-      margin: 0;
-      color: var(--text);
-      line-height: 1.6;
-    }
+@section('title', 'Painel Inicial - Glow Cosmetics')
 
-    header {
-      background: linear-gradient(135deg, var(--dark-sidebar), var(--dark-sidebar-end));
-      color: white;
-      padding: 30px 20px;
-      text-align: center;
-      font-size: 1.8rem;
-      font-weight: bold;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      border-bottom-left-radius: var(--radius);
-      border-bottom-right-radius: var(--radius);
-      margin-bottom: 30px;
-      letter-spacing: 1px;
-      border-bottom: 3px solid var(--gold);
-    }
-
-    header i {
-      margin-right: 15px;
-      color: var(--gold);
-    }
-
-    .container {
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 30px;
-      padding: 40px;
-      max-width: 1200px;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 25px;
-      box-shadow: var(--shadow);
-      transition: all 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      border: none;
-      border-top: 5px solid var(--primary); /* Sutil indica├º├úo de cor */
-    }
-
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 15px 35px rgba(255, 111, 97, 0.15);
-    }
-
-    h2 {
-      margin-top: 0;
-      font-size: 1.3rem;
-      color: var(--dark-sidebar);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 2px solid var(--background);
-      padding-bottom: 15px;
-      margin-bottom: 20px;
-    }
-
-    h2 i {
-      color: var(--primary);
-      font-size: 1.2rem;
-    }
-
-    .actions {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    button {
-      background: rgba(255, 111, 97, 0.05);
-      color: var(--primary);
-      border: 1.5px solid rgba(255, 111, 97, 0.3);
-      padding: 12px 18px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      letter-spacing: 0.5px;
-    }
-
-    button:hover {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      border-color: transparent;
-    }
-
-    .btn-filled {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border: none;
-      margin-top: auto;
-      box-shadow: 0 4px 15px rgba(255, 111, 97, 0.3);
-    }
-
-    .btn-filled:hover {
-      transform: scale(1.03);
-      box-shadow: 0 6px 20px rgba(255, 111, 97, 0.4);
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 20px 0;
-      flex-grow: 1;
-    }
-
-    ul li {
-      padding: 8px 0;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    ul li::before {
-      content: "\f00c";
-      font-family: "Font Awesome 5 Free";
-      font-weight: 900;
-      color: var(--secondary);
-      font-size: 0.8rem;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <i class="fas fa-chart-line"></i> Painel de Vendas
-  </header>
-
-  <div class="container">
-    <!-- Card de A├º├Áes -->
-    <div class="card">
-      <h2><i class="fas fa-tasks"></i> A├º├Áes R├ípidas</h2>
-      <div class="actions">
-        <button onclick="cadastrarCliente()"><i class="fas fa-user-plus"></i> Novo Cliente</button>
-        <button onclick="cadastrarConsultora()"><i class="fas fa-user-tie"></i> Nova Consultora</button>
-        <button onclick="realizarPedido()"><i class="fas fa-cart-plus"></i> Criar Pedido</button>
-        <button onclick="verHistorico()"><i class="fas fa-history"></i> Relat├│rios</button>
-      </div>
+@section('header')
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+        <h1 class="text-4xl font-serif font-medium text-[#2C3E50]">
+            Bem-vinda de volta, <span class="text-[#E67E73] font-bold">{{ explode(' ', Auth::user()->nome)[0] }}.</span>
+        </h1>
     </div>
 
-    <!-- Hist├│rico de Comiss├Áes -->
-    <div class="card">
-      <h2><i class="fas fa-wallet"></i> Comiss├Áes</h2>
-      <ul>
-        <li>Visualizar registro de hist├│rico</li>
-        <li>Ver total acumulado</li>
-      </ul>
-      <button class="btn-filled" onclick="verHistorico()">Abrir Hist├│rico</button>
+    <div class="flex gap-4">
+        <button class="flex items-center gap-3 bg-[#FF7665] text-white px-6 py-4 rounded-2xl shadow-lg shadow-[#FF7665]/30 hover:bg-[#ff6450] transition-all font-bold uppercase text-xs tracking-wider">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+            Cadastrar Consultora
+        </button>
+        <button class="flex items-center gap-3 bg-white text-[#2C3E50] border border-gray-200 px-6 py-4 rounded-2xl shadow-sm hover:bg-gray-50 transition-all font-bold uppercase text-xs tracking-wider">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            Novo Pedido
+        </button>
+    </div>
+</div>
+@endsection
+
+@section('content')
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
+    
+    <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
+             <svg class="w-24 h-24 text-[#E67E73]" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"></path></svg>
+        </div>
+        
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-4">Financeiro Disponível</p>
+        <h3 class="text-gray-600 text-3xl font-light">
+            Saldo de Comissão: <span id="saldo-comissao" class="text-[#E67E73] font-bold">R$ 0,00</span>
+        </h3>
+        
+        <div class="mt-8">
+            <a href="/comissao/historico" class="text-[#E67E73] font-bold text-sm underline underline-offset-4 hover:text-[#2C3E50] transition-colors italic">Ver Histórico</a>
+        </div>
     </div>
 
-    <!-- Cadastro de Cliente -->
-    <div class="card">
-      <h2><i class="fas fa-users"></i> Clientes</h2>
-      <ul>
-        <li>Formul├írio para cadastrar clientes</li>
-        <li>Gest├úo de base ativa</li>
-      </ul>
-      <button class="btn-filled" onclick="cadastrarCliente()">Gerenciar Clientes</button>
+    <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 relative">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Produtividade Mensal</p>
+                <h3 class="text-gray-600 text-3xl font-light">
+                    Meta Mensal: <span id="valor-meta" class="text-[#2C3E50] font-bold">R$ 0,00</span>
+                </h3>
+            </div>
+            <span id="porcentagem-meta" class="bg-[#FFF9E5] text-[#D4AF37] px-4 py-2 rounded-xl font-bold text-lg">0%</span>
+        </div>
+
+        <div class="mt-8">
+            <div class="flex justify-between text-xs font-bold mb-2 uppercase tracking-tighter">
+                <span id="meta-atingida" class="text-gray-400 font-serif italic">R$ 0,00 atingidos</span>
+                <span id="meta-restante" class="text-gray-400 font-serif italic">Carregando...</span>
+            </div>
+            <div class="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
+                <div id="barra-meta" class="bg-gradient-to-r from-[#FF7665] to-[#ffb3a9] h-0 rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+            <p class="text-[11px] text-gray-400 mt-4 italic">Dados atualizados em tempo real.</p>
+        </div>
     </div>
 
-    <!-- Cadastro de Consultoras -->
-    <div class="card">
-      <h2><i class="fas fa-id-card"></i> Consultoras</h2>
-      <ul>
-        <li>Formul├írio para cadastrar consultoras</li>
-        <li>Monitoramento de desempenho</li>
-      </ul>
-      <button class="btn-filled" onclick="cadastrarConsultora()">Gerenciar Equipe</button>
-    </div>
+</div>
 
-    <!-- Estoque da Loja -->
-    <div class="card">
-      <h2><i class="fas fa-book-open"></i> Cat├ílogo de Vendas</h2>
-      <ul>
-        <li>Visualizar produtos dispon├¡veis</li>
-        <li>Pre├ºos e categorias</li>
-        <li>Novidades da revista</li>
-      </ul>
-      <button class="btn-filled" onclick="abrirCatalogo()">Ver Cat├ílogo</button>
+<div class="mt-10 relative h-72 rounded-[2.5rem] overflow-hidden group shadow-xl mb-10">
+    <img src="https://images.unsplash.com/photo-1596462502278-27bfdc4033c8?auto=format&fit=crop&q=80&w=1000" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Coleção">
+    <div class="absolute inset-0 bg-gradient-to-r from-[#2C3E50]/90 to-transparent flex flex-col justify-center px-12">
+        <span class="bg-[#FFD700] text-[#2C3E50] text-[10px] font-bold px-3 py-1 rounded-full w-fit mb-4 uppercase tracking-widest">Lançamento</span>
+        <h2 class="text-4xl font-serif text-white mb-6">Coleção<br><span class="font-bold italic">Seda & Veludo</span></h2>
+        <button class="bg-white text-[#2C3E50] px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-[#FFD700] transition-colors w-fit">
+            Acessar Catálogo Exclusivo
+        </button>
     </div>
+</div>
 
-    <!-- Pedido Link -->
-    <div class="card">
-      <h2><i class="fas fa-link"></i> Venda Online</h2>
-      <ul>
-        <li>Ver subtotais e frete</li>
-        <li>Gerar link de pagamento</li>
-      </ul>
-      <button class="btn-filled" onclick="pedidoLink()">Gerar Link</button>
-    </div>
-  </div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  axios.defaults.withCredentials = true;
+  axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-  <script>
-    function verHistorico() {
-      window.location.href = "pasta/historico.html";
-    }
-    function cadastrarCliente() {
-      window.location.href = "register.html";
-    }
-    function cadastrarConsultora() {
-      window.location.href = "cadastro-consutora.html";
-    }
-    function realizarPedido() {
-      window.location.href = "pedidos-clientes.html";
-    }
-    function abrirCatalogo() {
-      window.location.href = "/catalogo";
-    }
-    function pedidoLink() {
-      window.location.href = "pasta/pedido-link.html";
-    }
-  </script>
-</body>
-</html>
+  const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  if (token) {
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const formatMoney = (value) => {
+      return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      }).format(parseFloat(value) || 0);
+    };
+
+    // 1. Comissão
+    axios.get('/api/comissao')
+      .then(response => {
+        if (response.data.status === 'sucesso') {
+            document.getElementById('saldo-comissao').innerText = formatMoney(response.data.data);
+        }
+      }).catch(err => console.error(err));
+
+    // 2. Metas (Sincronizado)
+    Promise.all([
+        axios.get('/api/meta'),           // Pega valor_meta
+        axios.get('/api/meta/progresso')  // Pega o número do %
+    ]).then(([resMeta, resProgresso]) => {
+        
+        if (resMeta.data.status === 'sucesso' && resProgresso.data.status === 'sucesso') {
+            const valorTotal = parseFloat(resMeta.data.data) || 0;
+            const percentual = parseFloat(resProgresso.data.data) || 0;
+
+            // Cálculo: Valor atingido = (Total * %) / 100
+            const valorAtingido = (valorTotal * percentual) / 100;
+            const valorFalta = valorTotal - valorAtingido;
+
+            // Injetar no HTML
+            document.getElementById('valor-meta').innerText = formatMoney(valorTotal);
+            document.getElementById('porcentagem-meta').innerText = Math.round(percentual) + '%';
+            document.getElementById('meta-atingida').innerText = formatMoney(valorAtingido) + ' atingidos';
+            document.getElementById('meta-restante').innerText = 'Faltam ' + formatMoney(valorFalta > 0 ? valorFalta : 0);
+
+            // Barra de progresso
+            const barra = document.getElementById('barra-meta');
+            if (barra) {
+                setTimeout(() => {
+                    barra.style.width = (percentual > 100 ? 100 : percentual) + '%';
+                }, 100);
+            }
+        }
+    }).catch(error => console.error('Erro Metas:', error));
+  });
+</script>
+@endsection

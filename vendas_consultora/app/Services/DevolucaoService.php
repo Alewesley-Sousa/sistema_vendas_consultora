@@ -114,7 +114,7 @@ public function listarPendentes()
         // --- APROVAÇÃO AUTOMÁTICA ---
         // Como está no prazo de 7 dias, chamamos o método de aprovação imediatamente.
         // Usamos o ID do próprio usuário logado (consultora/lider) ou um ID de sistema (null).
-        $resultadoAprovacao = $this->aprovarDevolucao($devolucao->id, -1;
+        $resultadoAprovacao = $this->aprovarDevolucao($devolucao->id, -1);
 
         if ($resultadoAprovacao['status'] === 'success') {
             return [

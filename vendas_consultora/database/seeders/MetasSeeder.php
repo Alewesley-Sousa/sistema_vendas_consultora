@@ -20,8 +20,8 @@ class MetasSeeder extends Seeder
                 'consultora_id' => 2,
                 'lider_id' => 14,
                 'valor_meta' => 10000.00,
-                'data_referencia' => '2026-04-30',
-                'status_id' => 1
+                'data_referencia' => '2026-05-01',
+                'status_id' => 3
             ],
             [
                 'consultora_id' => 2,

@@ -24,7 +24,9 @@ class PedidosSeeder extends Seeder
             // ===============================================================
             // MARÇO 2026 (Período Anterior para o João ID 2)
             // ===============================================================
-            ['usuario_id' => 2, 'cliente_id' => 17, 'valor_total' => 250.00, 'tipo_pagamento' => 'pix', 'status_id' => 5, 'created_at' => $mesPassado->copy()->day(5)],
+            ['usuario_id' => 2, 'cliente_id' => 17, 'valor_total' => 5550.00,
+            'tipo_pagamento' => 'pix', 'status_id' => 6, 'created_at' =>
+            "2026-05-06"],
             ['usuario_id' => 21, 'cliente_id' => 19, 'valor_total' => 320.00, 'tipo_pagamento' => 'credito', 'status_id' => 6, 'created_at' => $mesPassado->copy()->day(12)],
             ['usuario_id' => 24, 'cliente_id' => 20, 'valor_total' => 150.00, 'tipo_pagamento' => 'pix', 'status_id' => 5, 'created_at' => $mesPassado->copy()->day(18)],
 
