@@ -49,12 +49,12 @@
 
             <div class="flex flex-col items-center mb-8 border-b border-white/10 pb-8 text-center">
                 <div class="relative w-20 h-20 mb-4">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&color=2C3E50&background=FFD700" class="rounded-full border-2 border-[#FFD700] p-1 object-cover w-full h-full shadow-md" alt="Perfil">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nome) }}&color=2C3E50&background=FFD700" class="rounded-full border-2 border-[#FFD700] p-1 object-cover w-full h-full shadow-md" alt="Perfil">
                     <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-[#2C3E50] rounded-full"></div>
                 </div>
                 <div>
                     <p class="text-[10px] uppercase tracking-widest text-[#FFD700] font-bold">{{ Auth::user()->cargo ?? 'Consultora' }}</p>
-                    <h2 class="text-lg font-semibold text-white">{{ Auth::user()->name }}</h2>
+                    <h2 class="text-lg font-semibold text-white">{{ Auth::user()->nome }}</h2>
                 </div>
             </div>
 

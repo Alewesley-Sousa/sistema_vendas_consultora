@@ -31,7 +31,7 @@ class LiderService
             /**
              * validação se o cargo não for de lider
              */
-            if ($usuario->cargo !== 'lider') {
+            if ($usuario->cargo !== 'lider' || $usuario->cargo !== 'consultora') {
                 throw new Exception("Acesso negado!");
             }
 

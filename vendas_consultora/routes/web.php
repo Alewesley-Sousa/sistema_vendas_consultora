@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ResetarSenhaController;
 use App\Http\Controllers\CatalogosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\HistoricoComissoesController;
+use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UsuariosController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -78,3 +79,5 @@ Route::get('/clientes', [ClientesController::class, 'listar'])->name('cliente.li
 // Rota pública para o cliente visualizar o pedido via link/UUID
 Route::get('/pedido/rastreio/{uuid}', [App\Http\Controllers\PedidosController::class, 'exibirPedidoCliente'])
     ->name('cliente.pedido.montado');
+
+Route::get('/rede/arvore', [RelatorioController::class, 'viewArvore'])->middleware('auth');

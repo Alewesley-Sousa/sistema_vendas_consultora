@@ -25,17 +25,14 @@
 
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
-    
     <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden group">
         <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
-             <svg class="w-24 h-24 text-[#E67E73]" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"></path></svg>
+            <svg class="w-24 h-24 text-[#E67E73]" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"></path></svg>
         </div>
-        
         <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-4">Financeiro Disponível</p>
         <h3 class="text-gray-600 text-3xl font-light">
             Saldo de Comissão: <span id="saldo-comissao" class="text-[#E67E73] font-bold">R$ 0,00</span>
         </h3>
-        
         <div class="mt-8">
             <a href="/comissao/historico" class="text-[#E67E73] font-bold text-sm underline underline-offset-4 hover:text-[#2C3E50] transition-colors italic">Ver Histórico</a>
         </div>
@@ -63,85 +60,80 @@
             <p class="text-[11px] text-gray-400 mt-4 italic">Dados atualizados em tempo real.</p>
         </div>
     </div>
-
 </div>
 
 <div class="mt-10 relative h-72 rounded-[2.5rem] overflow-hidden group shadow-xl mb-10">
-    <img src="https://images.unsplash.com/photo-1596462502278-27bfdc4033c8?auto=format&fit=crop&q=80&w=1000" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Coleção">
-    <div class="absolute inset-0 bg-gradient-to-r from-[#2C3E50]/90 to-transparent flex flex-col justify-center px-12">
-        <span class="bg-[#FFD700] text-[#2C3E50] text-[10px] font-bold px-3 py-1 rounded-full w-fit mb-4 uppercase tracking-widest">Lançamento</span>
-        <h2 class="text-4xl font-serif text-white mb-6">Coleção<br><span class="font-bold italic">Seda & Veludo</span></h2>
-        <button class="bg-white text-[#2C3E50] px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-[#FFD700] transition-colors w-fit">
-            Acessar Catálogo Exclusivo
-        </button>
+    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1000" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Equipe Glow">
+    
+    <div class="absolute inset-0 bg-gradient-to-r from-[#8B2E2E]/90 to-transparent flex flex-col justify-center px-12">
+        <span class="bg-[#FF7665] text-white text-[10px] font-bold px-3 py-1 rounded-full w-fit mb-4 uppercase tracking-widest">Minhas indicações</span>
+        <h2 class="text-4xl font-serif text-white mb-6">Expansão de<br><span class="font-bold italic">Árvore de Rede</span></h2>
+        
+        <a href="/rede/arvore" class="bg-white text-[#2C3E50] px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-[#FFD700] transition-all w-fit flex items-center gap-2 group">
+            Visualizar Organização
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+        </a>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-  axios.defaults.withCredentials = true;
-  axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    axios.defaults.withCredentials = true;
+    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-  const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-  if (token) {
-    axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
-  }
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (token) {
+        axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
+    }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    const formatMoney = (value) => {
-      return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      }).format(parseFloat(value) || 0);
-    };
+    document.addEventListener('DOMContentLoaded', function() {
+        const formatMoney = (value) => {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(parseFloat(value) || 0);
+        };
 
-    // 1. Comissão
-    axios.get('/api/comissao')
-      .then(response => {
-        if (response.data.status === 'sucesso') {
-            document.getElementById('saldo-comissao').innerText = formatMoney(response.data.data);
-        }
-      }).catch(err => console.error(err));
+        // 1. Comissão
+        axios.get('/api/comissao')
+            .then(response => {
+                if (response.data.status === 'sucesso') {
+                    document.getElementById('saldo-comissao').innerText = formatMoney(response.data.data);
+                }
+            }).catch(err => console.error(err));
 
-    // 2. Metas (Sincronizado)
-    Promise.all([
-        axios.get('/api/meta'),           
-        axios.get('/api/meta/progresso')  
-    ]).then(([resMeta, resProgresso]) => {
-        
-        if (resMeta.data.status === 'sucesso' && resProgresso.data.status === 'sucesso') {
-            // Garantir que os dados da API sejam tratados como números
-            const valorTotal = parseFloat(resMeta.data.data) || 0;
-            const percentual = parseFloat(resProgresso.data.data) || 0;
+        // 2. Metas (Sincronizado)
+        Promise.all([
+            axios.get('/api/meta'), 
+            axios.get('/api/meta/progresso') 
+        ]).then(([resMeta, resProgresso]) => {
+            if (resMeta.data.status === 'sucesso' && resProgresso.data.status === 'sucesso') {
+                const valorTotal = parseFloat(resMeta.data.data) || 0;
+                const percentual = parseFloat(resProgresso.data.data) || 0;
+                const valorAtingido = (valorTotal * percentual) / 100;
+                const valorFalta = valorTotal - valorAtingido;
 
-            // Cálculo: Valor atingido baseado no percentual
-            const valorAtingido = (valorTotal * percentual) / 100;
-            const valorFalta = valorTotal - valorAtingido;
+                document.getElementById('valor-meta').innerText = formatMoney(valorTotal);
+                document.getElementById('porcentagem-meta').innerText = Math.round(percentual) + '%';
+                document.getElementById('meta-atingida').innerText = formatMoney(valorAtingido) + ' atingidos';
+                
+                const txtRestante = document.getElementById('meta-restante');
+                if (valorFalta <= 0) {
+                    txtRestante.innerText = "Meta Concluída!";
+                    txtRestante.classList.replace('text-gray-400', 'text-green-500');
+                } else {
+                    txtRestante.innerText = 'Faltam ' + formatMoney(valorFalta);
+                }
 
-            // Atualizar textos no HTML
-            document.getElementById('valor-meta').innerText = formatMoney(valorTotal);
-            document.getElementById('porcentagem-meta').innerText = Math.round(percentual) + '%';
-            document.getElementById('meta-atingida').innerText = formatMoney(valorAtingido) + ' atingidos';
-            
-            const txtRestante = document.getElementById('meta-restante');
-            if (valorFalta <= 0) {
-                txtRestante.innerText = "Meta Concluída!";
-                txtRestante.classList.replace('text-gray-400', 'text-green-500');
-            } else {
-                txtRestante.innerText = 'Faltam ' + formatMoney(valorFalta);
+                const barra = document.getElementById('barra-meta');
+                if (barra) {
+                    setTimeout(() => {
+                        const larguraBarra = percentual > 100 ? 100 : percentual;
+                        barra.style.width = larguraBarra + '%';
+                    }, 200);
+                }
             }
-
-            // Atualizar Barra de Progresso com animação
-            const barra = document.getElementById('barra-meta');
-            if (barra) {
-                setTimeout(() => {
-                    // Limita a barra em 100% visualmente se ultrapassar a meta
-                    const larguraBarra = percentual > 100 ? 100 : percentual;
-                    barra.style.width = larguraBarra + '%';
-                }, 200);
-            }
-        }
-    }).catch(error => console.error('Erro Metas:', error));
-  });
+        }).catch(error => console.error('Erro Metas:', error));
+    });
 </script>
 @endsection

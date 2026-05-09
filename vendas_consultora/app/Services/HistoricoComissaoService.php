@@ -10,42 +10,56 @@ use Symfony\Component\HttpFoundation\Request;
 
 class HistoricoComissaoService
 {
-    public function PegarHistoricoComissao(Request $request)
-    {
-        $usuario = Auth::user();
-        $cargo = $usuario->cargo;
-        $usuario_id = $request->usuario_id;
+public function PegarHistoricoComissao(Request $request)
+{
+    $usuario = Auth::user();
+    $cargo = $usuario->cargo;
+    $usuario_id = $request->usuario_id;
 
-        $colunasPermitidas = ['valor', 'data_movimentacao'];
+    $saldoDisponivel = $usuario->saldo ?? 0;
 
-        // 2. Captura os valores ou define um padrão (default)
-        $coluna = in_array($request->ordenar_por, $colunasPermitidas) ? $request->ordenar_por : 'data_movimentacao';
-        $direcao = ($request->direcao === 'asc') ? 'asc' : 'desc';
+    $query = historico_comissoes::query()
+        ->with(['tipoComissao', 'tipoMovimentacao', 'usuario:id,nome'])
 
-        return historico_comissoes::query()
-            ->with(
-                [
-                    'tipoComissao',
-                    'tipoMovimentacao',
-                    'usuario' => function ($query) {
-                        $query->select('id', 'nome'); // 'id' é obrigatório para o Eloquent ligar as tabelas
-                    }
-                ]
-            )
-            //Se não for distribuidora, vai mostrar apenas o historico do usuario autenticado.
-            ->when($cargo !== 'distribuidora', function ($query) use ($usuario) {
-                return $query->where('consultora_id', $usuario->id);
-            })
+        // Filtro de Permissão
+        ->when($cargo !== 'distribuidora', function ($q) use ($usuario) {
+            return $q->where('consultora_id', $usuario->id);
+        })
+        ->when($cargo === 'distribuidora' && $usuario_id, function ($q) use ($usuario_id) {
+            return $q->where('consultora_id', $usuario_id);
+        })
 
-            //Se for distribuidora, vai filtrar pelo id do usuario escolhido
-            ->when($cargo === 'distribuidora' && $usuario_id, function ($query) use ($usuario_id) {
-                return $query->where('consultora_id', $id_usuario);
-            })
-            ->whereIn('tipo_movimentacao_id', [1, 2]) // Só vai pegar do tipo estorno e venda
+        // Filtros de Data
+        ->when($request->data_inicio, function ($q) use ($request) {
+            return $q->whereDate('data_movimentacao', '>=', $request->data_inicio);
+        })
+        ->when($request->data_fim, function ($q) use ($request) {
+            return $q->whereDate('data_movimentacao', '<=', $request->data_fim);
+        })
 
-            ->orderBy($coluna, $direcao)
-            ->paginate(10);
-    }
+        // CORREÇÃO: Filtro por Tipo de Movimentação (venda, estorno, saque)
+        ->when($request->tipo, function ($q) use ($request) {
+            return $q->where('tipo_movimentacao_id', $request->tipo);
+        })
+
+        // CORREÇÃO: Filtro por Tipo de Comissão (direta, nivel 1, nivel 2)
+        ->when($request->tipo_comissao_id, function ($q) use ($request) {
+            return $q->where('tipo_comissao_id', $request->tipo_comissao_id);
+        });
+
+    $colunasPermitidas = ['valor', 'data_movimentacao'];
+    $coluna = in_array($request->ordenar_por, $colunasPermitidas) ? $request->ordenar_por : 'data_movimentacao';
+    $direcao = ($request->direcao === 'asc') ? 'asc' : 'desc';
+
+    $historico = $query->orderBy($coluna, $direcao)->paginate(10);
+
+    return [
+        'historico' => $historico,
+        'saldo' => $saldoDisponivel
+    ];
+}
+
+
 
     public function comissaoPorMes($id)
     {

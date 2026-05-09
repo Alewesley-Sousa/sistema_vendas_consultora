@@ -8,6 +8,10 @@ use Illuminate\Http\JsonResponse;
 
 class RelatorioController extends Controller
 {
+
+public function viewArvore() {
+    return view('rede');
+}
     public function vendasPessoais(Request $request, RelatorioService $service): JsonResponse
     {
         $dados = $service->vendasPessoais(
