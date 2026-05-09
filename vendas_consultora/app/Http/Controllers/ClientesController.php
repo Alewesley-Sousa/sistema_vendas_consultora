@@ -18,22 +18,23 @@ class ClientesController extends Controller
         $this->clienteService = $clientesService;
     }
 
-    public function formulario($id = null) {
+    public function formulario($id = null)
+    {
         return view('formularios.formulario-cliente', ['id' => $id]);
     }
 
     public function cadastrarCliente(ClienteRequest $request)
     {
+        $usuario = Auth::user();
 
         // O $request aqui já passou pela validação de CPF/Email único!
-        $resultado = $this->clienteService->armazenar($request);
+        $resultado = $this->clienteService->armazenar($request, $usuario);
 
         if ($resultado['status'] === 'success') {
             return response()->json($resultado, 200);
         }
 
         return response()->json($resultado, 400);
-
     }
 
     /**
@@ -49,27 +50,43 @@ class ClientesController extends Controller
         }
 
         return response()->json($resultado, 400);
-
     }
 
     /**
      * Display the specified resource.
      */
-    public function exibir(clientes $cliente): JsonResponse
+    public function exibir($idOrCpf): JsonResponse
     {
+        // Limpa o CPF caso venha com pontos ou traços para buscar apenas números
+        $search = preg_replace('/\D/', '', $idOrCpf);
+
+        // Busca por ID ou por CPF
+        $cliente = clientes::where('id', $idOrCpf)
+            ->orWhere('cpf', $search)
+            ->first();
+
+        if (!$cliente) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cliente não encontrado no sistema e revise se o CPF esta certo'
+            ], 404);
+        }
+
         return response()->json([
             'status' => 'success',
             'data' => $cliente
         ], 200);
     }
 
-    public function listar() {
+    public function listar()
+    {
         // Para renderizar a página Blade
         $clientes = $this->clienteService->listarTodos();
         return view('distribuidora.lista', compact('clientes'));
     }
 
-    public function destroy($id) {
+    public function destroy($id)
+    {
         // Para ser chamado via API/Axios
         $resultado = $this->clienteService->excluir($id);
         return response()->json($resultado, $resultado['status'] === 'success' ? 200 : 400);

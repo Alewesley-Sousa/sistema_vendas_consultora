@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Hash;
 
 class ClientesService 
 {
-    public function armazenar ($dados) {
+    public function armazenar ($dados, $Usuario) {
         DB::beginTransaction();
-        $usuario = Auth::user();
+        $usuario = $Usuario;
         
         try {
         
@@ -37,7 +37,8 @@ class ClientesService
 
             return [
                 'status' => 'success',
-                'messagem' => "cliente cadastrado com sucesso"
+                'messagem' => "cliente cadastrado com sucesso",
+                'data' => $cliente
             ];
 
         } catch (Exception $e) {
