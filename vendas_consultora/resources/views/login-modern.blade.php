@@ -84,8 +84,6 @@
             </div>
         </div>
     </div>
-    
-    
 </div>
 @endsection
 
@@ -93,11 +91,10 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
-<<<<<<< HEAD
-    // 1. Configuração fundamental para o Railway/Produção
+    // Configuração para Railway/Produção
     axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     
-    // 2. Garante que o Axios envie o Token CSRF do Laravel automaticamente
+    // Captura o Token CSRF para evitar erro 419
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
                       || document.querySelector('input[name="_token"]')?.value;
                       
@@ -105,83 +102,43 @@
         axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
     }
 
-=======
-    // Configuração global do Axios para Laravel
-    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-    
->>>>>>> 71e69a9e20ecd39102ca29d6e63d83df7f7cd8a5
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
         const btnLogin = document.getElementById('btnLogin');
         const btnText = document.getElementById('btnText');
-<<<<<<< HEAD
-        const actionUrl = this.getAttribute('action'); // Pega a URL da rota login
-        
-        // Transformamos o FormData em um objeto simples para evitar problemas de parsing no servidor
-        const data = Object.fromEntries(new FormData(this));
-        
-        // Feedback visual
-        btnText.textContent = 'Autenticando...';
-        btnLogin.disabled = true;
-        
-        // Enviando a requisição POST
-        axios.post(actionUrl, data)
-        .then(response => {
-            // Se o Controller retornar o redirect, o Axios redireciona
-=======
+        const actionUrl = this.getAttribute('action');
         const formData = new FormData(this);
         
         btnText.textContent = 'Autenticando...';
         btnLogin.disabled = true;
         
-        axios.post(this.action, formData)
+        axios.post(actionUrl, formData)
         .then(response => {
-            // Se o controller enviou o token, salvamos no localStorage (opcional, mas útil para APIs)
+            // Salva o token se o Sanctum retornar um
             if (response.data.token) {
                 localStorage.setItem('auth_token', response.data.token);
-                localStorage.setItem('user_name', response.data.user);
             }
 
-            // Redirecionamento baseado no match do Controller
->>>>>>> 71e69a9e20ecd39102ca29d6e63d83df7f7cd8a5
+            // Redireciona conforme a lógica do Controller
             if (response.data.redirect) {
                 window.location.href = response.data.redirect;
             }
         })
         .catch(error => {
-<<<<<<< HEAD
-            console.error('Erro detalhado:', error.response);
-            
-            let message = 'Erro ao processar login.';
-            
-            if (error.response) {
-                // Captura a mensagem JSON que você configurou no AutenticacaoController
-                message = error.response.data.message || 'Credenciais inválidas.';
-                
-                // Se o erro for 419, é problema de CSRF (comum em hospedagem)
-                if (error.response.status === 419) {
-                    message = 'A sessão expirou. Recarregue a página.';
-                }
-            }
-            
-            alert(message);
-=======
             console.error('Erro:', error.response);
             
-            // Tratamento das mensagens que você definiu no Controller
-            let errorMsg = 'Ocorreu um erro ao tentar entrar.';
-            
+            let errorMsg = 'Erro ao processar login.';
             if (error.response) {
-                if (error.response.status === 403 || error.response.status === 401) {
-                    errorMsg = error.response.data.message;
-                } else if (error.response.status === 422) {
-                    errorMsg = 'Por favor, preencha os dados corretamente.';
+                // Prioriza a mensagem vinda do seu AutenticacaoController
+                errorMsg = error.response.data.message || 'Credenciais inválidas.';
+                
+                if (error.response.status === 419) {
+                    errorMsg = 'Sessão expirada. Recarregue a página.';
                 }
             }
 
             alert(errorMsg);
->>>>>>> 71e69a9e20ecd39102ca29d6e63d83df7f7cd8a5
         })
         .finally(() => {
             btnText.textContent = 'Entrar';
