@@ -3,7 +3,6 @@
 @section('title', 'Login Moderno - Sistema de Vendas')
 
 @push('styles')
-<!-- Font Awesome & Tailwind via CDN (Caso não esteja no seu layout principal) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -13,6 +12,10 @@
     }
     .animate-float { animation: float 6s ease-in-out infinite; }
     .animate-float-reverse { animation: float 8s ease-in-out infinite reverse; }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 @endpush
 
@@ -20,9 +23,8 @@
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-5 font-sans">
     <div class="bg-white rounded-[20px] shadow-2xl grid grid-cols-1 md:grid-cols-2 w-full max-w-[900px] overflow-hidden animate-[slideIn_0.6s_ease-out]">
         
-        <!-- Lado Esquerdo: Branding (Escondido no Mobile) -->
+        <!-- Lado Esquerdo: Branding -->
         <div class="hidden md:flex bg-gradient-to-br from-[#667eea] to-[#764ba2] p-16 flex-col justify-center items-center text-white relative overflow-hidden">
-            <!-- Círculos Decorativos -->
             <div class="absolute w-[200px] h-[200px] bg-white/10 rounded-full -top-[100px] -right-[100px] animate-float"></div>
             <div class="absolute w-[150px] h-[150px] bg-white/10 rounded-full -bottom-[75px] -left-[75px] animate-float-reverse"></div>
             
@@ -42,10 +44,6 @@
                         <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><i class="fas fa-users"></i></div>
                         <span>Gestão de consultoras</span>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><i class="fas fa-wallet"></i></div>
-                        <span>Controle de comissões</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -57,7 +55,7 @@
                 <p class="text-gray-400">Entre com suas credenciais para acessar o sistema</p>
             </div>
 
-            <form id="loginForm" action="{{ route('login') }}">
+            <form id="loginForm" method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="mb-6">
                     <label for="email" class="block mb-3 font-semibold text-[#2c3e50] text-sm uppercase tracking-wider">E-mail</label>
@@ -74,13 +72,12 @@
                 </div>
 
                 <button type="submit" id="btnLogin" 
-                    class="w-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white p-4 rounded-xl font-bold hover:-translate-y-0.5 hover:shadow-lg transition-all mt-4 disabled:opacity-50">
-                    Entrar
+                    class="w-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white p-4 rounded-xl font-bold hover:-translate-y-0.5 hover:shadow-lg transition-all mt-4 disabled:opacity-50 flex justify-center items-center">
+                    <span id="btnText">Entrar</span>
                 </button>
             </form>
 
             <div class="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4">
-                <span class="hidden sm:inline text-gray-200">|</span>
                 <a href="{{ route('senha-formulario') }}" class="text-[#667eea] font-semibold hover:text-[#764ba2] transition-colors text-sm">
                     Esqueceu sua senha?
                 </a>
@@ -91,41 +88,63 @@
 @endsection
 
 @push('scripts')
-<!-- Axios via CDN -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+    // 1. Configuração fundamental para o Railway/Produção
+    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     
-    const btnLogin = document.getElementById('btnLogin');
-    const originalText = btnLogin.textContent;
-    const formData = new FormData(this);
-    
-    // Feedback visual
-    btnLogin.textContent = 'Autenticando...';
-    btnLogin.disabled = true;
-    
-    axios.post(this.action, formData)
-    .then(response => {
-        if (response.data.redirect) {
-            window.location.href = response.data.redirect;
-        }
-    })
-    .catch(error => {
-        console.error('Erro no login:', error);
+    // 2. Garante que o Axios envie o Token CSRF do Laravel automaticamente
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
+                      || document.querySelector('input[name="_token"]')?.value;
+                      
+    if (csrfToken) {
+        axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // Se o Laravel retornar erro de validação (422)
-        if (error.response && error.response.data.message) {
-            alert(error.response.data.message);
-        } else {
-            alert('Erro ao conectar com o servidor. Verifique sua conexão.');
-        }
-    })
-    .finally(() => {
-        btnLogin.textContent = originalText;
-        btnLogin.disabled = false;
+        const btnLogin = document.getElementById('btnLogin');
+        const btnText = document.getElementById('btnText');
+        const actionUrl = this.getAttribute('action'); // Pega a URL da rota login
+        
+        // Transformamos o FormData em um objeto simples para evitar problemas de parsing no servidor
+        const data = Object.fromEntries(new FormData(this));
+        
+        // Feedback visual
+        btnText.textContent = 'Autenticando...';
+        btnLogin.disabled = true;
+        
+        // Enviando a requisição POST
+        axios.post(actionUrl, data)
+        .then(response => {
+            // Se o Controller retornar o redirect, o Axios redireciona
+            if (response.data.redirect) {
+                window.location.href = response.data.redirect;
+            }
+        })
+        .catch(error => {
+            console.error('Erro detalhado:', error.response);
+            
+            let message = 'Erro ao processar login.';
+            
+            if (error.response) {
+                // Captura a mensagem JSON que você configurou no AutenticacaoController
+                message = error.response.data.message || 'Credenciais inválidas.';
+                
+                // Se o erro for 419, é problema de CSRF (comum em hospedagem)
+                if (error.response.status === 419) {
+                    message = 'A sessão expirou. Recarregue a página.';
+                }
+            }
+            
+            alert(message);
+        })
+        .finally(() => {
+            btnText.textContent = 'Entrar';
+            btnLogin.disabled = false;
+        });
     });
-});
 </script>
 @endpush
