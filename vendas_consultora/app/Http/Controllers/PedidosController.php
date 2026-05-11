@@ -22,7 +22,7 @@ class PedidosController extends Controller
     }
 
 public function index() {
-	
+	return view("lider.pedidos-equipe");
 }
     /**
      * Método chamado pelo botão "Confirmar Pagamento" do Checkout
