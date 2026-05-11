@@ -1,291 +1,88 @@
-@extends('layouts.app')
+@extends('layouts.appAdmin')
 
-@section('title', 'Painel Administrativo - Protótipo')
-
-@push('styles')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<style>
-    .admin-container {
-        max-width: 1200px;
-        margin: 16px auto;
-        padding: 16px;
-        min-height: calc(100vh - 32px);
-    }
-
-    .admin-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 18px;
-        background: rgba(255, 255, 255, 0.95);
-        padding: 16px;
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-        border: 1px solid #e8ebfa;
-    }
-
-    .admin-title h1 {
-        color: #333;
-        margin: 0;
-        font-size: 28px;
-    }
-
-    .admin-title p {
-        color: #666;
-        margin: 5px 0 0 0;
-    }
-
-    .admin-actions {
-        display: flex;
-        gap: 15px;
-    }
-
-    .btn-admin {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-    }
-
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-
-    .dashboard-card {
-        background: white;
-        border-radius: 14px;
-        padding: 18px;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border: 1px solid #eef1ff;
-    }
-
-    .dashboard-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-    }
-
-    .card-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-
-    .card-icon {
-        font-size: 24px;
-        margin-right: 15px;
-        color: #667eea;
-    }
-
-    .card-title {
-        font-size: 18px;
-        font-weight: bold;
-        color: #333;
-        margin: 0;
-    }
-
-    .card-value {
-        font-size: 32px;
-        font-weight: bold;
-        color: #667eea;
-        margin: 10px 0;
-    }
-
-    .card-subtitle {
-        color: #666;
-        font-size: 14px;
-    }
-
-    .users-section {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 14px;
-        padding: 18px;
-        margin-bottom: 24px;
-        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-        border: 1px solid #edf0ff;
-    }
-
-    .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .section-title {
-        font-size: 24px;
-        font-weight: bold;
-        color: #333;
-        margin: 0;
-    }
-
-    .users-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 16px;
-    }
-
-    .users-table th, .users-table td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #e9ecff;
-        font-size: 14px;
-    }
-
-    .users-table th {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        font-weight: bold;
-    }
-
-    .users-table tr:hover {
-        background: rgba(102, 126, 234, 0.05);
-    }
-
-    .role-badge {
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-size: 12px;
-        font-weight: bold;
-        text-transform: uppercase;
-    }
-
-    .role-admin {
-        background: #e74c3c;
-        color: white;
-    }
-
-    .role-cliente {
-        background: #27ae60;
-        color: white;
-    }
-
-    @media (max-width: 768px) {
-        .admin-header {
-            flex-direction: column;
-            gap: 20px;
-            text-align: center;
-        }
-
-        .admin-actions {
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .dashboard-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .section-header {
-            flex-direction: column;
-            gap: 15px;
-        }
-    }
-</style>
-@endpush
+@section('header', 'Painel de Controle')
 
 @section('content')
-<div class="admin-container">
-    <div class="admin-header">
-        <div class="admin-title">
-            <h1>Painel Administrativo</h1>
-            <p>Gerencie usuários e clientes do sistema - PROTÓTIPO</p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+    <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-green-500/10 text-green-600 rounded-2xl">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <span class="text-[10px] font-bold text-green-500 bg-green-50 px-2 py-1 rounded-lg">+12%</span>
         </div>
-        <div class="admin-actions">
-            <button class="btn-admin btn-primary" onclick="alert('Funcionalidade em desenvolvimento')">
-                <i class="fas fa-user-plus"></i> Adicionar Usuário
-            </button>
-        </div>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Vendas (Mês)</p>
+        <h3 class="text-2xl font-black text-slate-800">R$ 8.420,00</h3>
     </div>
 
-    <div class="dashboard-grid">
-        <div class="dashboard-card">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-users"></i></div>
-                <h3 class="card-title">Total de Usuários</h3>
+    <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-blue-500/10 text-blue-600 rounded-2xl">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
             </div>
-            <div class="card-value">12</div>
-            <div class="card-subtitle">Usuários registrados no sistema</div>
+            <span class="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded-lg">8 Novos</span>
         </div>
-
-        <div class="dashboard-card">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-user-tie"></i></div>
-                <h3 class="card-title">Funcionários</h3>
-            </div>
-            <div class="card-value">5</div>
-            <div class="card-subtitle">Usuários com papel de funcionário</div>
-        </div>
-
-        <div class="dashboard-card">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-user"></i></div>
-                <h3 class="card-title">Clientes</h3>
-            </div>
-            <div class="card-value">7</div>
-            <div class="card-subtitle">Usuários com papel de cliente</div>
-        </div>
-
-        <div class="dashboard-card">
-            <div class="card-header">
-                <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
-                <h3 class="card-title">Clientes Sistema</h3>
-            </div>
-            <div class="card-value">23</div>
-            <div class="card-subtitle">Clientes cadastrados no sistema</div>
-        </div>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Pedidos Hoje</p>
+        <h3 class="text-2xl font-black text-slate-800">24</h3>
     </div>
 
-    <div class="users-section">
-        <div class="section-header">
-            <h2 class="section-title">Gerenciamento de Usuários</h2>
+    <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-purple-500/10 text-purple-600 rounded-2xl">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+            </div>
         </div>
-        <table class="users-table">
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>E-mail</th>
-                    <th>Papel</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Maria Silva</td>
-                    <td>maria@exemplo.com</td>
-                    <td><span class="role-badge role-admin">Admin</span></td>
-                    <td>Ativo</td>
-                </tr>
-                <tr>
-                    <td>João Santos</td>
-                    <td>joao@exemplo.com</td>
-                    <td><span class="role-badge role-cliente">Cliente</span></td>
-                    <td>Ativo</td>
-                </tr>
-                <tr>
-                    <td>Ana Costa</td>
-                    <td>ana@exemplo.com</td>
-                    <td><span class="role-badge role-cliente">Cliente</span></td>
-                    <td>Ativo</td>
-                </tr>
-            </tbody>
-        </table>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Consultoras Ativas</p>
+        <h3 class="text-2xl font-black text-slate-800">142</h3>
+    </div>
+
+    <div class="bg-white p-6 rounded-[2.5rem] border border-red-100 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-red-500/10 text-red-600 rounded-2xl">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+            </div>
+        </div>
+        <p class="text-xs font-bold text-red-400 uppercase tracking-widest">Estoque Crítico</p>
+        <h3 class="text-2xl font-black text-slate-800">5 Itens</h3>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <livewire:admin.solicitacoes-table />
+
+    <div class="bg-[#1E293B] rounded-[2.5rem] p-8 text-white shadow-xl relative overflow-hidden flex flex-col justify-between">
+        <div class="relative z-10">
+            <h3 class="text-xl font-bold mb-1">Ações Rápidas</h3>
+            <p class="text-slate-400 text-[10px] mb-8 font-bold uppercase tracking-widest">Atalhos Administrativos</p>
+            
+            <div class="space-y-3">
+                <button class="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all group border border-white/5">
+                    <span class="text-xs font-bold tracking-wide">Novo Produto</span>
+                    <svg class="w-4 h-4 text-yellow-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                </button>
+                
+                <button class="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all group border border-white/5">
+                    <span class="text-xs font-bold tracking-wide">Criar Promoção</span>
+                    <svg class="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+                </button>
+
+                <button class="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all group border border-white/5">
+                    <span class="text-xs font-bold tracking-wide">Backup do Banco</span>
+                    <svg class="w-4 h-4 text-blue-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="mt-8 relative z-10">
+            <p class="text-[10px] text-slate-500 font-bold mb-2 uppercase">Status do Servidor</p>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <span class="text-[10px] font-bold text-slate-300">Sincronizado</span>
+            </div>
+        </div>
+
+        <div class="absolute -right-4 -bottom-4 w-32 h-32 bg-yellow-400/10 rounded-full blur-3xl"></div>
     </div>
 </div>
 @endsection

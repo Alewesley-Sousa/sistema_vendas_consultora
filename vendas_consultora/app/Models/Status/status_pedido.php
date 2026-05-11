@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class status_pedido extends Model
 {
+
+    public $table = 'status_pedido';
+
     // RELACIONAMENTO PEDIDO
     public function pedidos(): HasMany
     {

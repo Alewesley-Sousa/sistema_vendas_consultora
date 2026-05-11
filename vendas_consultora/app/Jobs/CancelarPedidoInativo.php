@@ -1,13 +1,14 @@
+<?php
+
 namespace App\Jobs;
 
 use App\Models\pedidos;
+use App\Services\LogService;
 use Illuminate\Bus\Queueable;
-<?php
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Services\LogService;
 
 class CancelarPedidoInativo implements ShouldQueue
 {
@@ -30,7 +31,7 @@ class CancelarPedidoInativo implements ShouldQueue
             $pedido->save();
 
             LogService::registrarAcao(
-                "Pedido #$pedido->id cancelado automaticamente por falta de pagamento (8 min)",
+                "Pedido #{$pedido->id} cancelado automaticamente por falta de pagamento (8 min)",
                 "Pedidos",
                 $pedido->id,
                 "Sistema de cancelamento automático"

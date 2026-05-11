@@ -8,10 +8,55 @@ use App\Models\usuarios;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class MetaService
 {
+	
+	// No UsuarioService.php ou MetasService.php
+
+/**
+ * Retorna consultoras do líder que não possuem meta definida para o mês/ano atual
+ */
+public function consultorasSemMetaMesAtual(Request $request)
+{
+    try {
+        $lider = Auth::user();
+        $mesAtual = now()->month;
+        $anoAtual = now()->year;
+        $busca = $request->query('search');
+
+        $query = usuarios::where('consultora_id', $lider->id)
+            ->where('cargo', 'consultora')
+            ->where('status_id', 1)
+            ->whereDoesntHave('metasConsultora', function ($q) use ($mesAtual, $anoAtual) {
+                // CORREÇÃO AQUI: Usar whereMonth e whereYear na coluna correta
+                $q->whereMonth('data_referencia', $mesAtual)
+                  ->whereYear('data_referencia', $anoAtual);
+            });
+
+        if ($busca) {
+            $query->where('nome', 'like', "%{$busca}%");
+        }
+
+        $consultoras = $query->paginate(10);
+
+        return [
+            'status' => 'success',
+            'data' => $consultoras
+        ];
+
+    } catch (\Exception $e) {
+        return [
+            'status' => 'error',
+            'mensagem' => $e->getMessage()
+        ];
+    }
+}
+
+
+
     /**
      * Pega o registro da meta ativa (status 3) do usuário.
      */
@@ -57,70 +102,71 @@ class MetaService
         return round($progresso, 2);
     }
 
-    /**
-     * Cria uma nova meta para uma consultora da rede.
-     */
-    public function criarMeta($idConsultora, $dados)
-    {
-        try {
-            return DB::transaction(function () use ($idConsultora, $dados) {
-                $lider = Auth::user();
+/**
+ * Cria uma nova meta para uma consultora da rede.
+ */
+public function criarMeta($idConsultora, $dados)
+{
+    try {
+        return DB::transaction(function () use ($idConsultora, $dados) {
+            $lider = Auth::user();
 
-                if ($lider->cargo !== 'lider') {
-                    throw new Exception('Acesso negado! Somente líderes podem atribuir metas.');
-                }
+            // 1. Verificação de Cargo
+            if ($lider->cargo !== 'lider') {
+                throw new Exception('Acesso negado! Somente líderes podem atribuir metas.');
+            }
 
-                // Busca a consultora garantindo que ela pertence à rede do líder logado
-                $consultora = usuarios::where('id', $idConsultora)
-                    ->where('consultora_id', $lider->id)
-                    ->first();
+            // 2. Busca a consultora (Usando o model plural conforme seu padrão)
+            // IMPORTANTE: Verifique se a coluna é 'consultora_id' ou 'lider_id'
+            $consultora = usuarios::where('id', $idConsultora)
+                ->where('consultora_id', $lider->id) 
+                ->first();
 
-                if (!$consultora) {
-                    throw new Exception('Consultora não encontrada ou não pertence à sua rede.');
-                }
+            if (!$consultora) {
+                throw new Exception('Consultora não encontrada ou não pertence à sua rede.');
+            }
 
-                // Normaliza a data para o primeiro dia do mês (Evita duplicidade no mesmo mês)
-                $dataRef = Carbon::parse($dados['data_referencia'])->startOfMonth();
+            // 3. Tratamento da Data com Carbon
+            // Se vier "2026-05", o Carbon entende. startOfMonth() garante 2026-05-01
+            $dataRef = Carbon::parse($dados['data_referencia'])->startOfMonth();
 
-                // 1. Verifica se JÁ EXISTE uma meta ativa (Status 3)
-                $temMetaAtiva = metas::where('consultora_id', $idConsultora)
-                    ->where('status_id', 3)
-                    ->exists();
+            // 4. Verificação de Meta Existente (Mesmo Mês/Ano)
+            // Usamos whereDate ou Month/Year para evitar falsos negativos
+            $metaExistente = metas::where('consultora_id', $idConsultora)
+                ->whereYear('data_referencia', $dataRef->year)
+                ->whereMonth('data_referencia', $dataRef->month)
+                ->first();
 
-                if ($temMetaAtiva) {
-                    throw new Exception('Esta consultora já possui uma meta ativa no momento.');
-                }
+            if ($metaExistente) {
+                $statusMsg = ($metaExistente->status_id == 3) ? 'ativa' : 'registrada';
+                throw new Exception("Já existe uma meta {$statusMsg} para " . $dataRef->format('m/Y'));
+            }
 
-                // 2. Verifica se JÁ EXISTE meta cadastrada para este MÊS específico (Independente do status)
-                $metaNoMes = metas::where('consultora_id', $idConsultora)
-                    ->whereYear('data_referencia', $dataRef->year)
-                    ->whereMonth('data_referencia', $dataRef->month)
-                    ->exists();
+            // 5. Criação da Meta
+            metas::create([
+                'consultora_id'   => $idConsultora,
+                'lider_id'        => $lider->id,
+                'valor_meta'      => $dados['valor_meta'],
+                'data_referencia' => $dataRef->toDateString(), // Formato Y-m-d
+                'status_id'       => 3 // Ativa
+            ]);
 
-                if ($metaNoMes) {
-                    throw new Exception('Já existe uma meta registrada para ' . $dataRef->format('m/Y'));
-                }
-
-                $meta = metas::create([
-                    'consultora_id'   => $idConsultora,
-                    'lider_id'        => $lider->id,
-                    'valor_meta'      => $dados['valor_meta'],
-                    'data_referencia' => $dataRef->format('Y-m-d'),
-                    'status_id'       => 3 // Ativa
-                ]);
-
-                return [
-                    'status'   => 'success',
-                    'mensagem' => "Meta de R$ " . number_format($dados['valor_meta'], 2, ',', '.') . " atribuída com sucesso para {$consultora->nome}!"
-                ];
-            });
-        } catch (Exception $e) {
             return [
-                'status'   => 'error',
-                'mensagem' => $e->getMessage()
+                'status'   => 'success',
+                'mensagem' => "Meta de R$ " . number_format($dados['valor_meta'], 2, ',', '.') . " atribuída para {$consultora->nome}!"
             ];
-        }
+        });
+    } catch (Exception $e) {
+        // Log para debug interno se necessário
+        // Log::error($e->getMessage());
+        
+        return [
+            'status'   => 'error',
+            'mensagem' => $e->getMessage()
+        ];
     }
+}
+
 
     /**
      * Lista consultoras da rede com histórico de metas concluídas e progresso da meta atual.

@@ -69,12 +69,26 @@ class UsuariosController extends Controller
         ], 200);
     }
 
-    public function listarPreCadastros(): JsonResponse
-    {
-        $resultado = $this->usuarioService->visualizarSolicitacoesDeNovasConsultora();
-        
-        return response()->json($resultado, $resultado['status'] === 'success' ? 200 : 400);
+    // No seu UsuariosController
+public function listarPreCadastros()
+{
+    $usuarioLogado = Auth::user();
+
+    $query = usuarios::where('status_id', 3);
+
+    // Se for uma consultora/líder, ela só vê os pré-cadastros que ela mesma fez
+    if (in_array($usuarioLogado->cargo, ['consultora', 'lider'])) {
+        $query->where('consultora_id', $usuarioLogado->id);
     }
+
+    $preCadastros = $query->orderBy('created_at', 'desc')->get();
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $preCadastros
+    ]);
+}
+
 
     public function aprovarOuRecusar($id, Request $request): JsonResponse
     {

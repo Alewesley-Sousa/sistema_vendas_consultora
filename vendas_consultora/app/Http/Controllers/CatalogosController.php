@@ -17,7 +17,7 @@ class CatalogosController extends Controller
     }
 
     public function index() {
-        return view('consultora.catalogo-vendas');
+        return view('consultora.catalogo');
     }
 
     public function listar(): JsonResponse

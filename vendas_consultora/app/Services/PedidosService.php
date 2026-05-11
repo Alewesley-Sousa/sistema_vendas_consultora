@@ -6,6 +6,7 @@ use App\Models\itens_pedido;
 use App\Models\pedidos;
 use App\Models\pagamentos;
 use Exception;
+use DateTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Interfaces\calcularSubtotal;
@@ -98,43 +99,101 @@ class PedidosService
       ];
     }
   }
-
-  public function trazerPedidoPorId($id)
-  {
-    try {
-      $usuarioLongado = Auth::check();
-      if (!$usuarioLongado) {
-        throw new Exception("Acesso negado!");
-      }
-      $resultado = pedidos::select(
-        "id",
-        "usuario_id",
-        "cliente_id",
-        "link",
-        "valor_total",
-        "status_id",
-        "tipo_pagamento"
-      )
-        ->where("id", $id)
-        ->with("itensPedidos", function ($query) {
-          $query->select("id", "produto_id", "quantidade", "preco");
+  public function listarPedidosPorEquipe($liderId)
+{
+    return pedidos::with(['consultora', 'clientes', 'itensPedidos'])
+        // Filtra para NÃO trazer pedidos com status de cancelado (ID 7)
+        ->where('status_id', '!=', 7) 
+        ->whereHas('consultora', function ($query) use ($liderId) {
+            $query->where('consultora_id', $liderId);
         })
-        ->first();
-      if (!$resultado) {
-        throw new Exception("Pedido não registrado no sistema!");
-      }
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($pedido) {
+            return [
+                'id'        => $pedido->id,
+                'data'      => $pedido->created_at->format('d/m/Y'),
+                'nome'      => $pedido->consultora->nome ?? 'Consultora',
+                'cliente'   => $pedido->clientes->nome ?? 'Consumidor',
+                'pagamento' => strtoupper($pedido->tipo_pagamento),
+                'status'    => $pedido->status->nome ?? 'Pendente',
+                'total'     => (float) $pedido->valor_total,
+                'itens'     => $pedido->itensPedidos->map(function ($item) {
+                    return [
+                        'produto' => $item->produto->nome ?? 'Produto',
+                        'qtd'     => $item->quantidade,
+                        'preco'   => (float) $item->preco_unitario
+                    ];
+                })
+            ];
+        });
+}
 
-      return [
-        "status" => "success",
-        "data" => $resultado,
-      ];
+
+
+
+
+public function trazerPedidoPorId($id)
+{
+    try {
+        if (!Auth::check()) {
+            throw new Exception("Acesso negado!");
+        }
+
+        $resultado = pedidos::select(
+            "id", 
+            "usuario_id",
+            "cliente_id",
+            "link",
+            "valor_total",
+            "status_id",
+            "tipo_pagamento"
+        )
+        ->where("id", $id)
+        ->with([
+            // Ajustado para 'consultora' conforme seu Model
+            'consultora' => function ($query) {
+                $query->select("id", "nome"); 
+            },
+            // Ajustado para 'clientes' conforme seu Model
+            'clientes' => function ($query) {
+                $query->select("id", "nome");
+            },
+            'itensPedidos' => function ($query) {
+                $query->select("id", "pedido_id", "item_catalogo_id", "quantidade", "preco_unitario");
+            },
+            'itensPedidos.itemCatalogo' => function ($query) {
+                $query->select("id", "produto_id");
+            },
+            'itensPedidos.itemCatalogo.produto' => function ($query) {
+                $query->select("id", "nome");
+            },
+            'status' => function ($query) {
+            	$query->select('id', 'nome');
+            }
+        ])
+        ->first();
+
+        if (!$resultado) {
+            throw new Exception("Pedido não registrado no sistema!");
+        }
+
+        return [
+            "status" => "success",
+            "data" => $resultado,
+        ];
+
     } catch (Exception $e) {
-      return [
-        "status" => "error",
-        "mensagem" => "Erro encontrado: " . $e->getMessage(),
-      ];
+        return [
+            "status" => "error",
+            "mensagem" => "Erro encontrado: " . $e->getMessage(),
+        ];
     }
-  }
+}
+
+
+
+
 
   protected function diasDesde(string $data)
   {
@@ -150,7 +209,7 @@ class PedidosService
     try {
       $pedido = pedidos::find($id);
       $pagamento = pagamentos::where("pedido_id", $pedido->id)->first();
-      if ($pedido->status_id === 1) {
+      if ($pedido->status_id !== 1) {
         throw new Exception("pedido náo pode ser mais cancelado.");
       } elseif ($pedido->status_id === 7) {
         throw new Exception(
@@ -204,7 +263,7 @@ class PedidosService
       $pedido->tipo_pagamento = $data["tipo_pagamento"];
 
       // Monta o link dinâmico (ajuste a rota conforme seu web.php)
-      $pedido->link = config("app.url") . "/pedido/rastreio/" . $pedido->uuid;
+      $pedido->link = "/pedido/rastreio/" . $pedido->uuid;
 
       $pedido->save();
 
@@ -214,7 +273,7 @@ class PedidosService
       foreach ($data["itens"] as $itemData) {
         $item = new itens_pedido();
         $item->pedido_id = $pedido->id;
-        $item->produto_id = $itemData["produto_id"];
+        $item->item_catalogo_id = $itemData["item_catalogo_id"];
         $item->quantidade = $itemData["quantidade"];
 
         // Aqui você pode buscar o preço do produto no banco futuramente
@@ -244,7 +303,7 @@ class PedidosService
       );
 
       DB::commit();
-      
+
       // Dispara o cancelamento automático para daqui a 8 minutos
       CancelarPedidoInativo::dispatch($pedido->id)->delay(now()->addMinutes(8));
 

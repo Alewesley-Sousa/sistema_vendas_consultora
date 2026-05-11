@@ -17,6 +17,25 @@ class MetasController extends Controller
         $this->metaService = $metaService;
     }
 
+public function listarPendentesConfiguracao(Request $request)
+{
+    // O ideal é que o MetasController use um MetasService, 
+    // mas seguindo sua lógica, podemos chamar o service especializado
+    $resultado = $this->metaService->consultorasSemMetaMesAtual($request);
+
+    return response()->json($resultado);
+}
+    /**
+     * Exibe a tela de definição de metas individuais.
+     */
+    public function index()
+    {
+        // Aqui você pode carregar dados iniciais se precisar, 
+        // como a lista de membros da equipe para o Alpine.js consumir.
+        
+        return view('lider.configuracaoMeta'); 
+        // Certifique-se que o arquivo está em: resources/views/metas/configuracao.blade.php
+    }
     public function metaAtual() {
 
         $idUsuario = Auth::id();

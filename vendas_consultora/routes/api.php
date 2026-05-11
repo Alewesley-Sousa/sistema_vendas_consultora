@@ -27,13 +27,15 @@ Route::middleware("auth:sanctum")->group(function () {
         Route::get("/historico", [HistoricoComissoesController::class, "visualizarHistorico"]);
     });
 
-    // --- METAS ---
-    Route::prefix("meta")->controller(MetasController::class)->group(function () {
-        Route::get("/", "metaAtual");
-        Route::get("/progresso", "progressoMeta");
-        Route::get("/historico", "historicoMetaProgresso");
-        Route::post("/atribuir/{id}", "atribuirMeta");
-    });
+// --- METAS ---
+Route::prefix("meta")->controller(MetasController::class)->group(function () {
+    Route::get("/", "metaAtual");
+    Route::get("/progresso", "progressoMeta");
+    Route::get("/historico", "historicoMetaProgresso");
+    Route::get("/pendentes", "listarPendentesConfiguracao"); // <-- Nova Rota
+    Route::post("/atribuir/{id}", "atribuirMeta");
+});
+
 
     // --- CLIENTES ---
     Route::prefix("cliente")->controller(ClientesController::class)->group(function () {
@@ -78,6 +80,8 @@ Route::post("/", "cadastrarUsuario");
     // --- PEDIDOS ---
     Route::prefix("pedido")->controller(PedidosController::class)->group(function () {
     	Route::post("/", "store");
+    	Route::post("/{id}/pagar-simulado",
+"processarPagamentoCheckout")->name('pedido.pagar.simulado');
         Route::get("/{pedido}", "visualizarPedido");
         Route::put("/{pedido}", "atualizarPedido");
         Route::delete("/{id}", "cancelarPedido");
@@ -127,6 +131,7 @@ Route::post("/", "cadastrarUsuario");
     Route::prefix("lider")->controller(LiderController::class)->group(function () {
         Route::get("/equipe", "visualizarEquipe");
         Route::get("/equipe/desempenho", "visualizarDesempenho");
+		Route::get('/equipe/pedidos', [PedidosController::class,
+		'listar'])->middleware('auth');
     });
-
 });

@@ -32,10 +32,9 @@ class itens_pedido extends Model
         return $this->hasOne(itens_devolucao::class, 'item_pedido_id', 'id');
     }
 
-    // RELACIONAMENTO PRODUTO
-    public function produto(): BelongsTo
+    public function itemCatalogo()
     {
-        return $this->belongsTo(produtos::class, 'produto_id', 'id');
+        return $this->belongsTo(itens_catalogo::class, 'item_catalogo_id', 'id');
     }
 
     // RELACIONAMENTO PEDIDOS

@@ -61,21 +61,40 @@ public function PegarHistoricoComissao(Request $request)
 
 
 
-    public function comissaoPorMes($id)
-    {
+    /**
+ * Busca a comissão agrupada por mês com tratamento de erros.
+ */
+public function comissaoPorMes($id)
+{
+    try {
         $comissaoVenda = historico_comissoes::where('consultora_id', $id)
             ->selectRaw("
-        strftime('%m/%Y', data_movimentacao) as mes_referencia,
-        SUM(CASE 
-            WHEN tipo_movimentacao_id = 1 THEN valor 
-            WHEN tipo_movimentacao_id = 2 THEN -valor 
-            ELSE 0 
-        END) as valor_final
-    ")
+                strftime('%m/%Y', data_movimentacao) as mes_referencia,
+                SUM(CASE 
+                    WHEN tipo_movimentacao_id = 1 THEN valor 
+                    WHEN tipo_movimentacao_id = 2 THEN -valor 
+                    ELSE 0 
+                END) as valor_final
+            ")
             ->groupBy('mes_referencia')
             ->orderBy('mes_referencia', 'desc')
             ->get();
 
+        // Se o resultado for vazio, é um aviso importante para o seu log no Termux
+        if ($comissaoVenda->isEmpty()) {
+            \Log::info("Aviso: Nenhuma comissão encontrada para a consultora ID: {$id}. Verifique se os Seeds foram rodados.");
+        }
+
         return $comissaoVenda;
+
+    } catch (\Exception $e) {
+        // Registra o erro real no log do Laravel (storage/logs/laravel.log)
+        \Log::error("Erro na query de comissão (ID $id): " . $e->getMessage());
+
+        // Retorna uma Collection vazia para não quebrar o map() no UsuarioService,
+        // mas você saberá pelo log que houve um erro técnico.
+        return collect([]);
     }
+}
+
 }

@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\MetasController;
 use App\Http\Controllers\Auth\AutenticacaoController;
 use App\Http\Controllers\Auth\ResetarSenhaController;
 use App\Http\Controllers\CatalogosController;
+use App\Http\Controllers\LiderController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\HistoricoComissoesController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UsuariosController;
+use App\Http\Controllers\PedidosController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -81,3 +84,18 @@ Route::get('/pedido/rastreio/{uuid}', [App\Http\Controllers\PedidosController::c
     ->name('cliente.pedido.montado');
 
 Route::get('/rede/arvore', [RelatorioController::class, 'viewArvore'])->middleware('auth');
+
+Route::get('/lider/upgrade', [LiderController::class, 'verificarRequisitos']);
+Route::get('/lider/mudarCargo', [LiderController::class, 'mudarCargo']);
+Route::get('/relatorios/desempenho-equipe', [RelatorioController::class, 'desempenho'])
+        ->name('relatorios.desempenho');
+        
+
+// Rota para a página de configuração de metas
+Route::get('/metas/configuracao-equipe', [MetasController::class, 'index'])
+    ->name('metas.configuracao')->middleware('auth');
+Route::get('/pedidos/equipe', [PedidosController::class,
+'index'])->middleware('auth');
+
+Route::get('/pedido/rastreio/{uuid}', [PedidosController::class,
+'exibirPaginaPagamento'])->name('pedido.rastreio');

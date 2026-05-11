@@ -1,769 +1,161 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - Sistema de Vendas</title>
-    <link rel="stylesheet" href="estilo.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        :root {
-            --primary: #667eea;
-            --primary-dark: #764ba2;
-            --success: #27ae60;
-            --danger: #e74c3c;
-            --card: #ffffff;
-            --bg: #f6f8ff;
-            --text: #333;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(180deg, #eef2ff 0%, #f7f9ff 100%);
-            color: var(--text);
-            line-height: 1.45;
-        }
-
-        .admin-container {
-            max-width: 1200px;
-            margin: 16px auto;
-            padding: 16px;
-            min-height: calc(100vh - 32px);
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 16px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e8ebfa;
-        }
-
-        .admin-title h1 {
-            color: #333;
-            margin: 0;
-            font-size: 28px;
-        }
-
-        .admin-title p {
-            color: #666;
-            margin: 5px 0 0 0;
-        }
-
-        .admin-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .btn-admin {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-secondary {
-            background: #f8f9fa;
-            color: #333;
-            border: 2px solid #e9ecef;
-        }
-
-        .btn-secondary:hover {
-            background: #e9ecef;
-        }
-
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .dashboard-card {
-            background: var(--card);
-            border-radius: 14px;
-            padding: 18px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid #eef1ff;
-        }
-
-        .dashboard-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .card-icon {
-            font-size: 24px;
-            margin-right: 15px;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin: 0;
-        }
-
-        .card-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #667eea;
-            margin: 10px 0;
-        }
-
-        .card-subtitle {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .users-section, .clients-section {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 24px;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-            border: 1px solid #edf0ff;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            margin: 0;
-        }
-
-        .section-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        .users-table, .clients-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
-            min-width: 600px;
-        }
-
-        .users-table th, .users-table td,
-        .clients-table th, .clients-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e9ecff;
-            font-size: 14px;
-        }
-
-        .users-table th, .clients-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: bold;
-        }
-
-        .users-table tr:hover, .clients-table tr:hover {
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .role-badge {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .role-admin {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .role-funcionario {
-            background: #f39c12;
-            color: white;
-        }
-
-        .role-cliente {
-            background: #27ae60;
-            color: white;
-        }
-
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .status-ativo {
-            background: #27ae60;
-            color: white;
-        }
-
-        .status-inativo {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .status-pendente {
-            background: #f39c12;
-            color: white;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-edit {
-            background: #f39c12;
-            color: white;
-        }
-
-        .btn-edit:hover {
-            background: #e67e22;
-        }
-
-        .btn-delete {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-delete:hover {
-            background: #c0392b;
-        }
-
-        .btn-promote {
-            background: #27ae60;
-            color: white;
-        }
-
-        .btn-promote:hover {
-            background: #229954;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            width: 90%;
-            max-width: 600px;
-            animation: modalFadeIn 0.3s ease;
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            color: #333;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #999;
-        }
-
-        .close-btn:hover {
-            color: #333;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-
-        .modal-footer {
-            text-align: right;
-            margin-top: 20px;
-        }
-
-        .no-data {
-            text-align: center;
-            color: #999;
-            font-style: italic;
-            padding: 40px;
-        }
-
-        @media (max-width: 768px) {
-            .admin-header {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-
-            .admin-actions {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .section-header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-
-            .form-row {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="admin-container">
-        <div class="admin-header">
-            <div class="admin-title">
-                <h1>Painel Administrativo</h1>
-                <p>Gerencie usu├írios e clientes do sistema</p>
-            </div>
-            <div class="admin-actions">
-                <button class="btn-admin btn-primary" onclick="openAddUserModal()">
-                    <i class="fas fa-user-plus"></i> Adicionar Usu├írio
-                </button>
-                <button class="btn-admin btn-secondary" onclick="window.location.href='clientes.html'">
-                    <i class="fas fa-users"></i> Ver Clientes
-                </button>
-                <button class="btn-admin btn-danger" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
-            </div>
+@extends('layouts.app')
+
+@section('title', 'Painel Inicial - Glow Cosmetics')
+
+@section('header')
+<style>
+    /* Suporte para Glassmorphism */
+    .backdrop-blur-md {
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+    }
+</style>
+
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6" x-data>
+    <div>
+        <h1 class="text-4xl font-serif font-medium text-[#2C3E50]">
+            Bem-vinda de volta, <span class="text-[#E67E73] font-bold">{{ explode(' ', Auth::user()->nome)[0] }}.</span>
+        </h1>
+    </div>
+
+    <div class="flex gap-4">
+        <button @click="$dispatch('abrir-modal-cadastro')" 
+                class="flex items-center gap-3 bg-[#FF7665] text-white px-6 py-4 rounded-2xl shadow-lg shadow-[#FF7665]/30 hover:bg-[#ff6450] transition-all font-bold uppercase text-xs tracking-wider focus:outline-none">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+            Cadastrar Consultora
+        </button>
+
+        <a href="/catalogo" class="flex items-center gap-3 bg-white text-[#2C3E50] border border-gray-200 px-6 py-4 rounded-2xl shadow-sm hover:bg-gray-50 transition-all font-bold uppercase text-xs tracking-wider">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            Novo Pedido
+        </a>
+    </div>
+</div>
+@endsection
+
+@section('content')
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
+    {{-- Card de Comissão --}}
+    <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
+            <svg class="w-24 h-24 text-[#E67E73]" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"></path></svg>
         </div>
-
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fas fa-users"></i></div>
-                    <h3 class="card-title">Total de Usu├írios</h3>
-                </div>
-                <div class="card-value" id="totalUsers">0</div>
-                <div class="card-subtitle">Usu├írios registrados no sistema</div>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fas fa-user-tie"></i></div>
-                    <h3 class="card-title">Funcion├írios</h3>
-                </div>
-                <div class="card-value" id="totalFuncionarios">0</div>
-                <div class="card-subtitle">Usu├írios com papel de funcion├írio</div>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fas fa-user"></i></div>
-                    <h3 class="card-title">Clientes</h3>
-                </div>
-                <div class="card-value" id="totalClientes">0</div>
-                <div class="card-subtitle">Usu├írios com papel de cliente</div>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
-                    <h3 class="card-title">Clientes Sistema</h3>
-                </div>
-                <div class="card-value" id="totalClientesSistema">0</div>
-                <div class="card-subtitle">Clientes cadastrados no sistema</div>
-            </div>
-        </div>
-
-        <div class="users-section">
-            <div class="section-header">
-                <h2 class="section-title">Gerenciamento de Usu├írios</h2>
-                <div class="section-actions">
-                    <input type="text" id="userSearch" placeholder="Buscar usu├írios..." style="padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
-                </div>
-            </div>
-            <div class="table-wrapper">
-                <table class="users-table">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>E-mail</th>
-                            <th>Papel</th>
-                            <th>Data Cadastro</th>
-                            <th>A├º├Áes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="usersTableBody">
-                        <tr>
-                            <td colspan="5" class="no-data">Carregando usu├írios...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-4">Financeiro Disponível</p>
+        <h3 class="text-gray-600 text-3xl font-light">
+            Saldo de Comissão: <span id="saldo-comissao" class="text-[#E67E73] font-bold">R$ 0,00</span>
+        </h3>
+        <div class="mt-8">
+            <a href="/comissao/historico" class="text-[#E67E73] font-bold text-sm underline underline-offset-4 hover:text-[#2C3E50] transition-colors italic">Ver Histórico</a>
         </div>
     </div>
 
-    <!-- Modal para adicionar/editar usu├írio -->
-    <div id="userModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Adicionar Usu├írio</h2>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
+    {{-- Card de Metas --}}
+    <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 relative">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Produtividade Mensal</p>
+                <h3 class="text-gray-600 text-3xl font-light">
+                    Meta Mensal: <span id="valor-meta" class="text-[#2C3E50] font-bold">R$ 0,00</span>
+                </h3>
             </div>
-            <form id="userForm">
-                <input type="hidden" id="userId">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="userFirstName">Nome</label>
-                        <input type="text" id="userFirstName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="userLastName">Sobrenome</label>
-                        <input type="text" id="userLastName" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="userEmail">E-mail</label>
-                    <input type="email" id="userEmail" required>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="userPassword">Senha</label>
-                        <input type="password" id="userPassword" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="userRole">Papel</label>
-                        <select id="userRole" required>
-                            <option value="cliente">Cliente</option>
-                            <option value="funcionario">Funcion├írio</option>
-                            <option value="admin">Administrador</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn-admin btn-primary">Salvar</button>
-                </div>
-            </form>
+            <span id="porcentagem-meta" class="bg-[#FFF9E5] text-[#D4AF37] px-4 py-2 rounded-xl font-bold text-lg">0%</span>
+        </div>
+
+        <div class="mt-8">
+            <div class="flex justify-between text-xs font-bold mb-2 uppercase tracking-tighter">
+                <span id="meta-atingida" class="text-gray-400 font-serif italic">R$ 0,00 atingidos</span>
+                <span id="meta-restante" class="text-gray-400 font-serif italic">Carregando...</span>
+            </div>
+            <div class="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
+                <div id="barra-meta" class="bg-gradient-to-r from-[#FF7665] to-[#ffb3a9] h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+            <p class="text-[11px] text-gray-400 mt-4 italic">Dados atualizados em tempo real.</p>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
+    {{-- Banner de Rede (Esquerda) --}}
+    <div class="relative h-72 rounded-[2.5rem] overflow-hidden group shadow-xl">
+        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1000" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Equipe Glow">
+        <div class="absolute inset-0 bg-gradient-to-r from-[#8B2E2E]/90 to-transparent flex flex-col justify-center px-12">
+            <span class="bg-[#FF7665] text-white text-[10px] font-bold px-3 py-1 rounded-full w-fit mb-4 uppercase tracking-widest">Minhas indicações</span>
+            <h2 class="text-3xl font-serif text-white mb-6">Expansão de<br><span class="font-bold italic">Árvore de Rede</span></h2>
+            <a href="/rede/arvore" class="bg-white text-[#2C3E50] px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-[#FFD700] transition-all w-fit flex items-center gap-2 group">
+                Organização
+                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+            </a>
         </div>
     </div>
 
-    <script>
-        let users = [];
-        let currentUser = null;
-        let editUserId = null;
+    {{-- Banner de Pedidos da Equipe (Direita) --}}
+    <div class="relative h-72 rounded-[2.5rem] overflow-hidden group shadow-xl border border-white/20">
+        <img src="https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&q=80&w=1000" 
+             class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
+             alt="Pedidos Equipe">
+        
+        <div class="absolute inset-0 bg-gradient-to-l from-[#2C3E50]/80 via-[#2C3E50]/40 to-transparent"></div>
 
-        // Verificar se usu├írio est├í logado e ├® admin
-        document.addEventListener('DOMContentLoaded', function() {
-            currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        <div class="absolute inset-0 flex flex-col justify-center items-end px-12 text-right">
+            <div class="backdrop-blur-md bg-white/10 p-6 rounded-[2rem] border border-white/20 shadow-2xl transform group-hover:-translate-y-2 transition-transform duration-500">
+                
+                <div class="flex items-center justify-end gap-3 mb-3">
+                    <span class="text-white text-[9px] font-black uppercase tracking-[0.3em]">Monitoramento</span>
+                    <div class="relative flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF7665] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FF7665]"></span>
+                    </div>
+                </div>
 
-            if (!currentUser || currentUser.role !== 'admin') {
-                alert('Acesso negado! Apenas administradores podem acessar esta p├ígina.');
-                window.location.href = 'login.html';
-                return;
-            }
+                <h2 class="text-3xl font-serif text-white mb-2">Pedidos da <span class="font-bold italic text-[#FF7665]">Equipe</span></h2>
+                <p class="text-gray-200 text-[11px] mb-4 font-light max-w-[200px] ml-auto leading-tight">
+                    Acompanhe em tempo real as vendas e o desempenho do seu time.
+                </p>
 
-            loadUsers();
-            loadDashboardStats();
-            setupSearch();
+                <a href="/pedidos/equipe" class="inline-flex items-center gap-3 bg-[#FF7665] text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-[#ff6450] transition-all group/btn">
+                    <svg class="w-4 h-4 text-white group-hover/btn:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    Ver Pedidos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<x-modal-cadastro-consultora />
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    axios.defaults.withCredentials = true;
+    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (token) {
+        axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const formatMoney = (v) => new Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(v || 0);
+
+        axios.get('/api/comissao').then(r => {
+            if (r.data.status === 'sucesso') document.getElementById('saldo-comissao').innerText = formatMoney(r.data.data);
+        }).catch(err => console.error("Erro Comissão:", err));
+
+        Promise.all([
+            axios.get('/api/meta').catch(() => ({data: {data: 0}})),
+            axios.get('/api/meta/progresso').catch(() => ({data: {data: 0}}))
+        ]).then(([resMeta, resProgresso]) => {
+            const valorTotal = parseFloat(resMeta.data.data) || 0;
+            const percentual = parseFloat(resProgresso.data.data) || 0;
+            const valorAtingido = (valorTotal * percentual) / 100;
+            
+            document.getElementById('valor-meta').innerText = formatMoney(valorTotal);
+            document.getElementById('porcentagem-meta').innerText = Math.round(percentual) + '%';
+            document.getElementById('meta-atingida').innerText = formatMoney(valorAtingido) + ' atingidos';
+            
+            const barra = document.getElementById('barra-meta');
+            if (barra) setTimeout(() => barra.style.width = (percentual > 100 ? 100 : percentual) + '%', 200);
         });
-
-        function loadUsers() {
-            users = JSON.parse(localStorage.getItem('users')) || [];
-            renderUsersTable();
-        }
-
-        function loadDashboardStats() {
-            const clientesSistema = JSON.parse(localStorage.getItem('clientes')) || [];
-
-            document.getElementById('totalUsers').textContent = users.length;
-            document.getElementById('totalFuncionarios').textContent = users.filter(u => u.role === 'funcionario').length;
-            document.getElementById('totalClientes').textContent = users.filter(u => u.role === 'cliente').length;
-            document.getElementById('totalClientesSistema').textContent = clientesSistema.length;
-        }
-
-        function renderUsersTable(filteredUsers = null) {
-            const tbody = document.getElementById('usersTableBody');
-            const usersToShow = filteredUsers || users;
-
-            if (usersToShow.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="no-data">Nenhum usu├írio encontrado.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = usersToShow.map(user => `
-                <tr>
-                    <td>${user.firstName} ${user.lastName}</td>
-                    <td>${user.email}</td>
-                    <td><span class="role-badge role-${user.role}">${user.role}</span></td>
-                    <td>${new Date(user.createdAt).toLocaleDateString('pt-BR')}</td>
-                    <td class="action-buttons">
-                        <button class="btn-small btn-edit" onclick="editUser('${user.id}')">Editar</button>
-                        ${user.id !== '1' ? `<button class="btn-small btn-delete" onclick="deleteUser('${user.id}')">Excluir</button>` : ''}
-                        ${user.role === 'cliente' ? `<button class="btn-small btn-promote" onclick="promoteUser('${user.id}')">Promover</button>` : ''}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function setupSearch() {
-            document.getElementById('userSearch').addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const filteredUsers = users.filter(user =>
-                    user.firstName.toLowerCase().includes(searchTerm) ||
-                    user.lastName.toLowerCase().includes(searchTerm) ||
-                    user.email.toLowerCase().includes(searchTerm) ||
-                    user.role.toLowerCase().includes(searchTerm)
-                );
-                renderUsersTable(filteredUsers);
-            });
-        }
-
-        function openAddUserModal() {
-            editUserId = null;
-            document.getElementById('modalTitle').textContent = 'Adicionar Usu├írio';
-            document.getElementById('userForm').reset();
-            document.getElementById('userId').value = '';
-            document.getElementById('userModal').style.display = 'flex';
-        }
-
-        function editUser(userId) {
-            const user = users.find(u => u.id === userId);
-            if (!user) return;
-
-            editUserId = userId;
-            document.getElementById('modalTitle').textContent = 'Editar Usu├írio';
-            document.getElementById('userId').value = user.id;
-            document.getElementById('userFirstName').value = user.firstName;
-            document.getElementById('userLastName').value = user.lastName;
-            document.getElementById('userEmail').value = user.email;
-            document.getElementById('userPassword').value = user.password;
-            document.getElementById('userRole').value = user.role;
-
-            document.getElementById('userModal').style.display = 'flex';
-        }
-
-        function deleteUser(userId) {
-            if (userId === '1') {
-                alert('N├úo ├® poss├¡vel excluir o usu├írio administrador padr├úo!');
-                return;
-            }
-
-            if (confirm('Tem certeza que deseja excluir este usu├írio?')) {
-                users = users.filter(u => u.id !== userId);
-                localStorage.setItem('users', JSON.stringify(users));
-                loadUsers();
-                loadDashboardStats();
-                showMessage('Usu├írio exclu├¡do com sucesso!', 'success');
-            }
-        }
-
-        function promoteUser(userId) {
-            const user = users.find(u => u.id === userId);
-            if (!user) return;
-
-            const newRole = user.role === 'cliente' ? 'funcionario' : 'admin';
-            user.role = newRole;
-
-            localStorage.setItem('users', JSON.stringify(users));
-            loadUsers();
-            loadDashboardStats();
-            showMessage(`Usu├írio promovido para ${newRole}!`, 'success');
-        }
-
-        function closeModal() {
-            document.getElementById('userModal').style.display = 'none';
-            editUserId = null;
-        }
-
-        document.getElementById('userForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const userData = {
-                id: editUserId || Date.now().toString(),
-                firstName: document.getElementById('userFirstName').value.trim(),
-                lastName: document.getElementById('userLastName').value.trim(),
-                email: document.getElementById('userEmail').value.trim(),
-                password: document.getElementById('userPassword').value,
-                role: document.getElementById('userRole').value,
-                createdAt: editUserId ? users.find(u => u.id === editUserId).createdAt : new Date().toISOString()
-            };
-
-            // Verificar se e-mail j├í existe (exceto para o usu├írio sendo editado)
-            const existingUser = users.find(u => u.email === userData.email && u.id !== editUserId);
-            if (existingUser) {
-                alert('Este e-mail j├í est├í cadastrado!');
-                return;
-            }
-
-            if (editUserId) {
-                // Editar usu├írio existente
-                const index = users.findIndex(u => u.id === editUserId);
-                users[index] = userData;
-                showMessage('Usu├írio atualizado com sucesso!', 'success');
-            } else {
-                // Adicionar novo usu├írio
-                users.push(userData);
-                showMessage('Usu├írio adicionado com sucesso!', 'success');
-            }
-
-            localStorage.setItem('users', JSON.stringify(users));
-            closeModal();
-            loadUsers();
-            loadDashboardStats();
-        });
-
-        function logout() {
-            localStorage.removeItem('currentUser');
-            window.location.href = 'login.html';
-        }
-
-        function showMessage(message, type) {
-            const messageEl = document.createElement('div');
-            messageEl.textContent = message;
-            messageEl.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                z-index: 1001;
-                animation: slideIn 0.3s ease;
-            `;
-
-            document.body.appendChild(messageEl);
-
-            setTimeout(() => {
-                messageEl.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => document.body.removeChild(messageEl), 300);
-            }, 3000);
-        }
-
-        // Anima├º├Áes CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Fechar modal ao clicar fora
-        window.addEventListener('click', function(e) {
-            const modal = document.getElementById('userModal');
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-    </script>
-</body>
-</html>
+    });
+</script>
+@endsection

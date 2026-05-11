@@ -77,6 +77,8 @@ class LiderService
 
             $comissao = $this->HistoricoComissaoService->comissaoPorMes($consultora->id);
 
+			dd($comissao->toArray());
+			
             $consultora->TotalVendido = $totalVendido;
             $consultora->TotalPedidos = $totalPedidos;
             $consultora->comissao = $comissao;

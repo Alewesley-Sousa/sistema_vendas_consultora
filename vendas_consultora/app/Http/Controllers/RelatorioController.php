@@ -5,12 +5,27 @@ namespace App\Http\Controllers;
 use App\Services\RelatorioService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\View\View; // <--- O CORRETO É ESTE
+use Illuminate\Support\Facades\Auth;
 
 class RelatorioController extends Controller
 {
-
+ /**
+     * Exibe a página de análise de desempenho da equipe.
+     */
+    public function desempenho(): View
+    {
+        // Aqui você pode passar dados iniciais via compact() se necessário,
+        // mas como você usa AlpineJS, a página carregará os dados via fetch.
+        return view('lider/desempenho');
+    }
 public function viewArvore() {
+	$usuario = Auth::user();
+	if ($usuario->cargo === "consultora") {
     return view('rede');
+	} else {
+		return view('redeLider');
+	}
 }
     public function vendasPessoais(Request $request, RelatorioService $service): JsonResponse
     {
