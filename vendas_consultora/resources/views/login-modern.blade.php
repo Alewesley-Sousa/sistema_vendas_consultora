@@ -94,7 +94,7 @@
     // Configuração para Railway/Produção
     axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     
-    // Captura o Token CSRF para evitar erro 419
+    // Captura o Token CSRF
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') 
                       || document.querySelector('input[name="_token"]')?.value;
                       
@@ -115,30 +115,42 @@
         
         axios.post(actionUrl, formData)
         .then(response => {
-            // Salva o token se o Sanctum retornar um
             if (response.data.token) {
                 localStorage.setItem('auth_token', response.data.token);
             }
-
-            // Redireciona conforme a lógica do Controller
             if (response.data.redirect) {
                 window.location.href = response.data.redirect;
             }
         })
         .catch(error => {
-            console.error('Erro:', error.response);
-            
-            let errorMsg = 'Erro ao processar login.';
+            // Debug detalhado no console
+            console.error('Full Error:', error);
+
+            let errorTitle = "Erro ao processar login";
+            let details = "Causa desconhecida.";
+            let status = error.response ? error.response.status : 'Network Error';
+
             if (error.response) {
-                // Prioriza a mensagem vinda do seu AutenticacaoController
-                errorMsg = error.response.data.message || 'Credenciais inválidas.';
-                
-                if (error.response.status === 419) {
-                    errorMsg = 'Sessão expirada. Recarregue a página.';
+                // Erro vindo do Laravel (ex: validação, credenciais)
+                const data = error.response.data;
+                details = data.message || JSON.stringify(data);
+
+                if (status === 419) {
+                    details = "CSRF Token mismatch. A sessão expirou ou o domínio não é seguro (HTTPS).";
+                } else if (status === 500) {
+                    details = "Erro interno no servidor (Provavelmente conexão com Banco de Dados no Railway).";
+                } else if (status === 404) {
+                    details = "A rota de login não foi encontrada. Verifique o arquivo web.php.";
                 }
+            } else if (error.request) {
+                // A requisição foi feita mas não houve resposta
+                details = "O servidor não respondeu. Verifique sua conexão ou se o app no Railway está 'Sleeping'.";
+            } else {
+                details = error.message;
             }
 
-            alert(errorMsg);
+            // Exibe o alerta com tudo o que sabemos
+            alert(`⚠️ ${errorTitle}\n\nStatus: ${status}\nDetalhes: ${details}`);
         })
         .finally(() => {
             btnText.textContent = 'Entrar';
