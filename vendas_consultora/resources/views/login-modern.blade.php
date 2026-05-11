@@ -93,6 +93,7 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
+<<<<<<< HEAD
     // 1. Configuração fundamental para o Railway/Produção
     axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
     
@@ -104,11 +105,17 @@
         axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
     }
 
+=======
+    // Configuração global do Axios para Laravel
+    axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    
+>>>>>>> 71e69a9e20ecd39102ca29d6e63d83df7f7cd8a5
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
         const btnLogin = document.getElementById('btnLogin');
         const btnText = document.getElementById('btnText');
+<<<<<<< HEAD
         const actionUrl = this.getAttribute('action'); // Pega a URL da rota login
         
         // Transformamos o FormData em um objeto simples para evitar problemas de parsing no servidor
@@ -122,11 +129,28 @@
         axios.post(actionUrl, data)
         .then(response => {
             // Se o Controller retornar o redirect, o Axios redireciona
+=======
+        const formData = new FormData(this);
+        
+        btnText.textContent = 'Autenticando...';
+        btnLogin.disabled = true;
+        
+        axios.post(this.action, formData)
+        .then(response => {
+            // Se o controller enviou o token, salvamos no localStorage (opcional, mas útil para APIs)
+            if (response.data.token) {
+                localStorage.setItem('auth_token', response.data.token);
+                localStorage.setItem('user_name', response.data.user);
+            }
+
+            // Redirecionamento baseado no match do Controller
+>>>>>>> 71e69a9e20ecd39102ca29d6e63d83df7f7cd8a5
             if (response.data.redirect) {
                 window.location.href = response.data.redirect;
             }
         })
         .catch(error => {
+<<<<<<< HEAD
             console.error('Erro detalhado:', error.response);
             
             let message = 'Erro ao processar login.';
@@ -142,6 +166,22 @@
             }
             
             alert(message);
+=======
+            console.error('Erro:', error.response);
+            
+            // Tratamento das mensagens que você definiu no Controller
+            let errorMsg = 'Ocorreu um erro ao tentar entrar.';
+            
+            if (error.response) {
+                if (error.response.status === 403 || error.response.status === 401) {
+                    errorMsg = error.response.data.message;
+                } else if (error.response.status === 422) {
+                    errorMsg = 'Por favor, preencha os dados corretamente.';
+                }
+            }
+
+            alert(errorMsg);
+>>>>>>> 71e69a9e20ecd39102ca29d6e63d83df7f7cd8a5
         })
         .finally(() => {
             btnText.textContent = 'Entrar';
