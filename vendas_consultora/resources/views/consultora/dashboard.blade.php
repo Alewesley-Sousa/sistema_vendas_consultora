@@ -259,4 +259,12 @@
         });
     });
 </script>
-@endsection
+
+
+@push('modals')
+    <x-modal 
+        id="clientes"
+        title="Área do Cliente"
+        subtitle="Gestão de contatos" />
+@endpush
+

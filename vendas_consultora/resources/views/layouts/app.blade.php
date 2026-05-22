@@ -1,180 +1,101 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Glow Cosmetics')</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-    <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <title>
+        @yield('title', 'Glow Cosmetics')
+    </title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta
+        name="csrf-token"
+        content="{{ csrf_token() }}">
 
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-        [x-cloak] { display: none !important; }
-    </style>
+    {{-- Fonts --}}
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    {{-- Font Awesome --}}
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    {{-- Vite --}}
+    @vite([
+        'resources/css/app.css',
+        'resources/js/app.js'
+    ])
+
+    @stack('styles')
 </head>
 
-<body class="bg-[#FFF5F7]" x-data="{}">
+<body
+    class="font-[Inter] bg-[#FFF5F7] text-[#2C3E50] antialiased">
 
-    <div class="flex h-screen md:p-4 font-sans overflow-hidden">
-        <input type="checkbox" id="menu-toggle" class="peer hidden" />
+    {{-- Alpine cloak --}}
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
 
-        <!-- Botão Abrir Menu (Mobile) -->
-        <label for="menu-toggle" class="fixed top-6 left-6 z-50 flex items-center gap-2 px-3 py-2 bg-[#2C3E50] rounded-lg text-white md:hidden cursor-pointer shadow-lg transition-all peer-checked:opacity-0 peer-checked:pointer-events-none active:scale-95">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-            </svg>
-            <span class="text-xs font-bold uppercase tracking-wider">Menu</span>
-        </label>
+    <div
+        class="relative min-h-screen overflow-hidden">
 
-        <!-- Overlay Sidebar (Mobile) -->
-        <label for="menu-toggle" class="fixed inset-0 bg-[#2C3E50]/40 z-30 transition-opacity opacity-0 pointer-events-none peer-checked:opacity-100 peer-checked:pointer-events-auto md:hidden"></label>
+        {{-- Background Layer --}}
+        <div
+            id="app-background"
+            class="absolute inset-0 -z-10">
+        </div>
 
-        <!-- Sidebar -->
-        <aside class="fixed md:static inset-y-0 left-0 z-40 flex flex-col w-64 h-full bg-[#2C3E50] text-gray-300 p-6 transition-transform duration-300 transform -translate-x-full peer-checked:translate-x-0 md:translate-x-0 md:rounded-3xl shadow-2xl">
+        {{-- Layout --}}
+        <div
+            class="flex min-h-screen md:p-4 overflow-hidden">
 
-            <!-- Botão Fechar (Mobile) -->
-            <label for="menu-toggle" class="absolute top-4 right-4 p-1.5 bg-[#2C3E50] rounded-lg text-red-500 md:hidden cursor-pointer border-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)] transition-all active:scale-90">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </label>
+            {{-- Sidebar --}}
+            <x-sidebar />
 
-            <!-- Logo -->
-            <div class="flex items-center gap-3 mb-8 text-white pr-8">
-                <div class="p-1.5 bg-[#FFD700] rounded-lg shadow-sm">
-                    <svg class="w-6 h-6 text-[#2C3E50]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                    </svg>
-                </div>
-                <span class="text-xl font-bold tracking-tight uppercase">Glow</span>
-            </div>
+            {{-- Main --}}
+            <main
+                class="flex-1 overflow-y-auto p-6 md:p-8">
 
-            <!-- Perfil do Usuário -->
-            <div class="flex flex-col items-center mb-8 border-b border-white/10 pb-8 text-center">
-                <div class="relative w-20 h-20 mb-4">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nome) }}&color=2C3E50&background=FFD700" class="rounded-full border-2 border-[#FFD700] p-1 object-cover w-full h-full shadow-md" alt="Perfil">
-                    <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-[#2C3E50] rounded-full"></div>
-                </div>
-                <div>
-                    <p class="text-[10px] uppercase tracking-widest text-[#FFD700] font-bold">{{ Auth::user()->cargo ?? 'Consultora' }}</p>
-                    <h2 class="text-lg font-semibold text-white">{{ Auth::user()->nome }}</h2>
-                </div>
-            </div>
-
-            <!-- Navegação -->
-            <nav class="flex-1 space-y-2 overflow-y-auto custom-scrollbar pr-2">
-                @php 
-                    $isDash = request()->routeIs('consultora.dashboard'); 
-                    $isRede = request()->is('rede/*');
-                    $isEquipe = request()->is('pedidos/equipe');
-                    $userCargo = strtolower(Auth::user()->cargo ?? '');
-                @endphp
-
-                <!-- HOME / DASHBOARD -->
-                <a href="{{ route('consultora.dashboard') }}" 
-                   class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all {{ $isDash ? 'text-[#2C3E50] bg-[#FFD700] font-bold shadow-lg' : 'hover:text-white hover:bg-white/10 group' }}">
-                    <svg class="w-5 h-5 {{ $isDash ? 'text-[#2C3E50]' : 'text-[#FFD700]' }}" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 00-1.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                    </svg>
-                    <span class="text-sm">Visão Geral</span>
-                </a>
-
-                <!-- MINHA REDE -->
-                <a href="/rede/arvore" 
-                   class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all {{ $isRede ? 'text-[#2C3E50] bg-[#FFD700] font-bold shadow-lg' : 'hover:text-white hover:bg-white/10 group' }}">
-                    <svg class="w-5 h-5 {{ $isRede ? 'text-[#2C3E50]' : 'text-[#FFD700]' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    <span class="text-sm">Minha Rede</span>
-                </a>
-
-                <!-- PEDIDOS EQUIPE (Apenas para Líder) -->
-                @if(str_contains($userCargo, 'líder') || str_contains($userCargo, 'lider'))
-                <a href="/pedidos/equipe" 
-                   class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all {{ $isEquipe ? 'text-[#2C3E50] bg-[#FFD700] font-bold shadow-lg' : 'hover:text-white hover:bg-white/10 group' }}">
-                    <svg class="w-5 h-5 {{ $isEquipe ? 'text-[#2C3E50]' : 'text-[#FF7665]' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                    <span class="text-sm">Pedidos Equipe</span>
-                </a>
+                {{-- Header --}}
+                @hasSection('header')
+                    <section class="mb-8">
+                        @yield('header')
+                    </section>
                 @endif
 
-                <!-- CLIENTES -->
-                <button
-                    @click="$dispatch('open-modal-clientes')"
-                    class="w-full flex items-center gap-4 px-4 py-3 hover:text-white hover:bg-white/10 rounded-xl transition-all group text-left cursor-pointer outline-none">
-                    <svg class="w-5 h-5 text-[#FF7665] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <span class="text-sm">Clientes</span>
-                </button>
-            </nav>
+                {{-- Content --}}
+                <section>
+                    @yield('content')
+                </section>
 
-            <!-- Rodapé Sidebar -->
-            <div class="mt-auto pt-4 border-t border-white/10">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="w-full flex items-center gap-4 px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-xl transition-all group font-bold cursor-pointer">
-                        <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                        </svg>
-                        <span class="text-sm">Sair do Painel</span>
-                    </button>
-                </form>
-            </div>
-        </aside>
+            </main>
 
-        <!-- Conteúdo Principal -->
-        <main class="flex-1 p-8 overflow-y-auto">
-            <section>
-                @yield('header')
-            </section>
-            <section class="mt-8">
-                @yield('content')
-            </section>
-        </main>
+        </div>
+
     </div>
 
-    <!-- MODAL CLIENTES -->
-    <x-modal id="clientes" title="Área do Cliente" subtitle="Gestão de contatos">
-        <div class="flex flex-col items-center text-center mb-8">
-            <div class="w-16 h-16 bg-[#FFD700]/20 rounded-2xl flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 text-[#2C3E50]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-[#2C3E50]">O que deseja fazer?</h3>
-            <p class="text-gray-500 text-sm">Gerencie sua base de clientes da Glow.</p>
-        </div>
+    {{-- Global Modals --}}
+    @stack('modals')
 
-        <div class="grid grid-cols-1 gap-3">
-            <button class="flex items-center gap-4 p-4 rounded-2xl border-2 border-pink-50 hover:border-[#FFD700] hover:bg-yellow-50 transition-all group text-left cursor-pointer">
-                <div class="p-2 bg-white rounded-lg shadow-sm group-hover:scale-110 transition-transform text-xl">🔍</div>
-                <div>
-                    <p class="font-bold text-[#2C3E50]">Consultar CPF</p>
-                    <p class="text-xs text-gray-500">Verifique históricos e débitos</p>
-                </div>
-            </button>
-
-            <button class="flex items-center gap-4 p-4 rounded-2xl border-2 border-pink-50 hover:border-[#FFD700] hover:bg-yellow-50 transition-all group text-left cursor-pointer">
-                <div class="p-2 bg-white rounded-lg shadow-sm group-hover:scale-110 transition-transform text-xl">✨</div>
-                <div>
-                    <p class="font-bold text-[#2C3E50]">Novo Cadastro</p>
-                    <p class="text-xs text-gray-500">Adicionar cliente à sua rede</p>
-                </div>
-            </button>
-        </div>
-    </x-modal>
+    {{-- Scripts específicos da página --}}
+    @stack('scripts')
 
 </body>
 </html>

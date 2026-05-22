@@ -7,7 +7,6 @@
     <title>@yield('title', 'Glow | Executive Admin')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <!-- Scripts & Frameworks -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -49,17 +48,14 @@
 
     <div class="flex h-screen overflow-hidden p-0 md:p-3 gap-3">
         
-        <!-- Overlay Mobile -->
         <div x-show="sidebarOpen" 
              x-transition:opacity
              @click="sidebarOpen = false" 
              class="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-md"></div>
 
-        <!-- Sidebar -->
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
                class="fixed md:static inset-y-0 left-0 z-50 flex flex-col w-72 sidebar-gradient text-slate-400 p-6 transition-transform duration-300 md:translate-x-0 md:rounded-[2rem] shadow-[20px_0_50px_-15px_rgba(0,0,0,0.3)] overflow-hidden border border-white/5">
             
-            <!-- Logo -->
             <div class="flex items-center gap-4 mb-12 px-2">
                 <div class="flex items-center justify-center w-11 h-11 bg-white rounded-xl">
                     <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
@@ -72,7 +68,6 @@
                 </div>
             </div>
 
-            <!-- Profile -->
             <div class="mb-10 p-5 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-sm">
                 <div class="flex items-center gap-4">
                     <div class="relative">
@@ -87,25 +82,43 @@
                 </div>
             </div>
 
-            <!-- Menu -->
             <nav class="flex-1 space-y-8 overflow-y-auto custom-scrollbar pr-2">
                 <div>
                     <p class="px-4 mb-4 text-[10px] font-bold text-slate-600 uppercase tracking-[0.25em]">Global Control</p>
                     <div class="space-y-1.5">
                         <a href="{{ route('distribuidora.dashboard') }}" 
                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white group {{ request()->routeIs('distribuidora.dashboard') ? 'nav-item-active' : '' }}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                            <svg class="w-4 h-4 {{ request()->routeIs('distribuidora.dashboard') ? '' : 'opacity-50 group-hover:opacity-100' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                             <span class="text-[11px] font-semibold uppercase tracking-widest">Dashboard</span>
                         </a>
-                        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/5 hover:text-white group">
-                            <svg class="w-4 h-4 opacity-50 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /></svg>
-                            <span class="text-[11px] font-semibold uppercase tracking-widest">Inventário</span>
+
+                        <a href="{{ route('distribuidora.produtos') }}" 
+                           class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white group {{ request()->routeIs('distribuidora.produtos') ? 'nav-item-active' : '' }}">
+                            <svg class="w-4 h-4 {{ request()->routeIs('distribuidora.produtos') ? '' : 'opacity-50 group-hover:opacity-100' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 11m8 4V5M4 11v10l8 4" />
+                            </svg>
+                            <span class="text-[11px] font-semibold uppercase tracking-widest">Produtos</span>
+                        </a>
+
+                        <a href="{{ route('distribuidora.catalogos') }}" 
+                           class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white group {{ request()->routeIs('distribuidora.catalogos') ? 'nav-item-active' : '' }}">
+                            <svg class="w-4 h-4 {{ request()->routeIs('distribuidora.catalogos') ? '' : 'opacity-50 group-hover:opacity-100' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <span class="text-[11px] font-semibold uppercase tracking-widest">Catálogos</span>
+                        </a>
+
+                        <a href="{{ route('distribuidora.estoques') }}" 
+                           class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white group {{ request()->routeIs('distribuidora.estoques') ? 'nav-item-active' : '' }}">
+                            <svg class="w-4 h-4 {{ request()->routeIs('distribuidora.estoques') ? '' : 'opacity-50 group-hover:opacity-100' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+                            </svg>
+                            <span class="text-[11px] font-semibold uppercase tracking-widest">Estoques</span>
                         </a>
                     </div>
                 </div>
             </nav>
 
-            <!-- Logout -->
             <div class="pt-6 border-t border-white/5 mt-6">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -119,7 +132,6 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="flex-1 flex flex-col min-w-0">
             
             <header class="flex items-center justify-between h-20 px-6 md:px-10 shrink-0">
@@ -143,12 +155,10 @@
                         </span>
                     </div>
 
-                    <!-- BOTÃO DE NOTIFICAÇÃO (Substituindo a engrenagem) -->
                     <button 
                         @click="$dispatch('toggle-notifications')"
                         class="p-3 bg-white text-slate-400 hover:text-black rounded-2xl shadow-sm border border-slate-200 transition-all relative group"
                     >
-                        <!-- Badge de Atividade -->
                         <span class="absolute top-3 right-3 flex h-2 w-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
@@ -167,7 +177,6 @@
         </main>
     </div>
 
-    <!-- INCLUSÃO DO MODAL (Componente Externo) -->
     @include('components.modal-notifications')
 
     @livewireScripts

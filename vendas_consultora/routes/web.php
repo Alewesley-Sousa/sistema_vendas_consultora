@@ -99,3 +99,12 @@ Route::get('/pedidos/equipe', [PedidosController::class,
 
 Route::get('/pedido/rastreio/{uuid}', [PedidosController::class,
 'exibirPaginaPagamento'])->name('pedido.rastreio');
+
+
+Route::prefix('distribuidora')->name('distribuidora.')->group(function () {
+    // ADICIONE ESTA LINHA:
+    Route::get('/produtos', function () { return view('distribuidora.produtos'); })->name('produtos');
+    Route::get('/catalogos', function () { return view('distribuidora.catalogos'); })->name('catalogos');
+    Route::get('/estoques', function () { return view('distribuidora.estoques');
+    })->name('estoques');
+});

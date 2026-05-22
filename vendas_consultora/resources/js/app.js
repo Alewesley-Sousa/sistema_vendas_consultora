@@ -1,21 +1,16 @@
-import './bootstrap';
+import './bootstrap'
 
-import { AuthService } from './api/auth';
-import { ResetarSenhaService } from './api/resetarSenha';
-import { initRecuperarSenha } from './pages/recuperar-senha'
-import { initAtualizarSenha } from './pages/atualizar-senha';
-import { initLogin } from './pages/login';
+import Alpine from 'alpinejs'
+import gsap from 'gsap'
 
-// Inicializa a lógica da página
-document.addEventListener('DOMContentLoaded', () => {
-    // UIService.init(); // Inicializa o elemento do loader
+import loginForm from './alpine/loginForm'
 
-    initRecuperarSenha();
-    initAtualizarSenha();
-    initLogin();
+window.Alpine = Alpine
+window.gsap = gsap
 
-// Garante que o loader suma quando a página carregar (F5/Navegação normal)
-    // UIService.hide();
-});
-window.ResetarSenhaSeResetarSenhaServiceetarSenhaService;
-window.AuthService = AuthService;
+Alpine.data(
+    'loginForm',
+    loginForm
+)
+
+Alpine.start()

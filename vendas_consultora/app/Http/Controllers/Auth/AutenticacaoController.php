@@ -76,6 +76,6 @@ class AutenticacaoController extends Controller
             };
         }
 
-        return view('login-modern');
+        return view('auth.login');
     }
 }
