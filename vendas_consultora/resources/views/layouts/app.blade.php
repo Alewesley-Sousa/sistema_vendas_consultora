@@ -32,30 +32,25 @@
         }
     </style>
 
-    <div class="relative min-h-screen overflow-hidden">
+<div class="relative h-dvh overflow-hidden">
+    <div id="app-background" class="absolute inset-0 -z-10"></div>
 
-        <div id="app-background" class="absolute inset-0 -z-10"></div>
+    <div class="flex h-dvh overflow-hidden md:p-4">
+        <x-sidebar />
 
-        <div class="flex min-h-screen md:p-4 overflow-hidden">
-
-            <x-sidebar />
-
-            <main class="flex-1 overflow-y-auto p-6 md:p-8">
-
-                @hasSection('header')
-                    <section class="mb-8">
-                        @yield('header')
-                    </section>
-                @endif
-
-                <section>
-                    @yield('content')
+        <main class="flex-1 h-dvh overflow-y-auto p-6 md:ml-[18rem] md:p-8 transition-all duration-300">
+            @hasSection('header')
+                <section class="mb-8">
+                    @yield('header')
                 </section>
+            @endif
 
-            </main>
-
-        </div>
+            <section>
+                @yield('content')
+            </section>
+        </main>
     </div>
+</div>
 
     <x-modal.cliente-modal
         id="cliente"

@@ -8,14 +8,20 @@ use App\Models\Status\status_catalogo;
 use App\Models\Tipos\tipo_catalogo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes; // <-- Importante
 
 class catalogos extends Model
 {
+    use SoftDeletes; // <-- Habilita o Soft Delete
+
     public $timestamps = false;
 
     protected $guarded = [
         'id'
     ];
+
+    // Como você não usa timestamps normais, mapeamos apenas o delete
+    const DELETED_AT = 'deleted_at'; 
 
     protected $casts = [
         'nome'              => 'string',

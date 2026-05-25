@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\estoques;
 use App\Services\LogService;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\movimentacao_estoque; 
 class EstoqueService
 {
     public function index()
@@ -17,7 +17,33 @@ class EstoqueService
     {
         return estoques::with('produto')->findOrFail($id);
     }
+/**
+     * Retorna o histórico completo de movimentações de estoque com relacionamentos.
+     */
+    public function getMovimentacoes()
+    {
+        return movimentacao_estoque::with(['produto', 'tipoMovimentacao'])
+            ->latest() // Ordena pelo 'created_at' decrescente
+            ->get();
+    }
+    
+    
+    /**
+ * Retorna todos os produtos que foram criados, mas ainda não possuem estoque definido.
+ */
+public function getProdutosSemEstoque()
+{
+    // Usa o Model de produtos para buscar quem NÃO tem relacionamento com estoque
+    return \App\Models\produtos::doesntHave('estoque')->get();
+}
 
+   
+
+    
+    
+    
+    
+    
     public function store(array $data)
     {
         DB::beginTransaction();

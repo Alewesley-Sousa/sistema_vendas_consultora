@@ -9,6 +9,35 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
+// =====================================================
+// ESTRUTURA DO SQL (NÃO APAGUE)
+// =====================================================
+
+/* CREATE TABLE `catalogos` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `nome` VARCHAR(100) NOT NULL,
+    `tipo_catalogo_id` BIGINT UNSIGNED NOT NULL,
+    `status_id` BIGINT UNSIGNED NOT NULL,
+    `descricao` TEXT NULL,
+    `data_encerramento` TIMESTAMP NOT NULL,
+    `data_publicacao` TIMESTAMP NOT NULL,
+    FOREIGN KEY (`tipo_catalogo_id`) REFERENCES `tipo_catalogo`(`id`),
+    FOREIGN KEY (`status_id`) REFERENCES `status_catalogo`(`id`)
+);
+
+CREATE TABLE `itens_catalogo` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `pontos_necessarios` INT NULL,
+    `status_id` BIGINT UNSIGNED NOT NULL,
+    `estoque_disponivel` INT NOT NULL DEFAULT 1,
+    `produto_id` BIGINT UNSIGNED NOT NULL,
+    `catalogo_id` BIGINT UNSIGNED NOT NULL,
+    FOREIGN KEY (`status_id`) REFERENCES `status_item_catalogo`(`id`),
+    FOREIGN KEY (`produto_id`) REFERENCES `produtos`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`catalogo_id`) REFERENCES `catalogos`(`id`) ON DELETE CASCADE
+); */
+
+
 class CatalogoService
 {
     /**
@@ -80,22 +109,51 @@ class CatalogoService
         }
     }
 
-    public function excluir(int $id)
+        public function excluir(int $id)
     {
         DB::beginTransaction();
         try {
+            // Garante que só busca catálogos que ainda não sofreram soft delete
             $catalogo = catalogos::findOrFail($id);
+
+            // 1. Regra de Negócio: Devolver ao estoque geral o saldo de todos os itens deste catálogo antes de ocultá-lo
+            $itens = itens_catalogo::where('catalogo_id', $id)->get();
+            
+            foreach ($itens as $item) {
+                if ($item->estoque_disponivel > 0) {
+                    $estoqueGeral = \App\Models\estoques::where('produto_id', $item->produto_id)->first();
+                    if ($estoqueGeral) {
+                        $estoqueGeral->increment('quantidade', $item->estoque_disponivel);
+                    }
+
+                    // Registra a movimentação de retorno individual
+                    \App\Models\movimentacao_estoque::create([
+                        'produto_id'           => $item->produto_id,
+                        'quantidade'           => $item->estoque_disponivel,
+                        'origem_tipo'          => 'itens_catalogo',
+                        'origem_id'            => $item->id,
+                        'tipo_movimentacao_id' => 1, // 1 = Entrada (Retorno ao Geral)
+                        'usuario_responsavel'  => auth()->id(),
+                    ]);
+                }
+                // Opcional: Você pode optar por deletar os itens fisicamente ou deixá-los órfãos guardados sob o catálogo excluído.
+                // Mantendo os itens salvos aqui preserva o histórico de quais produtos faziam parte da campanha.
+                $item->update(['estoque_disponivel' => 0]); 
+            }
+
+            // 2. Executa o Soft Delete no Catálogo
             $catalogo->delete();
 
-            LogService::registrarAcao("DELETE", "catalogos", $id, "Exclusão permanente realizada.");
+            LogService::registrarAcao("DELETE", "catalogos", $id, "Soft delete realizado. Itens recolhidos ao estoque geral.");
 
             DB::commit();
-            return ["status" => "success", "message" => "Deletado com sucesso"];
+            return ["status" => "success", "message" => "Campanha arquivada e estoque devolvido com sucesso."];
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
     }
+
 
 public function saveItem(array $data, ?int $id = null)
 {
@@ -232,4 +290,9 @@ public function saveItem(array $data, ?int $id = null)
             return ["status" => "error", "message" => "Erro ao excluir item: " . $e->getMessage()];
         }
     }
+    
+    
+    
+    
+    
 }

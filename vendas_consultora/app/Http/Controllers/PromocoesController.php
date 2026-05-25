@@ -10,10 +10,15 @@ class PromocoesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-    }
+    // Exemplo de dados para teste
+public function index() {
+    $promocoes = [
+        ['id' => 1, 'nome' => 'Verão Glow', 'status' => 'Ativa', 'data_inicio' => '2026-05-01', 'data_fim' => '2026-05-30'],
+        ['id' => 2, 'nome' => 'Dia das Mães', 'status' => 'Expirada', 'data_inicio' => '2026-04-01', 'data_fim' => '2026-05-10'],
+    ];
+    return view('distribuidora.promocoes', compact('promocoes'));
+}
+
 
     /**
      * Show the form for creating a new resource.

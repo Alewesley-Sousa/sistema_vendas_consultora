@@ -161,7 +161,16 @@
 </div>
 
 <x-modal-cadastro-consultora />
+@endsection
 
+@push('modals')
+    <x-modal.cliente-modal 
+        id="clientes"
+        title="Área do Cliente"
+        subtitle="Gestão de contatos" />
+@endpush
+
+@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     axios.defaults.withCredentials = true;
@@ -259,12 +268,4 @@
         });
     });
 </script>
-
-
-@push('modals')
-    <x-modal 
-        id="clientes"
-        title="Área do Cliente"
-        subtitle="Gestão de contatos" />
 @endpush
-

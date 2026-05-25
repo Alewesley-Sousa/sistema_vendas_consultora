@@ -9,9 +9,11 @@ use App\Models\itens_resgate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class itens_catalogo extends Model
 {
+	use SoftDeletes;
     public $timestamps = false;
     protected $table = 'itens_catalogo';
 

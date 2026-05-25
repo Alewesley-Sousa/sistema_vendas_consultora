@@ -10,6 +10,7 @@ use App\Http\Controllers\HistoricoComissoesController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\PedidosController;
+use App\Http\Controllers\PromocoesController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -107,4 +108,11 @@ Route::prefix('distribuidora')->name('distribuidora.')->group(function () {
     Route::get('/catalogos', function () { return view('distribuidora.catalogos'); })->name('catalogos');
     Route::get('/estoques', function () { return view('distribuidora.estoques');
     })->name('estoques');
+    Route::get('/promocoes', [PromocoesController::class,
+    'index'])->name('promocoes');
+    Route::get('/solicitacoes', fn() =>
+    view('distribuidora.solicitacoes'))->name('solicitacoes');
+    Route::get('/relatorios', fn() =>
+    view('distribuidora.relatorios'))->name('relatorios');
+    
 });

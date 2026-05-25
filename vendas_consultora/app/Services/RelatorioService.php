@@ -13,33 +13,41 @@ use Illuminate\Support\Facades\Schema;
 class RelatorioService
 {
     public function vendasPessoais(?string $dataInicio = null, ?string $dataFim = null)
-    {
-        $query = pedidos::where('usuario_id', Auth::id())
-            ->whereNotIn('status_id', [1, 7]); // Exclui pendente/cancelado
+{
+    // 1. Iniciamos a query removendo o filtro engessado de ID de usuário
+    $query = pedidos::whereNotIn('status_id', [1, 7]); // Exclui pendente/cancelado
 
-        $query->when($dataInicio, function ($q) use ($dataInicio) {
-            $q->whereDate('created_at', '>=', $dataInicio);
+    // 2. VERIFICAÇÃO: Se NÃO for distribuidora, filtra pelo ID do indivíduo logado
+    // (Ajuste o 'distribuidora' para o nome exato do cargo/role que você usa no banco)
+    $query->when(Auth::user()->role_cargo !== 'distribuidora', function ($q) {
+        $q->where('usuario_id', Auth::id());
+    });
+
+    // 3. Filtros de data permanecem iguais
+    $query->when($dataInicio, function ($q) use ($dataInicio) {
+        $q->whereDate('created_at', '>=', $dataInicio);
+    });
+
+    $query->when($dataFim, function ($q) use ($dataFim) {
+        $q->whereDate('created_at', '<=', $dataFim);
+    });
+
+    return $query->selectRaw("
+            strftime('%Y-%m', created_at) as periodo,
+            COUNT(*) as total_pedidos,
+            SUM(valor_total) as total_vendas,
+            AVG(valor_total) as ticket_medio
+        ")
+        ->groupBy('periodo')
+        ->orderBy('periodo', 'DESC')
+        ->get()
+        ->map(function ($item) {
+            $item->ticket_medio = round((float)$item->ticket_medio, 2);
+            $item->total_vendas = round((float)$item->total_vendas, 2);
+            return $item;
         });
+}
 
-        $query->when($dataFim, function ($q) use ($dataFim) {
-            $q->whereDate('created_at', '<=', $dataFim);
-        });
-
-        return $query->selectRaw("
-                strftime('%Y-%m', created_at) as periodo,
-                COUNT(*) as total_pedidos,
-                SUM(valor_total) as total_vendas,
-                AVG(valor_total) as ticket_medio
-            ")
-            ->groupBy('periodo')
-            ->orderBy('periodo', 'DESC')
-            ->get()
-            ->map(function ($item) {
-                $item->ticket_medio = round((float)$item->ticket_medio, 2);
-                $item->total_vendas = round((float)$item->total_vendas, 2);
-                return $item;
-            });
-    }
 
     public function comissoesDetalhadas(?string $dataInicio = null, ?string $dataFim = null, ?int $tipoId = null)
     {

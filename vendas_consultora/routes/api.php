@@ -100,10 +100,12 @@ Route::post("/", "cadastrarUsuario");
     // --- ESTOQUE ---
     Route::prefix("estoque")->controller(EstoquesController::class)->group(function () {
         Route::get("/", "index");
+        Route::get("/sem-estoque", "produtosSemEstoque");
         Route::post("/", "store");
         Route::get("/{id}", "show");
         Route::put("/{id}", "update");
         Route::delete("/{id}", "destroy");
+        Route::get("/movimentacoes", "movimentacoes");
     });
 
     // --- DEVOLUÇÕES ---

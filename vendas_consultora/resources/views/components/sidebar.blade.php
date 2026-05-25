@@ -43,10 +43,11 @@
 
     <!-- SIDEBAR -->
     <aside
-        class="fixed inset-y-0 left-0 z-40 flex h-full -translate-x-full transform flex-col bg-[#2C3E50] text-gray-300 shadow-2xl transition-all duration-300 md:static md:translate-x-0 md:rounded-3xl"
+        x-effect="document.body.classList.toggle('overflow-hidden', open)"
+        class="fixed inset-y-0 left-0 z-40 flex h-[100dvh] w-64 -translate-x-full transform flex-col bg-[#2C3E50] text-gray-300 shadow-2xl transition-all duration-300 overscroll-none md:fixed md:left-4 md:top-4 md:h-[calc(100dvh-2rem)] md:translate-x-0 md:rounded-3xl"
         :class="[
             open ? 'translate-x-0' : '',
-            collapsed ? 'w-20 p-3' : 'w-64 p-6'
+            collapsed ? 'md:w-20 md:p-3 sidebar-collapsed' : 'md:w-64 md:p-6'
         ]">
 
         <!-- MOBILE CLOSE -->
@@ -129,57 +130,98 @@
         </div>
 
         <!-- NAV -->
-        <nav class="flex-1 space-y-2 overflow-y-auto">
+        <nav class="min-h-0 flex-1 space-y-2 overflow-visible">
 
-            <!-- DASH -->
+            <!-- DASHBOARD -->
             <a
                 href="{{ route('consultora.dashboard') }}"
-                title="Visão Geral"
-                class="flex items-center rounded-xl px-4 py-3 transition-all {{ $isDash ? 'bg-[#FFD700] text-[#2C3E50]' : 'hover:bg-white/10 hover:text-white' }}"
+                data-tooltip="Visão Geral"
+                class="sidebar-item group flex items-center rounded-2xl px-4 py-3 transition-all duration-300
+                {{ $isDash
+                    ? 'bg-[#FFD700] text-[#2C3E50] shadow-lg'
+                    : 'hover:bg-white/10 hover:text-white'
+                }}"
                 :class="collapsed ? 'justify-center' : 'gap-4'">
 
-                <svg class="h-5 w-5 {{ $isDash ? 'text-[#2C3E50]' : 'text-[#FFD700]' }}" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 00-1.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                </svg>
+                <i class="fa-solid fa-house text-lg
+                    {{ $isDash ? 'text-[#2C3E50]' : 'text-[#FFD700]' }}">
+                </i>
 
-                <span x-show="!collapsed">Visão Geral</span>
+                <span
+                    x-show="!collapsed"
+                    x-transition
+                    class="font-medium">
+                    Visão Geral
+                </span>
             </a>
 
             <!-- REDE -->
             <a
                 href="/rede/arvore"
-                title="Minha Rede"
-                class="flex items-center rounded-xl px-4 py-3 transition-all {{ $isRede ? 'bg-[#FFD700] text-[#2C3E50]' : 'hover:bg-white/10 hover:text-white' }}"
+                data-tooltip="Minha Rede"
+                class="sidebar-item group flex items-center rounded-2xl px-4 py-3 transition-all duration-300
+                {{ $isRede
+                    ? 'bg-[#FFD700] text-[#2C3E50] shadow-lg'
+                    : 'hover:bg-white/10 hover:text-white'
+                }}"
                 :class="collapsed ? 'justify-center' : 'gap-4'">
 
-                <svg class="h-5 w-5 {{ $isRede ? 'text-[#2C3E50]' : 'text-[#FFD700]' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 4.354a4 4 0 110 5.292"/>
-                </svg>
+                <i class="fa-solid fa-users text-lg
+                    {{ $isRede ? 'text-[#2C3E50]' : 'text-[#FFD700]' }}">
+                </i>
 
-                <span x-show="!collapsed">Minha Rede</span>
+                <span
+                    x-show="!collapsed"
+                    x-transition
+                    class="font-medium">
+                    Minha Rede
+                </span>
             </a>
+
+            <!-- PEDIDOS EQUIPE -->
+            @if(str_contains($userCargo, 'líder') || str_contains($userCargo, 'lider'))
+                <a
+                    href="/pedidos/equipe"
+                    data-tooltip="Pedidos da Equipe"
+                    class="sidebar-item group flex items-center rounded-2xl px-4 py-3 transition-all duration-300
+                    {{ $isEquipe
+                        ? 'bg-[#FFD700] text-[#2C3E50] shadow-lg'
+                        : 'hover:bg-white/10 hover:text-white'
+                    }}"
+                    :class="collapsed ? 'justify-center' : 'gap-4'">
+
+                    <i class="fa-solid fa-clipboard-list text-lg
+                        {{ $isEquipe ? 'text-[#2C3E50]' : 'text-[#FF7665]' }}">
+                    </i>
+
+                    <span
+                        x-show="!collapsed"
+                        x-transition
+                        class="font-medium">
+                        Pedidos Equipe
+                    </span>
+                </a>
+            @endif
 
             <!-- CLIENTES -->
             <button
                 type="button"
-                title="Clientes"
+                data-tooltip="Clientes"
                 @click="
                     window.dispatchEvent(new CustomEvent('open-modal-cliente'));
                     open=false
                 "
-                class="flex w-full items-center rounded-xl px-4 py-3 transition-all hover:bg-white/10 hover:text-white"
+                class="sidebar-item group flex w-full items-center rounded-2xl px-4 py-3 transition-all duration-300 hover:bg-white/10 hover:text-white"
                 :class="collapsed ? 'justify-center' : 'gap-4'">
 
-                <svg class="h-5 w-5 text-[#FF7665]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2.5"
-                        d="M17 20h5v-2"/>
-                </svg>
+                <i class="fa-solid fa-user-group text-lg text-[#FF7665]"></i>
 
-                <span x-show="!collapsed">Clientes</span>
+                <span
+                    x-show="!collapsed"
+                    x-transition
+                    class="font-medium">
+                    Clientes
+                </span>
             </button>
 
         </nav>
@@ -192,7 +234,8 @@
 
                 <button
                     type="submit"
-                    class="flex w-full items-center rounded-xl px-4 py-3 text-red-400 transition hover:bg-red-400/10"
+                    data-tooltip="Sair"
+                    class="sidebar-item flex w-full items-center rounded-xl px-4 py-3 text-red-400 transition hover:bg-red-400/10"
                     :class="collapsed ? 'justify-center' : 'gap-4'">
 
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

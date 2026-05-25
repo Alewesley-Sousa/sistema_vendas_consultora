@@ -10,6 +10,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/CountUp.js/2.8.0/countUp.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -115,6 +117,23 @@
                             </svg>
                             <span class="text-[11px] font-semibold uppercase tracking-widest">Estoques</span>
                         </a>
+
+                        <a href="{{ route('distribuidora.solicitacoes') }}" 
+                           class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white group {{ request()->routeIs('distribuidora.solicitacoes') ? 'nav-item-active' : '' }}">
+                            <svg class="w-4 h-4 {{ request()->routeIs('distribuidora.solicitacoes') ? '' : 'opacity-50 group-hover:opacity-100' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                            <span class="text-[11px] font-semibold uppercase tracking-widest">Solicitações</span>
+                        </a>
+                        
+                        <a href="{{ route('distribuidora.relatorios') }}" 
+   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white group {{ request()->routeIs('distribuidora.relatorios.*') ? 'nav-item-active' : '' }}">
+    <svg class="w-4 h-4 {{ request()->routeIs('distribuidora.relatorios.*') ? '' : 'opacity-50 group-hover:opacity-100' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+    </svg>
+    <span class="text-[11px] font-semibold uppercase tracking-widest">Relatórios</span>
+</a>
+
                     </div>
                 </div>
             </nav>
@@ -132,7 +151,8 @@
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col min-w-0">
+        <!-- Removido o opacity-0 para evitar flashes brancos na carga nativa -->
+        <main id="main-content" class="flex-1 flex flex-col min-w-0">
             
             <header class="flex items-center justify-between h-20 px-6 md:px-10 shrink-0">
                 <div class="flex items-center gap-6">
@@ -180,5 +200,155 @@
     @include('components.modal-notifications')
 
     @livewireScripts
+    
+    <script>
+// ========== PAGE SCRIPTS MANAGER ==========
+window.PageScriptsManager = {
+    countUpInstances: [],
+    eventListeners: [],
+
+    cleanup() {
+        this.countUpInstances.forEach(instance => {
+            if (instance && typeof instance.stop === 'function') {
+                instance.stop();
+            }
+        });
+        this.countUpInstances = [];
+
+        this.eventListeners.forEach(({ target, event, handler }) => {
+            if (target && typeof target.removeEventListener === 'function') {
+                target.removeEventListener(event, handler);
+            }
+        });
+        this.eventListeners = [];
+    },
+
+    initCountUps() {
+        const elements = document.querySelectorAll('[data-count-up]');
+        elements.forEach(el => {
+            const endValue = parseFloat(el.dataset.countUp);
+            const duration = parseFloat(el.dataset.duration || '2');
+            
+            const options = {
+                duration: duration,
+                easingName: 'easeOutExpo',
+                separator: '.',
+                decimalPlaces: 0
+            };
+
+            try {
+                const countUp = new CountUp(el, endValue, options);
+                if (!countUp.error) {
+                    countUp.start();
+                    this.countUpInstances.push(countUp);
+                }
+            } catch (error) {
+                console.error('Error creating CountUp:', error);
+            }
+        });
+    },
+
+    initMouseMoveEffects() {
+        const cards = document.querySelectorAll('[data-tilt]');
+        
+        cards.forEach(card => {
+            const handler = (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+
+                gsap.to(card, {
+                    transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            };
+
+            const resetHandler = () => {
+                gsap.to(card, {
+                    transform: 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)',
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            };
+
+            card.addEventListener('mousemove', handler);
+            card.addEventListener('mouseleave', resetHandler);
+
+            this.eventListeners.push(
+                { target: card, event: 'mousemove', handler },
+                { target: card, event: 'mouseleave', handler: resetHandler }
+            );
+        });
+    },
+
+    initTooltips() {
+        const tooltips = document.querySelectorAll('[data-tooltip]');
+        tooltips.forEach(el => {
+            const tooltipText = el.dataset.tooltip;
+            
+            const showTooltip = (e) => {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'absolute z-50 px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-lg pointer-events-none';
+                tooltip.textContent = tooltipText;
+                tooltip.id = 'tooltip-' + el.id;
+                document.body.appendChild(tooltip);
+
+                const rect = el.getBoundingClientRect();
+                tooltip.style.top = rect.top - tooltip.offsetHeight - 8 + 'px';
+                tooltip.style.left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + 'px';
+
+                gsap.fromTo(tooltip, 
+                    { opacity: 0, y: 5 },
+                    { opacity: 1, y: 0, duration: 0.2 }
+                );
+
+                el._tooltip = tooltip;
+            };
+
+            const hideTooltip = (e) => {
+                if (el._tooltip) {
+                    gsap.to(el._tooltip, {
+                        opacity: 0,
+                        y: 5,
+                        duration: 0.15,
+                        onComplete: () => el._tooltip.remove()
+                    });
+                    el._tooltip = null;
+                }
+            };
+
+            el.addEventListener('mouseenter', showTooltip);
+            el.addEventListener('mouseleave', hideTooltip);
+
+            this.eventListeners.push(
+                { target: el, event: 'mouseenter', handler: showTooltip },
+                { target: el, event: 'mouseleave', handler: hideTooltip }
+            );
+        });
+    },
+
+    init() {
+        this.cleanup();
+        
+        setTimeout(() => {
+            this.initCountUps();
+            this.initMouseMoveEffects();
+            this.initTooltips();
+            document.dispatchEvent(new CustomEvent('pageScriptsInitialized'));
+        }, 100);
+    }
+};
+
+// Inicializa os scripts nativamente a cada carregamento de página
+document.addEventListener('DOMContentLoaded', () => {
+    window.PageScriptsManager.init();
+});
+</script>
+
 </body>
 </html>

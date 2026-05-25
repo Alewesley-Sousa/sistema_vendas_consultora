@@ -5,12 +5,13 @@ namespace App\Services;
 use App\Models\produtos;
 use App\Services\LogService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\ProdutosRequest;
 
 class ProdutoService
 {
     public function index()
     {
-        // Retorna todos os produtos com os dados da categoria vinculada
         return produtos::with('categoria')->get();
     }
 
@@ -19,13 +20,20 @@ class ProdutoService
         return produtos::with('categoria')->findOrFail($id);
     }
 
-    public function store(array $data)
+    public function store(ProdutosRequest $request)
     {
         DB::beginTransaction();
         try {
-            $produto = produtos::create($data);
+            $dados = $request->validated();
+
+            // Executa o upload se a imagem foi enviada
+            if ($request->hasFile('imagem')) {
+                $path = $request->file('imagem')->store('produtos', 'public');
+                $dados['imagem_url'] = $path; // Seta o link correto para persistir no banco
+            }
+
+            $produto = produtos::create($dados);
             
-            // Carrega o relacionamento para pegar o nome da categoria
             $produto->load('categoria');
             $nomeCategoria = $produto->categoria->nome ?? 'Sem Categoria';
 
@@ -47,17 +55,29 @@ class ProdutoService
             DB::rollBack();
             return [
                 'status'  => 'error',
-                'message' => "O produto '{$produto->nome} não foi adicionado: " . $e->getMessage()
+                'message' => "Erro ao adicionar o produto: " . $e->getMessage()
             ];
         }
     }
 
-    public function update(array $data, int $id)
+    public function update(ProdutosRequest $request, int $id)
     {
         DB::beginTransaction();
         try {
             $produto = produtos::findOrFail($id);
-            $produto->update($data);
+            $dados = $request->validated();
+
+            if ($request->hasFile('imagem')) {
+                // Remove a imagem antiga se existir para não entulhar o Storage
+                if ($produto->imagem_url && Storage::disk('public')->exists($produto->imagem_url)) {
+                    Storage::disk('public')->delete($produto->imagem_url);
+                }
+
+                $path = $request->file('imagem')->store('produtos', 'public');
+                $dados['imagem_url'] = $path;
+            }
+
+            $produto->update($dados);
             
             $produto->load('categoria');
             $nomeCategoria = $produto->categoria->nome ?? 'Sem Categoria';
@@ -89,6 +109,12 @@ class ProdutoService
         try {
             $produto = produtos::findOrFail($id);
             $nomeRemovido = $produto->nome;
+
+            // Opcional: deletar a imagem do storage ao excluir o produto definitivamente
+            if ($produto->imagem_url && Storage::disk('public')->exists($produto->imagem_url)) {
+                Storage::disk('public')->delete($produto->imagem_url);
+            }
+
             $produto->delete();
 
             LogService::registrarAcao(

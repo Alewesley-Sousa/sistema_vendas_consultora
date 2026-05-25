@@ -6,61 +6,46 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ProdutosRequest extends FormRequest
 {
-    /**
-     * Determina se o usuário está autorizado a fazer este request.
-     */
     public function authorize(): bool
     {
-        // Como você está usando o middleware 'auth:sanctum', 
-        // podemos retornar true aqui.
         return true;
     }
 
-    /**
-     * Regras de validação aplicadas ao request.
-     */
     public function rules(): array
     {
-        // Lógica para diferenciar regras de POST (store) e PUT (update)
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
 
         return [
-            'nome' => [
-                $isUpdate ? 'sometimes' : 'required',
-                'string',
-                'max:150'
-            ],
-            'preco' => [
-                $isUpdate ? 'sometimes' : 'required',
-                'numeric',
-                'min:0'
-            ],
-            'descricao' => [
-                $isUpdate ? 'sometimes' : 'required',
-                'string'
-            ],
-            'imagem_url' => [
-                $isUpdate ? 'sometimes' : 'required',
-                'string',
-                'url' // Garante que seja um link válido
-            ],
-            'categoria_id' => [
-                'nullable',
-                'exists:categorias,id' // Valida se a categoria realmente existe na tabela
+            'nome' => [$isUpdate ? 'sometimes' : 'required', 'string', 'max:150'],
+            'preco' => [$isUpdate ? 'sometimes' : 'required', 'numeric', 'min:0'],
+            'descricao' => ['nullable', 'string', 'max:500'],
+            'categoria_id' => ['required', 'integer', 'exists:categorias,id'],
+            'status' => [$isUpdate ? 'sometimes' : 'required', 'string', 'in:ativo,inativo'],
+            
+            // Tratamento correto do arquivo de imagem vindo do front-end
+            'imagem' => [
+                $isUpdate ? 'nullable' : 'required',
+                'file',
+                'image',
+                'mimes:jpeg,png,jpg,webp',
+                'max:2048'
             ],
         ];
     }
 
-    /**
-     * Mensagens personalizadas de erro (Opcional)
-     */
     public function messages(): array
     {
         return [
             'nome.required' => 'O nome do produto é obrigatório.',
+            'preco.required' => 'O preço é obrigatório.',
             'preco.numeric' => 'O preço deve ser um valor numérico.',
+            'categoria_id.required' => 'A categoria é obrigatória.',
             'categoria_id.exists' => 'A categoria selecionada não existe.',
-            'imagem_url.url' => 'O formato da URL da imagem é inválido.',
+            'status.required' => 'O status é obrigatório.',
+            'status.in' => 'O status deve ser ativo ou inativo.',
+            'imagem.required' => 'A imagem do produto é obrigatória.',
+            'imagem.image' => 'O arquivo enviado deve ser uma imagem válida.',
+            'imagem.max' => 'A imagem não pode ser maior que 2MB.',
         ];
     }
 }

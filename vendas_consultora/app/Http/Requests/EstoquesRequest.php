@@ -14,7 +14,8 @@ class EstoquesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'quantidade'  => ['required', 'integer', 'min:0'],
-        ];
+        'quantidade'  => ['required', 'integer', 'min:0'],
+        'produto_id'  => ['required', 'exists:produtos,id'], // Adicione esta linha
+    ];
     }
 }
