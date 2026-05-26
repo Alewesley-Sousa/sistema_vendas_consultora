@@ -13,8 +13,8 @@ class PedidosSeeder extends Seeder
         // Limpamos para garantir que o Tinker não duplique dados em testes manuais
         // pedidos::truncate();
 
-        $agora = Carbon::now(); // Abril 2026
-        $mesPassado = Carbon::now()->subMonth(); // Março 2026
+        $agora = Carbon::now(); // Maio 2026
+        $mesPassado = Carbon::now()->subMonth(); // Abril 2026
 
         $pedidosIniciais = [
             // Pedidos Genéricos para outros consultores
@@ -22,16 +22,14 @@ class PedidosSeeder extends Seeder
             ['usuario_id' => 14, 'cliente_id' => 2, 'link' => 'https://loja.com/p/2', 'valor_total' => 890.00, 'tipo_pagamento' => 'credito', 'status_id' => 5],
 
             // ===============================================================
-            // MARÇO 2026 (Período Anterior para o João ID 2)
+            // PERÍODO ANTERIOR (Ex: Abril 2026 ou data fixa tratada)
             // ===============================================================
-            ['usuario_id' => 2, 'cliente_id' => 17, 'valor_total' => 5550.00,
-            'tipo_pagamento' => 'pix', 'status_id' => 6, 'created_at' =>
-            "2026-05-06"],
+            ['usuario_id' => 2, 'cliente_id' => 17, 'valor_total' => 5550.00, 'tipo_pagamento' => 'pix', 'status_id' => 6, 'created_at' => "2026-04-06"],
             ['usuario_id' => 21, 'cliente_id' => 19, 'valor_total' => 320.00, 'tipo_pagamento' => 'credito', 'status_id' => 6, 'created_at' => $mesPassado->copy()->day(12)],
             ['usuario_id' => 24, 'cliente_id' => 20, 'valor_total' => 150.00, 'tipo_pagamento' => 'pix', 'status_id' => 5, 'created_at' => $mesPassado->copy()->day(18)],
 
             // ===============================================================
-            // ABRIL 2026 (Período Atual para o João ID 2)
+            // PERÍODO ATUAL (Maio 2026)
             // ===============================================================
             // João (Líder)
             ['usuario_id' => 2, 'cliente_id' => 17, 'valor_total' => 450.00, 'tipo_pagamento' => 'pix', 'status_id' => 5, 'created_at' => $agora->copy()->day(2)],
@@ -48,9 +46,20 @@ class PedidosSeeder extends Seeder
         ];
 
         foreach ($pedidosIniciais as $dados) {
-            // Adicionamos link padrão se não existir e garantimos data de atualização
+            // Adicionamos link padrão se não existir
             $dados['link'] = $dados['link'] ?? 'https://loja.com/pedido/' . rand(1000, 9000);
-            $dados['updated_at'] = $dados['created_at'] ?? $agora;
+            
+            // Tratamento rígido de data para não passar objetos brutos ou strings inválidas ao banco
+            if (isset($dados['created_at'])) {
+                $dados['created_at'] = $dados['created_at'] instanceof Carbon 
+                    ? $dados['created_at']->toDateTimeString() 
+                    : Carbon::parse($dados['created_at'])->toDateTimeString();
+            } else {
+                $dados['created_at'] = $agora->toDateTimeString();
+            }
+
+            // Força o updated_at a acompanhar rigorosamente a mesma string de data
+            $dados['updated_at'] = $dados['created_at'];
             
             pedidos::create($dados);
         }
@@ -59,6 +68,9 @@ class PedidosSeeder extends Seeder
         // Criar mais 20 pedidos rápidos para a rede do João para o gráfico ficar "cheio"
         $membrosRede = [2, 21, 22, 24, 26];
         for ($i = 0; $i < 20; $i++) {
+            // Gera uma string de data aleatória limpa dentro do mês atual
+            $dataAleatoria = $agora->copy()->subDays(rand(1, 20))->toDateTimeString();
+
             pedidos::create([
                 'usuario_id' => $membrosRede[array_rand($membrosRede)],
                 'cliente_id' => rand(1, 20),
@@ -66,7 +78,8 @@ class PedidosSeeder extends Seeder
                 'valor_total' => rand(50, 500),
                 'tipo_pagamento' => 'pix',
                 'status_id' => rand(2, 6), // Status válidos (não 1 ou 7)
-                'created_at' => $agora->copy()->subDays(rand(1, 20)),
+                'created_at' => $dataAleatoria,
+                'updated_at' => $dataAleatoria,
             ]);
         }
     }

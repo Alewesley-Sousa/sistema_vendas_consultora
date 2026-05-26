@@ -14,21 +14,18 @@ class RelatorioService
 {
     public function vendasPessoais(?string $dataInicio = null, ?string $dataFim = null)
 {
-    // 1. Iniciamos a query removendo o filtro engessado de ID de usuário
-    $query = pedidos::whereNotIn('status_id', [1, 7]); // Exclui pendente/cancelado
+    $query = pedidos::whereNotIn('status_id', [1, 7]);
 
-    // 2. VERIFICAÇÃO: Se NÃO for distribuidora, filtra pelo ID do indivíduo logado
-    // (Ajuste o 'distribuidora' para o nome exato do cargo/role que você usa no banco)
-    $query->when(Auth::user()->role_cargo !== 'distribuidora', function ($q) {
+    $query->when(Auth::user()->cargo !== 'distribuidora', function ($q) {
         $q->where('usuario_id', Auth::id());
     });
-
-    // 3. Filtros de data permanecem iguais
-    $query->when($dataInicio, function ($q) use ($dataInicio) {
+    
+    // 3. CORREÇÃO: filled() só ativa se a string NÃO for vazia e NÃO for nula
+    $query->when(filled($dataInicio), function ($q) use ($dataInicio) {
         $q->whereDate('created_at', '>=', $dataInicio);
     });
 
-    $query->when($dataFim, function ($q) use ($dataFim) {
+    $query->when(filled($dataFim), function ($q) use ($dataFim) {
         $q->whereDate('created_at', '<=', $dataFim);
     });
 
@@ -50,42 +47,50 @@ class RelatorioService
 
 
     public function comissoesDetalhadas(?string $dataInicio = null, ?string $dataFim = null, ?int $tipoId = null)
-    {
-        $query = DB::table('historico_comissoes as hc')
-            ->join('tipo_movimentacao_comissao as tmc', 'hc.tipo_movimentacao_id', '=', 'tmc.id')
-            ->where('hc.consultora_id', Auth::id());
+{
+    // Removida a linha do deleted_at que causava o erro
+    $query = DB::table('historico_comissoes as hc')
+        ->join('tipo_movimentacao_comissao as tmc', 'hc.tipo_movimentacao_id', '=', 'tmc.id');
 
-        $query->when($dataInicio, function ($q) use ($dataInicio) {
-            $q->whereDate('hc.data_movimentacao', '>=', $dataInicio);
+    // Filtros condicionais
+    $query->when($dataInicio, function ($q) use ($dataInicio) {
+        $q->where('hc.data_movimentacao', '>=', $dataInicio);
+    });
+
+    $query->when($dataFim, function ($q) use ($dataFim) {
+        $q->where('hc.data_movimentacao', '<=', $dataFim);
+    });
+
+    $query->when($tipoId, function ($q) use ($tipoId) {
+        $q->where('hc.tipo_movimentacao_id', $tipoId);
+    });
+
+    return $query->selectRaw("
+            strftime('%Y-%m', hc.data_movimentacao) as periodo,
+            COUNT(CASE WHEN hc.tipo_movimentacao_id = 1 THEN 1 END) as total_vendas_qtd,
+            SUM(CASE WHEN hc.tipo_movimentacao_id = 1 THEN hc.valor ELSE 0 END) as faturamento_bruto,
+            SUM(CASE WHEN hc.tipo_movimentacao_id = 2 THEN hc.valor ELSE 0 END) as total_estornos,
+            SUM(CASE WHEN hc.tipo_movimentacao_id = 3 THEN hc.valor ELSE 0 END) as total_saques,
+            SUM(CASE \n                WHEN hc.tipo_movimentacao_id = 1 THEN hc.valor 
+                WHEN hc.tipo_movimentacao_id = 2 THEN hc.valor 
+                WHEN hc.tipo_movimentacao_id = 3 THEN -hc.valor 
+                ELSE 0 
+            END) as saldo_liquido
+        ")
+        ->groupBy(DB::raw("strftime('%Y-%m', hc.data_movimentacao)"))
+        ->orderBy('periodo', 'DESC')
+        ->get()
+        ->map(function ($item) {
+            $item->faturamento_bruto = round((float)$item->faturamento_bruto, 2);
+            $item->total_estornos = round((float)$item->total_estornos, 2);
+            $item->total_saques = round((float)$item->total_saques, 2);
+            $item->saldo_liquido = round((float)$item->saldo_liquido, 2);
+            return $item;
         });
+}
 
-        $query->when($dataFim, function ($q) use ($dataFim) {
-            $q->whereDate('hc.data_movimentacao', '<=', $dataFim);
-        });
 
-        $query->when($tipoId, function ($q) use ($tipoId) {
-            $q->where('hc.tipo_movimentacao_id', $tipoId);
-        });
 
-        return $query->selectRaw("
-                strftime('%Y-%m', hc.data_movimentacao) as periodo,
-                tmc.nome as tipo_movimentacao,
-                hc.tipo_movimentacao_id,
-                SUM(CASE 
-                    WHEN hc.tipo_movimentacao_id = 1 THEN hc.valor 
-                    WHEN hc.tipo_movimentacao_id = 2 THEN -hc.valor 
-                    ELSE 0 
-                END) as valor_liquido
-            ")
-            ->groupBy('periodo', 'tmc.nome', 'hc.tipo_movimentacao_id')
-            ->orderBy('periodo', 'DESC')
-            ->orderBy('tmc.nome')
-            ->get()
-            ->map(function ($item) {
-                $item->valor_liquido = round((float)$item->valor_liquido, 2);
-                return $item;
-            });
-    }
 
     /**
      * Processa o desempenho completo da rede.
