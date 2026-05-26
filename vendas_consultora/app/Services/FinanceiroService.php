@@ -24,7 +24,7 @@ class FinanceiroService
     DB::beginTransaction();
     try {
       // Carregamos o pedido com itens e o usuário que realizou a venda
-      $pedido = pedidos::with(["itensPedidos", "usuario"])->find($pedidoId);
+      $pedido = pedidos::with(["itensPedidos", "consultora"])->find($pedidoId);
 
       if (!$pedido) {
         throw new Exception("Pedido não encontrado.");
