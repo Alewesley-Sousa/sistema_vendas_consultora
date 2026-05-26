@@ -279,7 +279,7 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide block mb-1">Data de Encerramento</label>
-                            <input type="datetime-local" x-model="novaCampanha.Campanha.encerramento" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:bg-white focus:border-slate-400 text-slate-700" />
+                            <input type="datetime-local" x-model="novaCampanha.encerramento" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:bg-white focus:border-slate-400 text-slate-700" />
                         </div>
                     </div>
                 </div>
