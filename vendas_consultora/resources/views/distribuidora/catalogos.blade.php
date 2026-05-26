@@ -256,7 +256,6 @@
                             <select x-model="novaCampanha.tipo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:bg-white focus:border-slate-400 text-slate-700 font-medium">
                                 <option>Venda Direta Tradicional</option>
                                 <option>Resgate de Pontos</option>
-                                <option>Misto / Promocional</option>
                             </select>
                         </div>
                         <div>
@@ -639,8 +638,8 @@
                 async gravarCampanha() {
                     if (!this.novaCampanha.nome) return;
 
-                    let tipoId = 1; 
-                    if (this.novaCampanha.tipo === 'Resgate de Pontos') tipoId = 2;
+                    let tipoId = 2; 
+                    if (this.novaCampanha.tipo === 'Resgate de Pontos') tipoId = 1;
                     if (this.novaCampanha.tipo === 'Misto / Promocional') tipoId = 3;
 
                     let statusId = this.novaCampanha.status.includes('Ativo') ? 1 : 2;

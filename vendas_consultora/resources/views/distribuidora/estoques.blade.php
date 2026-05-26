@@ -100,6 +100,7 @@
         try {
             await axios.put(`/api/estoque/${this.selectedEstoque.id}`, {
                 quantidade: novaQuantidade,
+                produto_id: this.selectedEstoque.produto_id,
                 justificativa: this.justificativa,
                 quantidade_movimentada: this.quantidadeAjuste,
                 tipo_movimentacao: ehSaida ? 'saida' : 'entrada'
