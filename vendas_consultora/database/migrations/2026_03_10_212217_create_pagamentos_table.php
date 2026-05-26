@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pedido_id')->constrained('pedidos')->cascadeOnDelete();
             $table->enum('tipo_pagamento',['credito', 'debito', 'pix']);
-            $table->decimal('valor', 10, 2);
+            $table->decimal('valor', 10, 2)->nullable();
             $table->enum('status', ['pendente', 'recusado', 'aprovado', 'estornado', 'em_analise']);
             $table->string('codigo_transacao', 100);
             $table->timestamp('data_solicitacao')->useCurrent();
