@@ -92,16 +92,21 @@ class RelatorioService
 
 
 
-    /**
+/**
      * Processa o desempenho completo da rede.
      */
     public function analisarDesempenhoRede(?string $dataInicio = null, ?string $dataFim = null)
     {
-        $userId = Auth::id();
+        $user = Auth::user();
 
-        // 1. Mapeamento da "Família" (CTE Recursiva)
-        $rede = $this->mapearRede($userId);
-        $redeIds = $rede->pluck('id')->toArray();
+        // ALTERAÇÃO AQUI: Se for distribuidora, pega TODOS os IDs de usuários do sistema.
+        // Se não for, faz o mapeamento recursivo da rede daquele usuário específico.
+        if ($user->cargo === 'distribuidora') {
+            $redeIds = DB::table('usuarios')->pluck('id')->toArray();
+        } else {
+            $rede = $this->mapearRede($user->id);
+            $redeIds = $rede->pluck('id')->toArray();
+        }
 
         // 2. Definição dos Períodos
         $periodoA_Inicio = $dataInicio ? Carbon::parse($dataInicio)->startOfDay() : Carbon::now()->startOfMonth();
@@ -110,11 +115,16 @@ class RelatorioService
         $periodoB_Inicio = $periodoA_Inicio->copy()->subMonth();
         $periodoB_Fim = $periodoA_Fim->copy()->subMonth();
 
+        // Se a lista de IDs estiver vazia (caso raro), evita erros nas queries de 'whereIn'
+        if (empty($redeIds)) {
+            $redeIds = [0];
+        }
+
         // 3. Processamentos de Vendas
         $vendasA = $this->calcularVendasNoPeriodo($redeIds, $periodoA_Inicio, $periodoA_Fim);
         $vendasB = $this->calcularVendasNoPeriodo($redeIds, $periodoB_Inicio, $periodoB_Fim);
 
-        // 4. Processamento de Metas (Passando o objeto Carbon)
+        // 4. Processamento de Metas
         $metasTotais = $this->buscarMetasDaRede($redeIds, $periodoA_Inicio);
 
         // 5. Cálculos de Comparativos
