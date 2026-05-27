@@ -13,7 +13,8 @@
     x-init="init()"
     class="space-y-8"
 >
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {{-- Cards de Resumo --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-4">
             <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,20 +38,9 @@
                 <h4 class="text-xl font-bold text-emerald-700 tracking-tight">1 Ativo</h4>
             </div>
         </div>
-
-        <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-slate-400 flex items-center justify-center text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                </svg>
-            </div>
-            <div>
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Itens Inativos</p>
-                <h4 class="text-xl font-bold text-slate-700 tracking-tight" x-text="`${inativosCount} Arquivados`">0 Arquivados</h4>
-            </div>
-        </div>
     </div>
 
+    {{-- Filtros e Ações --}}
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div class="flex flex-1 flex-col sm:flex-row gap-3">
             <div class="relative flex-1 max-w-md">
@@ -88,28 +78,6 @@
                     </template>
                 </ul>
             </div>
-
-            <div class="relative" x-data="{ open: false, selected: 'all' }">
-                <button @click="open = !open" @click.outside="open = false" type="button" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-slate-400 shadow-sm flex items-center justify-between gap-2">
-                    <span x-text="selected === 'all' ? 'Todos os Status' : (selected === 'ativo' ? 'Ativos' : 'Inativos')"></span>
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-                <ul x-show="open" 
-                    x-transition:enter="transition ease-out duration-150"
-                    x-transition:enter-start="opacity-0 scale-95"
-                    x-transition:enter-end="opacity-100 scale-100"
-                    x-transition:leave="transition ease-in duration-100"
-                    x-transition:leave-start="opacity-100 scale-100"
-                    x-transition:leave-end="opacity-0 scale-95"
-                    class="absolute left-0 mt-2 w-full z-10 bg-white border border-slate-100 rounded-xl shadow-xl py-1"
-                >
-                    <li @click="statusFilter = 'all'; selected = 'all'; open = false; currentPage = 1" class="px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50">Todos os Status</li>
-                    <li @click="statusFilter = 'ativo'; selected = 'ativo'; open = false; currentPage = 1" class="px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50">Ativos</li>
-                    <li @click="statusFilter = 'inativo'; selected = 'inativo'; open = false; currentPage = 1" class="px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50">Inativos</li>
-                </ul>
-            </div>
         </div>
 
         <button @click="abrirCreateModal()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all shrink-0">
@@ -120,6 +88,7 @@
         </button>
     </div>
 
+    {{-- Tabela de Produtos --}}
     <div class="overflow-x-auto bg-white rounded-2xl border border-slate-200 shadow-sm mt-4">
         <table class="w-full text-left border-collapse">
             <thead>
@@ -127,7 +96,6 @@
                     <th class="py-4 px-6">Produto</th>
                     <th class="py-4 px-4">Categoria</th>
                     <th class="py-4 px-4 text-right">Preço Base</th>
-                    <th class="py-4 px-4 text-center">Status</th>
                     <th class="py-4 px-6 text-center">Ações</th>
                 </tr>
             </thead>
@@ -137,10 +105,10 @@
                     <tr x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 transform -translate-y-2"
                         x-transition:enter-end="opacity-100 transform translate-y-0"
-                        :class="getProdutoStatus(produto) === 'inativo' ? 'bg-slate-50/40 text-slate-400 hover:bg-slate-50 transition-colors' : 'hover:bg-slate-50/50 transition-colors'"
+                        class="hover:bg-slate-50/50 transition-colors"
                     >
                         <td class="py-4 px-6">
-                            <div class="flex items-center gap-3" :class="getProdutoStatus(produto) === 'inativo' ? 'opacity-60' : ''">
+                            <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
                                     <template x-if="produto.imagem_url">
                                         <img :src="resolveImageUrl(produto.imagem_url)" :alt="produto.nome" class="w-full h-full object-cover">
@@ -151,20 +119,13 @@
                                 </div>
 
                                 <div>
-                                    <p class="font-bold" :class="getProdutoStatus(produto) === 'inativo' ? 'text-slate-700 line-through' : 'text-slate-900'" x-text="produto.nome"></p>
+                                    <p class="font-bold text-slate-900" x-text="produto.nome"></p>
                                     <p class="text-[10px] text-slate-400" x-text="`SKU: ${getSku(produto)}`"></p>
                                 </div>
                             </div>
                         </td>
                         <td class="py-4 px-4 text-slate-500" x-text="getCategoriaNome(produto)"></td>
                         <td class="py-4 px-4 text-right font-semibold text-slate-900" x-text="formatMoney(produto.preco)"></td>
-                        <td class="py-4 px-4 text-center">
-                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full"
-                                  :class="getProdutoStatus(produto) === 'ativo'
-                                        ? 'bg-emerald-100 text-emerald-800'
-                                        : 'bg-slate-200 text-slate-600'"
-                                  x-text="getProdutoStatus(produto) === 'ativo' ? 'Ativo' : 'Inativo'"></span>
-                        </td>
                         <td class="py-4 px-6 text-center">
                             <div class="flex items-center justify-center gap-2">
                                 <button @click="editarProduto(produto)" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-black transition-all" title="Editar">
@@ -173,34 +134,25 @@
                                     </svg>
                                 </button>
 
-                                <template x-if="getProdutoStatus(produto) === 'ativo'">
-                                    <button @click="excluirProduto(produto.id, produto.nome)" class="p-1.5 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-600 transition-all" title="Excluir">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                            <path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                                        </svg>
-                                    </button>
-                                </template>
-
-                                <template x-if="getProdutoStatus(produto) === 'inativo'">
-                                    <button @click="Swal.fire('Produto inativo', 'Este item já está inativo no catálogo.', 'info')" class="p-1.5 hover:bg-emerald-50 rounded-lg text-emerald-600 transition-all" title="Inativo">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                    </button>
-                                </template>
+                                <button @click="excluirProduto(produto.id, produto.nome)" class="p-1.5 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-600 transition-all" title="Excluir">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                    </svg>
+                                </button>
                             </div>
                         </td>
                     </tr>
                 </template>
 
                 <tr x-show="filteredProdutos.length === 0">
-                    <td colspan="5" class="py-12 px-6 text-center text-slate-400 text-sm">
+                    <td colspan="4" class="py-12 px-6 text-center text-slate-400 text-sm">
                         Nenhum produto encontrado.
                     </td>
                 </tr>
             </tbody>
         </table>
 
+        {{-- Paginação --}}
         <div x-show="filteredProdutos.length > 0" class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px] font-semibold">
             <div>
                 Exibindo de <span class="text-slate-800" x-text="startRecord"></span> até <span class="text-slate-800" x-text="endRecord"></span> de <span class="text-slate-800" x-text="filteredProdutos.length"></span> resultados
@@ -237,6 +189,7 @@
         </div>
     </div>
 
+    {{-- Modal de Criação --}}
     <div x-show="openCreateModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" role="dialog">
         <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
             <div x-show="openCreateModal" 
@@ -333,29 +286,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="sm:col-span-2">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Status Inicial</label>
-                                <div class="flex p-1 bg-slate-100 rounded-xl">
-                                    <button
-                                        type="button"
-                                        @click="createData.status = 'ativo'"
-                                        class="flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all"
-                                        :class="createData.status === 'ativo' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-                                    >
-                                        Ativo
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        @click="createData.status = 'inativo'"
-                                        class="flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all"
-                                        :class="createData.status === 'inativo' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-                                    >
-                                        Inativo
-                                    </button>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
@@ -370,6 +300,7 @@
         </div>
     </div>
 
+    {{-- Modal de Edição --}}
     <div x-show="openEditModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" role="dialog">
         <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
             <div x-show="openEditModal" 
@@ -465,29 +396,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="sm:col-span-2">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Disponibilidade / Status</label>
-                                <div class="flex p-1 bg-slate-100 rounded-xl">
-                                    <button
-                                        type="button"
-                                        @click="editData.status = 'ativo'"
-                                        class="flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all"
-                                        :class="editData.status === 'ativo' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-                                    >
-                                        Ativo
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        @click="editData.status = 'inativo'"
-                                        class="flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all"
-                                        :class="editData.status === 'inativo' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-                                    >
-                                        Inativo
-                                    </button>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
@@ -502,6 +410,7 @@
         </div>
     </div>
 
+    {{-- Modal de Crop --}}
     <div x-show="openCropModal" x-cloak class="fixed inset-0 z-[60] overflow-y-auto" role="dialog">
         <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
             <div x-show="openCropModal" 
@@ -568,7 +477,6 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('produtoManager', () => ({
         search: '',
         categoryFilter: 'all',
-        statusFilter: 'all',
 
         currentPage: 1,
         perPage: 5,
@@ -590,8 +498,7 @@ document.addEventListener('alpine:init', () => {
             preco: '',
             descricao: '',
             file: null,
-            imagePreview: '',
-            status: 'ativo'
+            imagePreview: ''
         },
 
         editData: {
@@ -602,11 +509,9 @@ document.addEventListener('alpine:init', () => {
             descricao: '',
             file: null,
             imagePreview: '',
-            currentImageUrl: '',
-            status: 'ativo'
+            currentImageUrl: ''
         },
 
-        // Iniciado vazio para receber os dados do banco via requisição Axios
         categorias: [],
         produtos: [],
         loading: false,
@@ -618,21 +523,12 @@ document.addEventListener('alpine:init', () => {
                 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
                 axios.defaults.withCredentials = true;
             }
-            // Dispara o carregamento das categorias assim que a tela abre
             this.carregarCategorias();
             this.carregarProdutos();
         },
 
         get totalProdutos() {
             return this.produtos.length;
-        },
-
-        get inativosCount() {
-            return this.produtos.filter(produto => this.getProdutoStatus(produto) === 'inativo').length;
-        },
-
-        get ativosCount() {
-            return this.produtos.filter(produto => this.getProdutoStatus(produto) === 'ativo').length;
         },
 
         get filteredProdutos() {
@@ -643,7 +539,6 @@ document.addEventListener('alpine:init', () => {
                 const descricao = (produto.descricao ?? '').toLowerCase();
                 const sku = this.getSku(produto).toLowerCase();
                 const categoriaNome = this.getCategoriaNome(produto).toLowerCase();
-                const status = this.getProdutoStatus(produto);
 
                 const matchSearch =
                     term === '' ||
@@ -655,11 +550,7 @@ document.addEventListener('alpine:init', () => {
                     this.categoryFilter === 'all' ||
                     categoriaNome === this.categoryFilter.toLowerCase();
 
-                const matchStatus =
-                    this.statusFilter === 'all' ||
-                    status === this.statusFilter;
-
-                return matchSearch && matchCategoria && matchStatus;
+                return matchSearch && matchCategoria;
             });
         },
 
@@ -683,14 +574,11 @@ document.addEventListener('alpine:init', () => {
             return calculatedEnd > this.filteredProdutos.length ? this.filteredProdutos.length : calculatedEnd;
         },
 
-        // Requisição AJAX/Axios para pegar as categorias do banco
         async carregarCategorias() {
             try {
                 const response = await axios.get('/api/categoria', {
                     headers: { Accept: 'application/json' }
                 });
-                
-                // Mapeia baseado na estrutura JSON retornada pelo seu CategoriasController ('data')
                 this.categorias = response.data.data ?? response.data ?? [];
             } catch (error) {
                 console.error('Erro ao buscar categorias via API:', error);
@@ -708,10 +596,6 @@ document.addEventListener('alpine:init', () => {
             }
 
             return 'Sem categoria';
-        },
-
-        getProdutoStatus(produto) {
-            return produto?.deleted_at ? 'inativo' : 'ativo';
         },
 
         getSku(produto) {
@@ -748,8 +632,7 @@ document.addEventListener('alpine:init', () => {
                 preco: '',
                 descricao: '',
                 file: null,
-                imagePreview: '',
-                status: 'ativo'
+                imagePreview: ''
             };
 
             if (this.$refs.createFileInput) {
@@ -766,8 +649,7 @@ document.addEventListener('alpine:init', () => {
                 descricao: '',
                 file: null,
                 imagePreview: '',
-                currentImageUrl: '',
-                status: 'ativo'
+                currentImageUrl: ''
             };
 
             if (this.$refs.editFileInput) {
@@ -1033,7 +915,6 @@ document.addEventListener('alpine:init', () => {
                 file: null,
                 imagePreview: '',
                 currentImageUrl: this.resolveImageUrl(produto.imagem_url),
-                status: this.getProdutoStatus(produto)
             };
 
             this.openEditModal = true;
@@ -1049,7 +930,9 @@ document.addEventListener('alpine:init', () => {
                 formData.append('categoria_id', source.categoria_id ?? '');
                 formData.append('preco', source.preco ?? '');
                 formData.append('descricao', source.descricao ?? '');
-                formData.append('status', source.status ?? 'ativo');
+
+                // Campo obrigatório adicionado de forma fixa nos bastidores
+                formData.append('status', 'ativo');
 
                 if (source.file instanceof File) {
                     formData.append('imagem', source.file, source.file.name);

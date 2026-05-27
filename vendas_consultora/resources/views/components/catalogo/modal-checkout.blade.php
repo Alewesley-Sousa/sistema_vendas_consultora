@@ -59,50 +59,18 @@
                 </div>
             </template>
 
-            {{-- Forma de Pagamento Estilizada --}}
+            {{-- Forma de Pagamento Estilizada (Apenas PIX ativo) --}}
             <div>
                 <label class="block text-[10px] font-black text-gray-400 uppercase mb-3 ml-2 tracking-widest">Método de Pagamento</label>
-                <div class="grid grid-cols-2 gap-4">
-                    <button @click="checkoutData.pagamento = 'pix'" 
-                            :class="checkoutData.pagamento === 'pix' ? 'border-[#FFD700] bg-white shadow-lg ring-2 ring-[#FFD700]/20' : 'border-gray-100 bg-gray-50 opacity-60'"
-                            class="flex flex-col items-center gap-2 p-4 rounded-3xl border-2 transition-all">
-                        <svg class="w-6 h-6 text-[#2C3E50]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span class="text-[10px] font-black uppercase">PIX</span>
-                    </button>
-                    <button @click="checkoutData.pagamento = 'cartao'" 
-                            :class="checkoutData.pagamento === 'cartao' ? 'border-[#FFD700] bg-white shadow-lg ring-2 ring-[#FFD700]/20' : 'border-gray-100 bg-gray-50 opacity-60'"
-                            class="flex flex-col items-center gap-2 p-4 rounded-3xl border-2 transition-all">
-                        <svg class="w-6 h-6 text-[#2C3E50]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        <span class="text-[10px] font-black uppercase">Cartão</span>
-                    </button>
+                <div class="w-full">
+                    <div class="flex flex-col items-center gap-2 p-5 rounded-3xl border-2 border-[#FFD700] bg-white shadow-lg ring-2 ring-[#FFD700]/20">
+                        <svg class="w-8 h-8 text-[#2C3E50]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-xs font-black uppercase text-[#2C3E50] tracking-wider">PIX (Padrão)</span>
+                    </div>
                 </div>
             </div>
-
-            {{-- Opções de Cartão --}}
-            <template x-if="checkoutData.pagamento === 'cartao'">
-                <div class="space-y-4 p-5 bg-gray-50 rounded-[2rem] border border-gray-100 animate-slideDown">
-                    <div class="flex justify-center gap-8 font-black text-[10px] uppercase">
-                        <label class="flex items-center gap-2 cursor-pointer group">
-                            <input type="radio" x-model="checkoutData.subMetodo" value="debito" class="text-[#FF7665] focus:ring-[#FF7665]"> 
-                            <span class="group-hover:text-[#2C3E50]">Débito</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer group">
-                            <input type="radio" x-model="checkoutData.subMetodo" value="credito" class="text-[#FF7665] focus:ring-[#FF7665]"> 
-                            <span class="group-hover:text-[#2C3E50]">Crédito</span>
-                        </label>
-                    </div>
-                    
-                    <template x-if="checkoutData.subMetodo === 'credito'">
-                        <div class="pt-2">
-                            <select x-model="checkoutData.parcelas" class="w-full bg-white border border-gray-200 rounded-2xl py-3 px-4 text-xs font-bold text-[#2C3E50] focus:ring-2 focus:ring-[#FFD700]">
-                                <template x-for="n in 12" :key="n">
-                                    <option :value="n" x-text="n + 'x de R$ ' + (totalCarrinho / n).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></option>
-                                </template>
-                            </select>
-                        </div>
-                    </template>
-                </div>
-            </template>
         </div>
 
         {{-- Footer do Modal --}}

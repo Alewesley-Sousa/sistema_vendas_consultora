@@ -187,14 +187,27 @@
                     const result = await response.json();
                     const itensRaw = result.data || result;
                     if (Array.isArray(itensRaw)) {
-                        this.selectedCatalogo.produtos = itensRaw.map(item => ({
-                            id: item.id,
-                            nome: item.produto.nome,
-                            preco: parseFloat(item.produto.preco_final),
-                            img: item.produto.imagem_url ? (item.produto.imagem_url.startsWith('http') ? item.produto.imagem_url : `/${item.produto.imagem_url}`) : null,
-                            estoque: item.estoque_disponivel,
-                            status: item.status.nome
-                        }));
+                        this.selectedCatalogo.produtos = itensRaw.map(item => {
+                            let rawImg = item.produto.imagem_url;
+                            let finalImg = null;
+
+                            if (rawImg) {
+                                if (rawImg.startsWith('http://') || rawImg.startsWith('https://') || rawImg.startsWith('/')) {
+                                    finalImg = rawImg;
+                                } else {
+                                    finalImg = `{{ asset('storage') }}/${rawImg}`;
+                                }
+                            }
+
+                            return {
+                                id: item.id,
+                                nome: item.produto.nome,
+                                preco: parseFloat(item.produto.preco_final),
+                                img: finalImg,
+                                estoque: item.estoque_disponivel,
+                                status: item.status.nome
+                            };
+                        });
                     }
                 } finally {
                     this.loading = false;
