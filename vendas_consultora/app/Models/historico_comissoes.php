@@ -16,7 +16,7 @@ class historico_comissoes extends Model
     protected $CREATED_AT = 'data_movimentacao';
 
     protected $guarded = [
-        'valor','id', 'usuario_responsavel', 'consultora_id'
+        'id'
     ];
 
     protected $casts = [

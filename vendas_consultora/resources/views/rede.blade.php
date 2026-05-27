@@ -18,7 +18,7 @@
         .tree ul { padding-top: 30px; position: relative; display: flex; justify-content: center; transition: all 0.5s; }
         .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 30px 10px 0 10px; transition: all 0.5s; }
         .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid #cbd5e1; width: 50%; height: 30px; }
-        .tree li::after { right: auto; left: 50%; border-left: 2px solid #cbd5e1; }
+        .tree li::after { right: auto; left: 50%; border-left: 2px solid #cbd5e1; width: 50%; height: 30px; }
         .tree li:only-child::after, .tree li:only-child::before { display: none; }
         .tree li:only-child { padding-top: 0; }
         .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
@@ -41,10 +41,10 @@
             <span class="hidden md:block text-slate-400 font-light ml-4">|</span>
             <span class="hidden md:block ml-4 text-sm font-medium text-slate-300">Minha Rede</span>
         </div>
-        <a href="/" class="group flex items-center gap-2 bg-slate-800/50 hover:bg-slate-700 border border-slate-600 px-4 py-2 rounded-full transition-all text-xs md:text-sm font-bold uppercase tracking-widest">
+        <button onclick="history.back()" class="group flex items-center gap-2 bg-slate-800/50 hover:bg-slate-700 border border-slate-600 px-4 py-2 rounded-full transition-all text-xs md:text-sm font-bold uppercase tracking-widest text-white">
             <svg class="w-4 h-4 text-[#d4af37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Voltar
-        </a>
+        </button>
     </nav>
 
     <div class="p-4 md:p-8 max-w-[1400px] mx-auto">

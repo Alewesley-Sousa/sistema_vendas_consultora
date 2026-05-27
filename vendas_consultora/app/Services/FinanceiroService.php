@@ -88,7 +88,7 @@ class FinanceiroService
   private function processarRecompensas(pedidos $pedido)
   {
     $valorTotal = $pedido->valor_total;
-    $vendedor = $pedido->usuario; // O usuário que montou o pedido
+    $vendedor = $pedido->consultora; // O usuário que montou o pedido
 
     if (!$vendedor) {
       return;
@@ -138,9 +138,6 @@ class FinanceiroService
     $valor,
     $tipoComissaoId
   ) {
-    if ($valor <= 0) {
-      return;
-    }
 
     // Atualiza ou cria o saldo na tabela 'comissoes'
     $saldo = comissoes::firstOrCreate(["consultora_id" => $usuarioId]);
