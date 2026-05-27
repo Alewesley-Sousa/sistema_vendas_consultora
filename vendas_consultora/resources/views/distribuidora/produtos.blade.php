@@ -64,7 +64,7 @@
             </div>
 
             <div class="relative" x-data="{ open: false, selected: 'all' }">
-                <button @click="open = !open" @click.outside="open = false" type="button" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-slate-400 shadow-sm flex items-center justify-between gap-2">
+                <button @click="open = !open" @click.outside="open = false" type="button" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-slate-400 shadow-sm flex items-center justify-between gap-2 min-w-[180px]">
                     <span x-text="selected === 'all' ? 'Todas as Categorias' : selected"></span>
                     <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -77,12 +77,15 @@
                     x-transition:leave="transition ease-in duration-100"
                     x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-95"
-                    class="absolute left-0 mt-2 w-full z-10 bg-white border border-slate-100 rounded-xl shadow-xl py-1"
+                    class="absolute left-0 mt-2 w-full z-10 bg-white border border-slate-100 rounded-xl shadow-xl py-1 max-h-60 overflow-y-auto"
                 >
                     <li @click="categoryFilter = 'all'; selected = 'all'; open = false; currentPage = 1" class="px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50">Todas as Categorias</li>
-                    <li @click="categoryFilter = 'Maquiagem'; selected = 'Maquiagem'; open = false; currentPage = 1" class="px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50">Maquiagem</li>
-                    <li @click="categoryFilter = 'Skincare'; selected = 'Skincare'; open = false; currentPage = 1" class="px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50">Skincare</li>
-                    <li @click="categoryFilter = 'Fragrâncias'; selected = 'Fragrâncias'; open = false; currentPage = 1" class="px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50">Fragrâncias</li>
+                    
+                    <template x-for="categoria in categorias" :key="categoria.id">
+                        <li @click="categoryFilter = categoria.nome; selected = categoria.nome; open = false; currentPage = 1" 
+                            class="px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50"
+                            x-text="categoria.nome"></li>
+                    </template>
                 </ul>
             </div>
 
@@ -278,7 +281,7 @@
 
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Categoria</label>
-                                <select x-model="createData.categoria_id"
+                                <select x-model="createData.categoria_id" required
                                         class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all">
                                     <option value="">Selecione</option>
                                     <template x-for="categoria in categorias" :key="categoria.id">
@@ -411,7 +414,7 @@
 
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Categoria</label>
-                                <select x-model="editData.categoria_id"
+                                <select x-model="editData.categoria_id" required
                                         class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all">
                                     <option value="">Selecione</option>
                                     <template x-for="categoria in categorias" :key="categoria.id">
@@ -603,12 +606,8 @@ document.addEventListener('alpine:init', () => {
             status: 'ativo'
         },
 
-        categorias: [
-            { id: 1, nome: 'Maquiagem' },
-            { id: 2, nome: 'Skincare' },
-            { id: 3, nome: 'Fragrâncias' },
-        ],
-
+        // Iniciado vazio para receber os dados do banco via requisição Axios
+        categorias: [],
         produtos: [],
         loading: false,
 
@@ -619,6 +618,8 @@ document.addEventListener('alpine:init', () => {
                 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
                 axios.defaults.withCredentials = true;
             }
+            // Dispara o carregamento das categorias assim que a tela abre
+            this.carregarCategorias();
             this.carregarProdutos();
         },
 
@@ -680,6 +681,20 @@ document.addEventListener('alpine:init', () => {
         get endRecord() {
             const calculatedEnd = this.currentPage * this.perPage;
             return calculatedEnd > this.filteredProdutos.length ? this.filteredProdutos.length : calculatedEnd;
+        },
+
+        // Requisição AJAX/Axios para pegar as categorias do banco
+        async carregarCategorias() {
+            try {
+                const response = await axios.get('/api/categoria', {
+                    headers: { Accept: 'application/json' }
+                });
+                
+                // Mapeia baseado na estrutura JSON retornada pelo seu CategoriasController ('data')
+                this.categorias = response.data.data ?? response.data ?? [];
+            } catch (error) {
+                console.error('Erro ao buscar categorias via API:', error);
+            }
         },
 
         getCategoriaNome(produto) {

@@ -245,7 +245,7 @@ public function trazerPedidoPorId($id)
     }
   }
 
-  public function criarPedido($data)
+public function criarPedido($data)
   {
     DB::beginTransaction();
     try {
@@ -256,14 +256,15 @@ public function trazerPedidoPorId($id)
 
       // 1. Criar a instância básica do pedido
       $pedido = new pedidos();
-      $pedido->uuid = (string) Str::uuid(); // Gera o identificador único
+      $pedido->uuid = (string) Str::uuid();
       $pedido->usuario_id = $usuarioLogado->id;
       $pedido->cliente_id = $data["cliente_id"];
       $pedido->status_id = $data["status_id"] ?? 1;
       $pedido->tipo_pagamento = $data["tipo_pagamento"];
 
-      // Monta o link dinâmico (ajuste a rota conforme seu web.php)
-      $pedido->link = "/pedido/rastreio/" . $pedido->uuid;
+      // PEGA O DOMÍNIO COMPLETO DINAMICAMENTE (HTTP ou HTTPS com base no ambiente)
+      // Ajuste o nome da rota ("cliente.pedido.montado") se necessário
+      $pedido->link = route("pedido.rastreio", ["uuid" => $pedido->uuid]);
 
       $pedido->save();
 
@@ -275,8 +276,6 @@ public function trazerPedidoPorId($id)
         $item->pedido_id = $pedido->id;
         $item->item_catalogo_id = $itemData["item_catalogo_id"];
         $item->quantidade = $itemData["quantidade"];
-
-        // Aqui você pode buscar o preço do produto no banco futuramente
         $item->preco_unitario = $itemData["preco_unitario"];
 
         $calculadorSubtotal = new calcularSubtotal(
@@ -294,7 +293,6 @@ public function trazerPedidoPorId($id)
       $pedido->valor_total = $calculadorTotal->calcular();
       $pedido->save();
 
-      // 4. Log do sistema
       LogService::registrarAcao(
         "Criou o pedido #$pedido->id",
         "Pedidos e itens_pedido",
@@ -304,7 +302,6 @@ public function trazerPedidoPorId($id)
 
       DB::commit();
 
-      // Dispara o cancelamento automático para daqui a 8 minutos
       CancelarPedidoInativo::dispatch($pedido->id)->delay(now()->addMinutes(8));
 
       return [

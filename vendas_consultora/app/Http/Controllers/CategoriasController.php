@@ -2,69 +2,110 @@
 /**
  * Autor: Alewesley-Sousa
  * Data: 01/03/2026
- * Descrição: Controler responsavel por controlar entrada e saida de dados
+ * Descrição: Controller responsável por controlar entrada e saída de dados de categorias
  */
 
 namespace App\Http\Controllers;
 
-use App\Models\categorias;
+use App\Models\categorias; // Lembrar de checar se o Model segue o plural "categorias"
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CategoriasController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listar todas as categorias.
      */
     public function index()
     {
-        //
+        try {
+            // Se o seu Model não usar timestamps, o all() funciona perfeitamente
+            $categorias = categorias::all();
+            
+            return response()->json([
+                'status' => 'success',
+                'data' => $categorias
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'mensagem' => 'Erro ao listar categorias: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Criar uma nova categoria.
      */
     public function store(Request $request)
     {
-        //
+        // Validação dos campos baseados na sua migration
+        $validator = Validator::make($request->all(), [
+            'nome' => 'required|string|max:100',
+            'descricao' => 'required|string'
+        ], [
+            'nome.required' => 'O nome da categoria é obrigatório.',
+            'nome.max' => 'O nome da categoria não pode passar de 100 caracteres.',
+            'descricao.required' => 'A descrição da categoria é obrigatória.'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            // Criando o registro no banco
+            $categoria = categorias::create([
+                'nome' => trim($request->nome),
+                'descricao' => trim($request->descricao)
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'mensagem' => 'Categoria criada com sucesso!',
+                'data' => $categoria
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'mensagem' => 'Não foi possível salvar a categoria: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Remover uma categoria específica do banco de dados.
      */
-    public function show(categorias $categorias)
+    public function destroy($id)
     {
-        //
-    }
+        try {
+            $categoria = categorias::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(categorias $categorias)
-    {
-        //
-    }
+            if (!$categoria) {
+                return response()->json([
+                    'status' => 'error',
+                    'mensagem' => 'Categoria não encontrada.'
+                ], 404);
+            }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, categorias $categorias)
-    {
-        //
-    }
+            // Deleta a categoria
+            $categoria->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(categorias $categorias)
-    {
-        //
+            return response()->json([
+                'status' => 'success',
+                'mensagem' => 'Categoria excluída com sucesso!'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'mensagem' => 'Erro ao excluir categoria: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

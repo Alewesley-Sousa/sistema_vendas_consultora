@@ -15,42 +15,37 @@ class UsuarioRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
-    {
-        // Pega o ID do usuário da rota para ignorar na validação de 'unique' durante a edição
-        // O nome aqui deve ser o mesmo que está na sua rota (ex: /usuarios/{usuario})
-        $usuarioId = $this->route('usuario') ?? $this->route('id');
+// No seu App\Http\Requests\UsuarioRequest.php
+public function rules(): array
+{
+    $usuarioId = $this->route('usuario') ?? $this->route('id');
 
-        return [
-            'nome' => 'required|string|max:100',
+    return [
+        'nome' => 'required|string|max:100',
 
-            'cpf' => [
-                'required',
-                'string',
-                'size:11',
-                Rule::unique('usuarios', 'cpf')->ignore($usuarioId),
-            ],
+        'cpf' => [
+            'required',
+            'string',
+            'size:11',
+            Rule::unique('usuarios', 'cpf')->ignore($usuarioId),
+        ],
 
-            'email' => [
-                'required',
-                'email',
-                'max:150',
-                // Garante que o e-mail seja único, ignorando o próprio ID na edição
-                Rule::unique('usuarios', 'email')->ignore($usuarioId),
-            ],
-            
-            'telefone' => 'nullable|string|max:20',
-            
-            // Senha obrigatória no POST (criação), opcional no PUT/PATCH (edição)
-            'senha' => $this->isMethod('post') ? 'required|string|min:8' : 'nullable|string|min:8',
-            
-            'cep' => 'required|string|size:8',
-            
-            'consultora_id' => 'nullable|exists:usuarios,id',
-            
-            'status_id' => 'required|exists:status_consultoras,id',
-        ];
-    }
+        'email' => [
+            'required',
+            'email',
+            'max:150',
+            Rule::unique('usuarios', 'email')->ignore($usuarioId),
+        ],
+        
+        'telefone' => 'nullable|string|max:20',
+        'senha' => $this->isMethod('post') ? 'required|string|min:8' : 'nullable|string|min:8',
+        'cep' => 'required|string|size:8',
+        'consultora_id' => 'nullable|exists:usuarios,id',
+        
+        // MUDANÇA AQUI: de 'required' para 'nullable'
+        'status_id' => 'nullable|exists:status_consultoras,id', 
+    ];
+}
 
     /**
      * Mensagens personalizadas de erro

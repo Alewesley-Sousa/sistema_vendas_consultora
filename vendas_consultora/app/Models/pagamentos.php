@@ -12,7 +12,7 @@ class pagamentos extends Model
     protected $CREATED_AT = 'data_solicitacao';
 
     protected $guarded = [
-        'id', 'valor', 'codigo_transacao'
+        'id'
     ];
 
     protected $casts = [

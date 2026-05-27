@@ -23,5 +23,6 @@ export default defineConfig({
                 '**/public/**',
             ],
         },
+        allowedHosts: ['.trycloudflare.com'],
     },
 })

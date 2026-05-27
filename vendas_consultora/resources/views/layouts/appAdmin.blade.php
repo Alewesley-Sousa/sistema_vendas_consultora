@@ -112,6 +112,16 @@
                             <span class="text-[11px] font-semibold uppercase tracking-widest">Catálogos</span>
                         </a>
 
+
+<a href="{{ route('distribuidora.categorias') }}" 
+   class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white group {{ request()->routeIs('distribuidora.categorias') ? 'nav-item-active' : '' }}">
+    <svg class="w-4 h-4 {{ request()->routeIs('distribuidora.categorias') ? '' : 'opacity-50 group-hover:opacity-100' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+    </svg>
+    <span class="text-[11px] font-semibold uppercase tracking-widest">Categorias</span>
+</a>
+
+
                         <a href="{{ route('distribuidora.estoques') }}" 
                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white group {{ request()->routeIs('distribuidora.estoques') ? 'nav-item-active' : '' }}">
                             <svg class="w-4 h-4 {{ request()->routeIs('distribuidora.estoques') ? '' : 'opacity-50 group-hover:opacity-100' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">

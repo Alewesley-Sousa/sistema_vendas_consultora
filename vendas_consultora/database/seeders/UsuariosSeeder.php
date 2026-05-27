@@ -34,7 +34,7 @@ class UsuariosSeeder extends Seeder
             // Consultoras Aleatórias
             ['nome' => 'Ana Costa', 'cargo' => 'consultora', 'cpf' => '33344455566', 'email' => 'ana.costa@example.com', 'telefone' => '85999990003', 'senha' => Hash::make('senha123'), 'cep' => '60000002', 'consultora_id' => null, 'status_id' => 2],
             ['nome' => 'Carlos Souza', 'cargo' => 'consultora', 'cpf' => '44455566677', 'email' => 'carlos.souza@example.com', 'telefone' => '85999990004', 'senha' => Hash::make('senha123'), 'cep' => '60000003', 'consultora_id' => null, 'status_id' => 1],
-            ['nome' => 'Fernanda Lima', 'cargo' => 'consultora', 'cpf' => '55566677788', 'email' => 'fernanda.lima@example.com', 'telefone' => '85999990005', 'senha' => Hash::make('senha123'), 'cep' => '60000004', 'consultora_id' => null, 'status_id' => 3],
+            ['nome' => 'Fernanda Lima', 'cargo' => 'consultora', 'cpf' => '55566677788', 'email' => 'fernanda.lima@example.com', 'telefone' => '85999990005', 'senha' => Hash::make('senha123'), 'cep' => '60000004', 'consultora_id' => null, 'status_id' => 1],
             ['nome' => 'Lucas Martins', 'cargo' => 'consultora', 'cpf' => '66677788899', 'email' => 'lucas.martins@example.com', 'telefone' => '85999990006', 'senha' => Hash::make('senha123'), 'cep' => '60000005', 'consultora_id' => null, 'status_id' => 1],
 
             // Líder Paulo e sua rede (ID 13)

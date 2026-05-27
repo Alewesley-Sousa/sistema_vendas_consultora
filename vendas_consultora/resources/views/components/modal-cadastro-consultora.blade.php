@@ -122,7 +122,8 @@
                             <div class="space-y-2 border-t border-gray-100 pt-4">
                                 <p class="text-xs text-gray-600"><strong>Nome:</strong> <span x-text="formData.nome" class="text-[#2C3E50] font-medium"></span></p>
                                 <p class="text-xs text-gray-600"><strong>WhatsApp:</strong> <span x-text="formData.telefone" class="text-[#2C3E50] font-medium"></span></p>
-                                <p class="text-xs text-gray-600"><strong>Indicada por:</strong> <span class="text-[#2C3E50] font-medium">{{ Auth::user()->nome }}</span></p>
+                                {{-- Segurança contra quebras: Forçando string tratada pelo Blade --}}
+                                <p class="text-xs text-gray-600"><strong>Indicada por:</strong> <span class="text-[#2C3E50] font-medium">{{ Auth::user()->nome ?? 'Nenhum' }}</span></p>
                                 <p class="text-xs text-gray-600"><strong>Status:</strong> <span class="text-[#FF7665] font-bold">Aguardando Aprovação</span></p>
                             </div>
                         </div>
@@ -170,7 +171,7 @@
                 cep: '',
                 email: '',
                 senha: '',
-                status_id: 3,
+                status_id: 3, 
                 cargo: 'consultora'
             },
 
@@ -196,46 +197,74 @@
             },
 
             async submitForm() {
+                // Impede reenvios caso já esteja processando
+                if (this.loading) return;
+                
                 this.loading = true;
                 
+                // Sanitização estrita dos dados
                 const cleanData = {
-                    ...this.formData,
-                    cpf: this.formData.cpf.replace(/\D/g, ''),
-                    cep: this.formData.cep.replace(/\D/g, ''),
-                    telefone: this.formData.telefone.replace(/\D/g, '')
+                    nome: String(this.formData.nome).trim(),
+                    cpf: String(this.formData.cpf).replace(/\D/g, ''),
+                    telefone: String(this.formData.telefone).replace(/\D/g, ''),
+                    cep: String(this.formData.cep).replace(/\D/g, ''),
+                    email: String(this.formData.email).trim(),
+                    senha: String(this.formData.senha),
+                    status_id: 3,
+                    cargo: 'consultora'
                 };
                 
                 try {
                     const token = localStorage.getItem('auth_token');
                     
+                    // Modificado para usar a rota exata da sua API
                     const response = await axios.post('/api/usuario', cleanData, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Accept': 'application/json',
+                            'Content-Type': 'application/json',
                             'X-Requested-With': 'XMLHttpRequest'
                         }
                     });
                     
-                    if (response.data.status === 'success') {
+                    if (response.data && (response.status === 200 || response.data.status === 'success')) {
+                        this.loading = false;
+                        
                         await Swal.fire({
                             title: 'Tudo pronto!',
-                            text: 'Cadastro realizado com sucesso.',
+                            text: response.data.mensagem || 'Pré-cadastro realizado com sucesso.',
                             icon: 'success',
-                            confirmButtonColor: '#2C3E50',
-                            showClass: { popup: 'animate__animated animate__fadeInUp' }
+                            confirmButtonColor: '#2C3E50'
                         });
+                        
                         this.open = false;
                         this.resetForm();
                         window.location.reload();
                     }
                 } catch (e) {
-                    let mensagemErro = 'Erro ao processar.';
-                    if (e.response?.status === 422) {
-                        mensagemErro = Object.values(e.response.data.errors).flat().join('<br>');
+                    this.loading = false; // Garante que o loading destrave se cair aqui
+                    console.error("Erro capturado na requisição:", e);
+                    
+                    let mensagemErro = 'Erro interno ao processar cadastro.';
+                    
+                    if (e.response) {
+                        if (e.response.status === 422 && e.response.data.errors) {
+                            // Erros de validação do Request do Laravel
+                            mensagemErro = Object.values(e.response.data.errors).flat().join('<br>');
+                        } else if (e.response.data && e.response.data.mensagem) {
+                            // Retornos customizados do seu UsuarioService
+                            mensagemErro = e.response.data.mensagem;
+                        }
+                    } else if (e.message) {
+                        mensagemErro = e.message;
                     }
-                    Swal.fire({ title: 'Atenção', html: mensagemErro, icon: 'error', confirmButtonColor: '#FF7665' });
-                } finally {
-                    this.loading = false;
+                    
+                    Swal.fire({ 
+                        title: 'Não foi possível cadastrar', 
+                        html: mensagemErro, 
+                        icon: 'error', 
+                        confirmButtonColor: '#FF7665' 
+                    });
                 }
             },
 

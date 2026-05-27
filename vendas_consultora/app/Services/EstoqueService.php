@@ -137,35 +137,45 @@ public function getProdutosSemEstoque()
         /**
      * Realiza a baixa de múltiplos itens no estoque a partir de um pedido.
      */
-    public function baixarEstoquePedido($pedido)
-    {
-        // Carrega os itens do pedido se ainda não estiverem carregados
-        $itens = $pedido->itensPedidos; 
+ public function baixarEstoquePedido($pedido)
+{
+    // Carrega os itens do pedido junto com o item correspondente no catálogo
+    // IMPORTANTE: mude para o nome exato da relação que está no seu Model
+    $itens = $pedido->itensPedidos()->with('itemCatalogo')->get(); 
 
-        foreach ($itens as $item) {
-            // Busca o registro de estoque pelo produto_id
-            $estoque = estoques::where('produto_id', $item->produto_id)->first();
+    foreach ($itens as $item) {
+        
+        // PEGA O ID DO PRODUTO PASSANDO PELO CATÁLOGO:
+        $produtoId = $item->itemCatalogo->produto_id ?? null;
 
-            if (!$estoque) {
-                throw new \Exception("Estoque não encontrado para o produto ID: {$item->produto_id}");
-            }
-
-            if ($estoque->quantidade < $item->quantidade) {
-                $produtoNome = $item->produto->nome ?? "ID {$item->produto_id}";
-                throw new \Exception("Estoque insuficiente para o produto: {$produtoNome}");
-            }
-
-            // Subtrai a quantidade
-            $estoque->quantidade -= $item->quantidade;
-            $estoque->save();
-
-            LogService::registrarAcao(
-                'UPDATE_ESTOQUE_BAIXA',
-                'estoques',
-                $estoque->id,
-                "Baixa automática: Pedido #{$pedido->id} retirou {$item->quantidade} unidades."
-            );
+        if (!$produtoId) {
+            throw new \Exception("Não foi possível rastrear o produto_id para o item do catálogo ID: {$item->item_catalogo_id}");
         }
+
+        // Agora sim, busca o estoque usando o ID correto do produto
+        $estoque = estoques::where('produto_id', $produtoId)->first();
+
+        if (!$estoque) {
+            throw new \Exception("Estoque não encontrado para o produto ID: {$produtoId}");
+        }
+
+        if ($estoque->quantidade < $item->quantidade) {
+            // Se você tiver a relação de produto no catálogo, pode pegar o nome dele assim:
+            $produtoNome = $item->itemCatalogo->produto->nome ?? "ID {$produtoId}";
+            throw new \Exception("Estoque insuficiente para o produto: {$produtoNome}");
+        }
+
+        // Subtrai a quantidade
+        $estoque->quantidade -= $item->quantidade;
+        $estoque->save();
+
+        LogService::registrarAcao(
+            'UPDATE_ESTOQUE_BAIXA',
+            'estoques',
+            $estoque->id,
+            "Baixa automática: Pedido #{$pedido->id} retirou {$item->quantidade} unidades."
+        );
     }
+}
 
 }

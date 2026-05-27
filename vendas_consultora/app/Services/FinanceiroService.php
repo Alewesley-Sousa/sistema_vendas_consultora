@@ -9,6 +9,9 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Services\LogService;
 use Illuminate\Support\Str;
+use App\Models\usuarios;
+use App\Models\comissoes; // Importado!
+use App\Models\historico_comissoes; // Importado!
 
 class FinanceiroService
 {
@@ -70,7 +73,7 @@ class FinanceiroService
       return [
         "status" => "success",
         "mensagem" =>
-          "Pagamento aprovado, estoque baixado e comissões distribuídas!",
+          "Pagamento aprovado",
         "transacao" => $pagamento->codigo_transacao,
       ];
     } catch (Exception $e) {

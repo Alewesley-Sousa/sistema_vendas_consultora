@@ -21,9 +21,14 @@ class PedidosController extends Controller
         $this->pedidosService = $pedidosService;
     }
 
-public function index() {
-	return view("lider.pedidos-equipe");
-}
+    /**
+     * Exibe a página inicial de pedidos da equipe para o Líder
+     */
+    public function index() 
+    {
+        return view("lider.pedidos-equipe");
+    }
+
     /**
      * Método chamado pelo botão "Confirmar Pagamento" do Checkout
      */
@@ -35,13 +40,27 @@ public function index() {
         if ($resultado['status'] === 'success') {
             $pedido = pedidos::find($id);
             
-            // Redireciona para a página de visualização do cliente usando o UUID
+            // Redireciona para a página de rastreio do cliente usando o UUID
             return redirect()->route('pedido.visualizar.cliente', ['uuid' => $pedido->uuid])
                              ->with('success', $resultado['mensagem']);
         }
 
         // Se der erro (ex: falta de estoque), volta para o checkout com a mensagem
         return back()->with('error', $resultado['mensagem']);
+    }
+
+    /**
+     * Página pública para o cliente final acompanhar o status (Aba que criamos)
+     */
+    public function visualizarPedidoCliente($uuid)
+    {
+        // Busca pelo UUID trazendo todas as relações que a tela de rastreio precisa
+        $pedido = pedidos::with(['clientes', 'itensPedidos.itemCatalogo.produto', 'status'])
+            ->where('uuid', $uuid)
+            ->firstOrFail();
+
+        // Aponta para a view nova que criamos: pedidos/rastreio.blade.php
+        return view("pedidos.rastreio", compact("pedido"));
     }
 
     /**
@@ -136,17 +155,4 @@ public function index() {
             ], 404);
         }
     }
-
-    /**
-     * Página pública para o cliente final ver o resumo da compra
-     */
-    public function exibirPedidoCliente($uuid)
-    {
-        $pedido = pedidos::where("uuid", $uuid)
-            ->with(["itensPedidos.itemCatalogo.produto"])
-            ->firstOrFail();
-
-        return view("cliente.pedido_visualizacao", compact("pedido"));
-    }
-
-} // Fim da Classe PedidosController
+}

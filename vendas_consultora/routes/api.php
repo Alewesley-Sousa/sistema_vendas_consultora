@@ -13,10 +13,22 @@ use App\Http\Controllers\{
     MetasController,
     ProdutosController,
     PedidosController,
-    UsuariosController
+    UsuariosController,
+    CategoriasController
 };
 
 Route::middleware("auth:sanctum")->group(function () {
+
+
+
+// --- CATEGORIAS ---
+    Route::prefix("categoria")->controller(CategoriasController::class)->group(function () {
+        Route::get("/", "index");       // Listar todas as categorias
+        Route::post("/", "store");      // Criar nova categoria
+        Route::delete("/{id}", "destroy"); // Apagar uma categoria específica
+    });
+
+
 
     // --- COMISSÕES ---
     Route::prefix("comissao")->controller(ComissoesController::class)->group(function () {
@@ -44,6 +56,8 @@ Route::prefix("meta")->controller(MetasController::class)->group(function () {
         Route::put("/{cliente}", "atualizarDados");
         Route::delete("/{id}", "destroy");
     });
+
+
 
     // --- USUÁRIOS ---
     Route::prefix("usuario")->controller(UsuariosController::class)->group(function () {
