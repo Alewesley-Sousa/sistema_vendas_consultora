@@ -4,8 +4,7 @@
         show: false, 
         loading: true,
         preCadastrosCount: 0,
-        saquesCount: 0, // Controla o alerta de saques pendentes
-        estoqueCriticoCount: 0, // Controla o alerta de estoque crítico
+        saquesCount: 0, 
         
         init() {
             this.fetchNotifications();
@@ -14,32 +13,24 @@
         fetchNotifications() {
             this.loading = true;
             
-            // Promise.all garante que o skeleton loading só saia da tela quando todas as requisições terminarem
+            // Reunião das duas APIs reais que alimentam a listagem
             Promise.all([
                 axios.get('/api/usuario/pre-cadastros'),
-                // axios.get('/api/financeiro/saques-pendentes'), // Descomente quando a API existir
-                // axios.get('/api/produtos/estoque-critico')    // Descomente quando a API existir
+                axios.get('/api/comissao/pendentes')
             ])
-            .then(([resPreCadastros]) => {
+            .then(([resPreCadastros, resSaques]) => {
                 // Tratamento dos Pré-Cadastros
-                const registros = resPreCadastros.data.data;
-                this.preCadastrosCount = Array.isArray(registros) ? registros.length : 0;
+                const cadastros = resPreCadastros.data.data;
+                this.preCadastrosCount = Array.isArray(cadastros) ? cadastros.length : 0;
                 
-                // MOCK DE DADOS: Enquanto suas outras APIs não estão prontas, mantemos valores fictícios para testes de layout
-                this.saquesCount = 4; 
-                this.estoqueCriticoCount = 2;
-                
-                /* 
-                // Quando as APIs estiverem prontas, a integração real será assim:
-                this.saquesCount = resSaques.data.total_pendente;
-                this.estoqueCriticoCount = resEstoque.data.produtos_esgotados;
-                */
+                // Tratamento dos Saques Pendentes
+                const saques = resSaques.data.data;
+                this.saquesCount = Array.isArray(saques) ? saques.length : 0;
             })
             .catch(error => {
                 console.error('Erro ao sincronizar notificações globais:', error);
                 this.preCadastrosCount = 0;
                 this.saquesCount = 0;
-                this.estoqueCriticoCount = 0;
             })
             .finally(() => {
                 this.loading = false;
@@ -48,7 +39,7 @@
         
         // Retorna verdadeiro se existir qualquer tipo de notificação ativa no sistema
         hasNotifications() {
-            return this.preCadastrosCount > 0 || this.saquesCount > 0 || this.estoqueCriticoCount > 0;
+            return this.preCadastrosCount > 0 || this.saquesCount > 0;
         }
     }" 
     @toggle-notifications.window="show = !show; if(show) fetchNotifications();"
@@ -56,7 +47,6 @@
     x-cloak
     class="fixed inset-0 z-[100] flex items-center justify-center p-4"
 >
-    <!-- Overlay -->
     <div 
         x-show="show" 
         x-transition:opacity
@@ -64,7 +54,6 @@
         class="fixed inset-0 bg-slate-900/40 backdrop-blur-md"
     ></div>
 
-    <!-- Corpo do Modal -->
     <div 
         x-show="show"
         x-transition:enter="transition ease-out duration-300"
@@ -72,7 +61,6 @@
         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
         class="relative w-full max-w-lg bg-[#111827] rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden"
     >
-        <!-- Header -->
         <div class="px-8 pt-8 pb-6 border-b border-white/5 flex items-center justify-between">
             <div>
                 <h3 class="text-xl font-bold text-white tracking-tight">Notificações</h3>
@@ -85,10 +73,8 @@
             </button>
         </div>
 
-        <!-- Lista de Notificações -->
         <div class="max-h-[50vh] overflow-y-auto custom-scrollbar p-6 space-y-3">
             
-            <!-- Skeleton Loading -->
             <template x-if="loading">
                 <div class="space-y-3">
                     <div class="animate-pulse flex space-x-4 p-4 bg-white/5 rounded-3xl">
@@ -104,7 +90,6 @@
             <template x-if="!loading">
                 <div class="space-y-3">
                     
-                    <!-- 1. Alerta de Pré-Cadastros (Cor: Azul) -->
                     <template x-if="preCadastrosCount > 0">
                         <div class="group flex items-start gap-4 p-5 rounded-[2rem] bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/40 transition-all cursor-pointer">
                             <div class="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
@@ -124,7 +109,6 @@
                         </div>
                     </template>
 
-                    <!-- 2. Alerta de Saques Solicitados (Cor: Amber) -->
                     <template x-if="saquesCount > 0">
                         <div class="group flex items-start gap-4 p-5 rounded-[2rem] bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/20 hover:border-amber-500/40 transition-all cursor-pointer">
                             <div class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
@@ -135,7 +119,7 @@
                             <div class="flex-1">
                                 <div class="flex justify-between items-start">
                                     <p class="text-sm font-bold text-amber-100 tracking-tight">Saques Solicitados</p>
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black bg-amber-500 text-black uppercase tracking-tighter">Ação Requeria</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black bg-amber-500 text-black uppercase tracking-tighter">Ação Requerida</span>
                                 </div>
                                 <p class="text-[12px] text-slate-400 mt-1 leading-snug">
                                     Existem <span class="text-amber-400 font-extrabold" x-text="saquesCount"></span> requisições de saques de comissão aguardando auditoria.
@@ -144,27 +128,6 @@
                         </div>
                     </template>
 
-                    <!-- 3. Alerta de Estoque Crítico (Cor: Red) -->
-                    <template x-if="estoqueCriticoCount > 0">
-                        <div class="group flex items-start gap-4 p-5 rounded-[2rem] bg-gradient-to-br from-red-500/10 to-transparent border border-red-500/20 hover:border-red-500/40 transition-all cursor-pointer">
-                            <div class="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-400 shrink-0 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex justify-between items-start">
-                                    <p class="text-sm font-bold text-red-100 tracking-tight">Estoque Crítico</p>
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black bg-red-500 text-white uppercase tracking-tighter">Crítico</span>
-                                </div>
-                                <p class="text-[12px] text-slate-400 mt-1 leading-snug">
-                                    <span class="text-red-400 font-extrabold" x-text="estoqueCriticoCount"></span> produtos cosméticos estão operando abaixo do limite mínimo global.
-                                </p>
-                            </div>
-                        </div>
-                    </template>
-
-                    <!-- Estado Vazio Amigável (Caso não haja nenhum alerta ativo) -->
                     <template x-if="!hasNotifications()">
                         <div class="py-12 text-center">
                             <div class="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
@@ -180,16 +143,6 @@
                 </div>
             </template>
 
-        </div>
-
-        <!-- Footer -->
-        <div class="p-6 bg-white/[0.02] border-t border-white/5">
-            <a href="/usuario/pre-cadastros" class="flex items-center justify-center gap-2 w-full py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-[11px] font-bold text-white uppercase tracking-[0.2em] transition-all group">
-                <span>Painel de Aprovações</span>
-                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M13 7l5 5m0 0l-5 5m5-5H6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </a>
         </div>
     </div>
 </div>
