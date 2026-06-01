@@ -227,12 +227,14 @@ const fetchCatalogos = async () => {
       catalogos.value = dataRaw
         .filter(cat => cat.tipo_catalogo_id !== 1)
         .map(cat => {
-          const dataFim = new Date(cat.data_encerramento)
+          const fixo = !cat.data_encerramento
+          const dataFim = fixo ? null : new Date(cat.data_encerramento)
           return {
             id: cat.id,
             titulo: cat.nome,
-            validade: dataFim.toLocaleDateString('pt-BR'),
-            encerrado: dataFim < hoje,
+            validade: fixo ? 'Catálogo fixo' : dataFim.toLocaleDateString('pt-BR'),
+            fixo,
+            encerrado: fixo ? false : dataFim < hoje,
             descricao: cat.descricao,
             img: cat.imagem_url || null,
             produtos: []

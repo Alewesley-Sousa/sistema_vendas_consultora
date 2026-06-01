@@ -19,7 +19,13 @@ const confirmacaoAberta = ref(false)
 const modo = ref('visualizar') 
 const pedidoEditavel = ref(null)
 
-const catalogos = ref(['Glow Outono/Inverno', 'Skincare Pro', 'Perfumaria'])
+const catalogos = ref([])
+const produtosCatalogo = ref([])
+const novoItem = ref({
+  catalogo_id: '',
+  item_catalogo_id: '',
+  quantidade: 1
+})
 const loading = ref(false)
 
 // --- ESTADO DO SWIPE MOBILE LUXUOSO ---
@@ -110,6 +116,47 @@ const buscarPedidos = async () => {
   }
 }
 
+const catalogoDisponivel = (catalogo) => {
+  if (!catalogo.data_encerramento) return catalogo.status_id === 1
+  return catalogo.status_id === 1 && new Date(catalogo.data_encerramento) >= new Date()
+}
+
+const buscarCatalogos = async () => {
+  try {
+    const response = await axios.get('/api/catalogos')
+    const data = response.data?.data || response.data || []
+    catalogos.value = Array.isArray(data)
+      ? data.filter(catalogo => catalogo.tipo_catalogo_id !== 1 && catalogoDisponivel(catalogo))
+      : []
+  } catch (error) {
+    notificar('Erro', 'Não foi possível carregar os catálogos disponíveis.', 'erro')
+  }
+}
+
+const carregarProdutosDoCatalogo = async () => {
+  produtosCatalogo.value = []
+  novoItem.value.item_catalogo_id = ''
+
+  if (!novoItem.value.catalogo_id) return
+
+  try {
+    const response = await axios.get(`/api/catalogos/${novoItem.value.catalogo_id}/itens`)
+    const data = response.data?.data || response.data || []
+    produtosCatalogo.value = Array.isArray(data)
+      ? data
+          .filter(item => item.estoque_disponivel > 0 && item.status_id === 1)
+          .map(item => ({
+            id: item.id,
+            nome: item.produto?.nome || `Produto #${item.produto_id}`,
+            preco: parseFloat(item.produto?.preco_final || item.produto?.preco || 0),
+            estoque: item.estoque_disponivel
+          }))
+      : []
+  } catch (error) {
+    notificar('Erro', 'Não foi possível carregar os produtos deste catálogo.', 'erro')
+  }
+}
+
 const abrirDetalhes = async (pedidoSimplificado) => {
   swipeTranslateX.value = 0
   swipeCompleted.value = false
@@ -137,6 +184,8 @@ const abrirDetalhes = async (pedidoSimplificado) => {
 
       modo.value = 'visualizar'
       modalAberto.value = true
+      novoItem.value = { catalogo_id: '', item_catalogo_id: '', quantidade: 1 }
+      produtosCatalogo.value = []
       
       nextTick(() => {
         calcularDistanciaMaxima()
@@ -177,6 +226,10 @@ const confirmarCancelamento = async () => {
 
 const salvarEdicao = async () => {
   try {
+    if (!pedidoEditavel.value.itens.length) {
+      return notificar('Pedido vazio', 'Mantenha pelo menos um produto no pedido.', 'erro')
+    }
+
     const payload = {
       itens: pedidoEditavel.value.itens.map(i => ({
         item_catalogo_id: i.item_catalogo_id,
@@ -233,6 +286,29 @@ const statusEstilos = (status) => {
   return 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/50'
 }
 
+const adicionarItem = () => {
+  const produtoSelecionado = produtosCatalogo.value.find(produto => produto.id === Number(novoItem.value.item_catalogo_id))
+  if (!produtoSelecionado) return
+
+  const quantidade = Math.max(1, Number(novoItem.value.quantidade || 1))
+  const itemExistente = pedidoEditavel.value.itens.find(item => item.item_catalogo_id === produtoSelecionado.id)
+
+  if (itemExistente) {
+    itemExistente.qtd += quantidade
+  } else {
+    pedidoEditavel.value.itens.push({
+      id: null,
+      item_catalogo_id: produtoSelecionado.id,
+      produto: produtoSelecionado.nome,
+      qtd: quantidade,
+      preco: produtoSelecionado.preco
+    })
+  }
+
+  novoItem.value.item_catalogo_id = ''
+  novoItem.value.quantidade = 1
+}
+
 const removerItem = (index) => {
   pedidoEditavel.value.itens.splice(index, 1)
 }
@@ -242,6 +318,7 @@ const proximaPagina = () => { if (paginaAtual.value < totalPaginas.value) pagina
 
 onMounted(() => {
   buscarPedidos()
+  buscarCatalogos()
 })
 </script>
 
@@ -451,6 +528,45 @@ onMounted(() => {
 
           <div>
             <span class="text-gray-400 dark:text-slate-500 font-bold text-xs block uppercase tracking-wide mb-3">Produtos Solicitados</span>
+            <div v-if="modo === 'editar'" class="mb-4 grid grid-cols-1 sm:grid-cols-[1fr_1fr_96px_auto] gap-3 rounded-2xl border border-gray-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/50 p-4">
+              <select
+                v-model="novoItem.catalogo_id"
+                @change="carregarProdutosDoCatalogo"
+                class="bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-[#E67E73]/30 outline-none"
+              >
+                <option value="">Catálogo</option>
+                <option v-for="catalogo in catalogos" :key="catalogo.id" :value="catalogo.id">
+                  {{ catalogo.nome }}
+                </option>
+              </select>
+
+              <select
+                v-model="novoItem.item_catalogo_id"
+                :disabled="!novoItem.catalogo_id"
+                class="bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-[#E67E73]/30 outline-none disabled:opacity-50"
+              >
+                <option value="">Produto</option>
+                <option v-for="produto in produtosCatalogo" :key="produto.id" :value="produto.id">
+                  {{ produto.nome }}
+                </option>
+              </select>
+
+              <input
+                v-model.number="novoItem.quantidade"
+                type="number"
+                min="1"
+                class="bg-white dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-bold text-center text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-[#E67E73]/30 outline-none"
+              >
+
+              <button
+                type="button"
+                @click="adicionarItem"
+                :disabled="!novoItem.item_catalogo_id"
+                class="bg-[#2C3E50] dark:bg-slate-950 text-white px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#E67E73]"
+              >
+                Adicionar
+              </button>
+            </div>
             <div class="border border-gray-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
               <table class="w-full text-left border-collapse text-xs">
                 <thead class="bg-slate-50 dark:bg-slate-900/50">

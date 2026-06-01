@@ -272,7 +272,15 @@
                         <textarea rows="3" x-model="novaCampanha.descricao" placeholder="Insira os detalhes e objectives desta campanha para as consultoras..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs focus:outline-none focus:bg-white focus:border-slate-400 text-slate-800 font-light leading-relaxed"></textarea>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <label class="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 cursor-pointer">
+                        <input type="checkbox" x-model="novaCampanha.fixo" class="mt-0.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900">
+                        <span>
+                            <span class="block text-[10px] font-bold text-slate-600 uppercase tracking-wide">Catálogo fixo</span>
+                            <span class="block text-xs text-slate-400 mt-0.5">Mantém o catálogo sempre disponível, sem data de publicação ou encerramento.</span>
+                        </span>
+                    </label>
+
+                    <div class="grid grid-cols-2 gap-4" x-show="!novaCampanha.fixo">
                         <div>
                             <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide block mb-1">Data de Publicação</label>
                             <input type="datetime-local" x-model="novaCampanha.publicacao" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:bg-white focus:border-slate-400 text-slate-700" />
@@ -357,7 +365,8 @@
                     status: 'Ativo (Publicado)',     
                     descricao: '',
                     publicacao: '',
-                    encerramento: ''
+                    encerramento: '',
+                    fixo: false
                 },
                 novoProdutoId: '',
                 selectedCatalogo: { id: null, nome: '', itens: [] },
@@ -430,8 +439,8 @@
                             status: c.status_id === 1 ? 'Ativo' : 'Inativo',
                             descricao: c.descricao || 'Sem descrição informada.',
                             publicacao: c.data_publicacao || 'A definir',
-                            encerramento: c.data_encerramento || 'A definir',
-                            progresso: c.status_id === 1 ? 65 : 0, 
+                            encerramento: c.data_encerramento || 'Catálogo fixo',
+                            progresso: c.status_id === 1 ? (c.data_encerramento ? 65 : 100) : 0, 
                             itens_count: c.itens_catalogo_count || (c.itens ? c.itens.length : 0),
                             itens: [] 
                         }));
@@ -555,7 +564,8 @@
 
                         if (!response.ok) throw new Error('Erro ao vincular novo produto ao catálogo.');
 
-                        const novoItemSalvo = await response.json();
+                        const respostaItem = await response.json();
+                        const novoItemSalvo = respostaItem.data || respostaItem;
                         const produtoEstoque = this.produtosInventario.find(p => p.id === parseInt(this.novoProdutoId));
 
                         this.selectedCatalogo.itens.push({
@@ -649,8 +659,8 @@
                         tipo_catalogo_id: tipoId,
                         status_id: statusId,
                         descricao: this.novaCampanha.descricao || '',
-                        data_publicacao: formatarDataParaBackend(this.novaCampanha.publicacao),
-                        data_encerramento: formatarDataParaBackend(this.novaCampanha.encerramento)
+                        data_publicacao: this.novaCampanha.fixo ? null : formatarDataParaBackend(this.novaCampanha.publicacao),
+                        data_encerramento: this.novaCampanha.fixo ? null : formatarDataParaBackend(this.novaCampanha.encerramento)
                     };
 
                     try {
@@ -681,7 +691,8 @@
                             status: 'Ativo (Publicado)', 
                             descricao: '', 
                             publicacao: '', 
-                            encerramento: '' 
+                            encerramento: '',
+                            fixo: false
                         };
                         
                         this.modalOpen = false;

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\itens_pedido;
+use App\Models\itens_catalogo;
 use App\Models\pedidos;
 use App\Models\pagamentos;
 use App\Models\usuarios;
@@ -46,34 +47,53 @@ class PedidosService
         throw new Exception("Pedido não encontrado");
       }
 
-      $itensPedidos = itens_pedido::where("pedido_id", $id)->get();
-
-      // Corrigido: Colunas em snake_case e sincronizadas com o payload do front-end
-      if (!empty($data["ids_excluidos"])) {
-        itens_pedido::where("pedido_id", $id)
-          ->whereIn("item_catalogo_id", $data["ids_excluidos"])
-          ->delete();
+      if (!$this->usuarioPodeGerenciarPedido($usuarioLongado, $pedido)) {
+        throw new Exception("Você não tem permissão para alterar este pedido.");
       }
 
       // tabela pedidos
       $pedido->status_id = $data["status_id"] ?? $pedido->status_id;
       $pedido->tipo_pagamento = $data["tipo_pagamento"] ?? $pedido->tipo_pagamento;
 
-      // tabela itens_pedido
-      $itensAtualizados = collect($data["itens"])->map(function ($itemData) use ($itensPedidos, $usuarioLongado) {
-        $item = $itensPedidos->firstWhere("produto_id", $itemData["produto_id"]);
+      $itensPayload = collect($data["itens"]);
+      $idsCatalogoPayload = $itensPayload->pluck("item_catalogo_id")->filter()->unique()->values()->all();
 
-        if ($item) {
-          $item->quantidade = $itemData["quantidade"] ?? $item->quantidade;
-          if ($usuarioLongado->cargo == "distribuidora") {
-            $item->preco_unitario = $itemData["preco_unitario"] ?? $item->preco_unitario;
-          }
-          
-          // Nota: Só funcionará se for uma Classe concreta importada.
-          $calculador = new calcularSubtotal($item->quantidade, $item->preco_unitario);
-          $item->subtotal = $calculador->calcular();
-          $item->save();
+      itens_pedido::where("pedido_id", $id)
+        ->whereNotIn("item_catalogo_id", $idsCatalogoPayload)
+        ->delete();
+
+      $itensAtuais = itens_pedido::where("pedido_id", $id)
+        ->get()
+        ->keyBy("item_catalogo_id");
+
+      $catalogoItens = itens_catalogo::with("produto")
+        ->whereIn("id", $idsCatalogoPayload)
+        ->get()
+        ->keyBy("id");
+
+      $itensAtualizados = $itensPayload->map(function ($itemData) use ($itensAtuais, $catalogoItens, $pedido, $usuarioLongado) {
+        $itemCatalogoId = $itemData["item_catalogo_id"];
+        $itemCatalogo = $catalogoItens->get($itemCatalogoId);
+
+        if (!$itemCatalogo) {
+          throw new Exception("Produto de catálogo inválido no pedido.");
         }
+
+        $item = $itensAtuais->get($itemCatalogoId) ?? new itens_pedido();
+        $item->pedido_id = $pedido->id;
+        $item->item_catalogo_id = $itemCatalogoId;
+        $item->quantidade = $itemData["quantidade"] ?? $item->quantidade ?? 1;
+
+        if (!$item->exists || $usuarioLongado->cargo == "distribuidora") {
+          $item->preco_unitario = $itemData["preco_unitario"]
+            ?? $item->preco_unitario
+            ?? $itemCatalogo->produto?->preco_final
+            ?? 0;
+        }
+
+        $calculador = new calcularSubtotal($item->quantidade, $item->preco_unitario);
+        $item->subtotal = $calculador->calcular();
+        $item->save();
 
         return $item;
       });
@@ -105,6 +125,25 @@ class PedidosService
         "mensagem" => "houve um erro no sistema: " . $e->getMessage(),
       ];
     }
+  }
+
+  private function usuarioPodeGerenciarPedido($usuario, pedidos $pedido): bool
+  {
+    if ($usuario->cargo === "distribuidora") {
+      return true;
+    }
+
+    if ($usuario->cargo === "consultora") {
+      return (int) $pedido->usuario_id === (int) $usuario->id;
+    }
+
+    if ($usuario->cargo === "lider") {
+      return usuarios::where("id", $pedido->usuario_id)
+        ->where("consultora_id", $usuario->id)
+        ->exists();
+    }
+
+    return false;
   }
 
   public function listarPedidosPorEquipe($liderId)
@@ -143,7 +182,7 @@ class PedidosService
             throw new Exception("Acesso negado!");
         }
 
-        $resultado = pedidos::select("id", "usuario_id", "cliente_id", "link", "valor_total", "status_id", "tipo_pagamento")
+        $query = pedidos::select("id", "usuario_id", "cliente_id", "link", "valor_total", "status_id", "tipo_pagamento")
         ->where("id", $id)
         ->with([
             'consultora' => function ($query) { $query->select("id", "nome"); },
@@ -154,8 +193,18 @@ class PedidosService
             'itensPedidos.itemCatalogo' => function ($query) { $query->select("id", "produto_id"); },
             'itensPedidos.itemCatalogo.produto' => function ($query) { $query->select("id", "nome"); },
             'status' => function ($query) { $query->select('id', 'nome'); }
-        ])
-        ->first();
+        ]);
+
+        $usuarioLogado = Auth::user();
+        if ($usuarioLogado->cargo === "consultora") {
+            $query->where("usuario_id", $usuarioLogado->id);
+        } elseif ($usuarioLogado->cargo === "lider") {
+            $query->whereHas("consultora", function ($query) use ($usuarioLogado) {
+                $query->where("consultora_id", $usuarioLogado->id);
+            });
+        }
+
+        $resultado = $query->first();
 
         if (!$resultado) {
             throw new Exception("Pedido não registrado no sistema!");
@@ -188,6 +237,11 @@ class PedidosService
       $pedido = pedidos::find($id);
       if (!$pedido) {
         throw new Exception("Pedido não encontrado.");
+      }
+
+      $usuarioLongado = Auth::user();
+      if (!$usuarioLongado || !$this->usuarioPodeGerenciarPedido($usuarioLongado, $pedido)) {
+        throw new Exception("Você não tem permissão para cancelar este pedido.");
       }
 
       $pagamento = pagamentos::where("pedido_id", $pedido->id)->first();

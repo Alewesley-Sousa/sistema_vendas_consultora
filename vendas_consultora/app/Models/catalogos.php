@@ -36,6 +36,7 @@ class catalogos extends Model
     public function scopeExpirados($query)
     {
         return $query->where('status_id', '1')
+                     ->whereNotNull('data_encerramento')
                      ->where('data_encerramento', '<', now());
     }
 

@@ -50,7 +50,7 @@ class CatalogoService
 
     public function listarTodos()
     {
-        return catalogos::all();
+        return catalogos::withCount('itensCatalogo')->get();
     }
 
     public function exibir(int $id)
@@ -69,8 +69,8 @@ class CatalogoService
                 "tipo_catalogo_id"  => $data['tipo_catalogo_id'],
                 "status_id"         => $data['status_id'],
                 "descricao"         => $data['descricao'] ?? null,
-                "data_encerramento" => $this->formatarData($data['data_encerramento']),
-                "data_publicacao"   => $this->formatarData($data['data_publicacao']),
+                "data_encerramento" => $this->formatarData($data['data_encerramento'] ?? null),
+                "data_publicacao"   => $this->formatarData($data['data_publicacao'] ?? null),
             ]);
 
             LogService::registrarAcao("CREATE", "catalogos", $catalogo->id, "Catálogo '{$catalogo->nome}' criado.");
@@ -95,8 +95,8 @@ class CatalogoService
                 "tipo_catalogo_id"  => $data['tipo_catalogo_id'],
                 "status_id"         => $data['status_id'],
                 "descricao"         => $data['descricao'] ?? null,
-                "data_encerramento" => $this->formatarData($data['data_encerramento']),
-                "data_publicacao"   => $this->formatarData($data['data_publicacao']),
+                "data_encerramento" => $this->formatarData($data['data_encerramento'] ?? null),
+                "data_publicacao"   => $this->formatarData($data['data_publicacao'] ?? null),
             ]);
 
             LogService::registrarAcao("UPDATE", "catalogos", $id, "Catálogo atualizado.");

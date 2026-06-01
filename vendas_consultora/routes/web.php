@@ -54,9 +54,9 @@ Route::post('/login/token', [AutenticacaoController::class, 'geraToken']);
 Route::post('/logout', [AutenticacaoController::class, 'logout'])->name('logout');
 
 // =========================================================================
-//  DASHBOARDS PROTEGIDOS (MIGRADOS PARA INERTIA/VUE)
+//  DASHBOARDS PROTEGIDOS
 // =========================================================================
-Route::get('/distribuidora/dashboard', fn() => Inertia::render('Distribuidora/Dashboard'))
+Route::get('/distribuidora/dashboard', fn() => view('distribuidora.dashboard'))
    ->middleware(['auth', 'cargo:distribuidora'])
    ->name('distribuidora.dashboard');
 
@@ -101,13 +101,11 @@ Route::get('/pedidos/equipe', [PedidosController::class, 'index'])->middleware('
 //  PAINEL DA DISTRIBUIDORA
 // =========================================================================
 Route::prefix('distribuidora')->name('distribuidora.')->group(function () {
-    Route::get('/produtos', function () { return Inertia::render('Distribuidora/GerenciamentoProdutos'); })->name('produtos');
-    Route::get('/catalogos', function () { return Inertia::render('Distribuidora/Catalogo'); })->name('catalogos');
-    Route::get('/estoques', function () { return view('distribuidora.estoques'); })->name('estoques');
+    Route::get('/produtos', fn() => view('distribuidora.produtos'))->name('produtos');
+    Route::get('/catalogos', fn() => view('distribuidora.catalogos'))->name('catalogos');
+    Route::get('/estoques', fn() => view('distribuidora.estoques'))->name('estoques');
     Route::get('/promocoes', [PromocoesController::class, 'index'])->name('promocoes');
     Route::get('/solicitacoes', fn() => view('distribuidora.solicitacoes'))->name('solicitacoes');
     Route::get('/relatorios', fn() => view('distribuidora.relatorios'))->name('relatorios');
-    Route::get('/categorias', function () {
-        return view('distribuidora.categorias');
-    })->name('categorias');
+    Route::get('/categorias', fn() => view('distribuidora.categorias'))->name('categorias');
 });

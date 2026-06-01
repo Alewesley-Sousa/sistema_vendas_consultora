@@ -14,6 +14,11 @@
           {{ cat.encerrado ? 'Encerrado' : 'Disponível' }}
         </span>
       </div>
+      <div v-if="cat.fixo" class="absolute top-4 left-4 z-20">
+        <span class="px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-[#2C3E50] dark:bg-slate-950 text-white">
+          Fixo
+        </span>
+      </div>
 
       <div class="aspect-[16/10] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900 relative overflow-hidden">
         <img 
@@ -40,7 +45,7 @@
 
         <div class="mt-6">
           <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500 mb-4 bg-gray-50 dark:bg-slate-950 p-2.5 rounded-xl border border-transparent dark:border-slate-800/40">
-            <span>Validade</span>
+            <span>{{ cat.fixo ? 'Tipo' : 'Validade' }}</span>
             <span class="text-[#2C3E50] dark:text-slate-200 font-black">{{ cat.validade }}</span>
           </div>
 

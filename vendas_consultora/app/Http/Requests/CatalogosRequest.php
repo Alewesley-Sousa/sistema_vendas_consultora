@@ -18,8 +18,8 @@ class CatalogosRequest extends FormRequest
             'tipo_catalogo_id'  => 'required|integer|exists:tipo_catalogo,id',
             'status_id'         => 'required|integer|exists:status_catalogo,id',
             'descricao'         => 'nullable|string',
-            'data_encerramento' => 'required|date_format:d/m/Y',
-            'data_publicacao'   => 'required|date_format:d/m/Y',
+            'data_encerramento' => 'nullable|date_format:d/m/Y',
+            'data_publicacao'   => 'nullable|date_format:d/m/Y',
         ];
     }
 
@@ -35,9 +35,7 @@ class CatalogosRequest extends FormRequest
             'status_id.required'            => 'O status é obrigatório.',
             'status_id.integer'             => 'O status deve ser um número inteiro.',
             'status_id.exists'              => 'O status informado não existe.',
-            'data_encerramento.required'    => 'A data de encerramento é obrigatória.',
             'data_encerramento.date_format' => 'A data de encerramento deve estar no formato dd/mm/aaaa.',
-            'data_publicacao.required'      => 'A data de publicação é obrigatória.',
             'data_publicacao.date_format'   => 'A data de publicação deve estar no formato dd/mm/aaaa.',
         ];
     }

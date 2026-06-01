@@ -41,7 +41,7 @@ class PedidoRequest extends FormRequest
         		'nullable',
         		Rule::in([$pedidoId]) // garante que seja igual ao pedido atual
     		],
-            'itens' => 'required|array',
+            'itens' => 'required|array|min:1',
             'itens.*.item_catalogo_id' => 'required|exists:itens_catalogo,id',
             'itens.*.quantidade' => 'required|integer|min:1',
             'itens.*.preco_unitario' => 'required|numeric|min:1'
