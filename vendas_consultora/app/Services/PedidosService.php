@@ -5,18 +5,33 @@ namespace App\Services;
 use App\Models\itens_pedido;
 use App\Models\pedidos;
 use App\Models\pagamentos;
+use App\Models\usuarios;
+use App\Models\comissoes;
+use App\Models\historico_comissoes;
+use App\Services\EstoqueService;
+use App\Services\LogService;
+use App\Interfaces\calcularSubtotal;
+use App\Interfaces\calcularTotal;
+use App\Jobs\CancelarPedidoInativo;
 use Exception;
 use DateTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Interfaces\calcularSubtotal;
-use App\Interfaces\calcularTotal;
-use App\Services\LogService;
 use Illuminate\Support\Str;
-use App\Jobs\CancelarPedidoInativo;
 
 class PedidosService
 {
+  protected $estoqueService;
+
+  /**
+   * Construtor preparado com a injeção do EstoqueService
+   * necessário para realizar as devoluções automáticas de estoque.
+   */
+  public function __construct(EstoqueService $estoqueService)
+  {
+    $this->estoqueService = $estoqueService;
+  }
+
   public function atualizarPedido($id, $data)
   {
     DB::beginTransaction();
@@ -33,50 +48,42 @@ class PedidosService
 
       $itensPedidos = itens_pedido::where("pedido_id", $id)->get();
 
+      // Corrigido: Colunas em snake_case e sincronizadas com o payload do front-end
       if (!empty($data["ids_excluidos"])) {
-        itens_pedido::where("pedidoid", $id)
-          ->whereIn("produtoid", $data["id_itens_excluidos"])
+        itens_pedido::where("pedido_id", $id)
+          ->whereIn("item_catalogo_id", $data["ids_excluidos"])
           ->delete();
       }
 
-      //tabela pedidos
+      // tabela pedidos
       $pedido->status_id = $data["status_id"] ?? $pedido->status_id;
-      $pedido->tipo_pagamento =
-        $data["tipo_pagamento"] ?? $pedido->tipo_pagamento;
+      $pedido->tipo_pagamento = $data["tipo_pagamento"] ?? $pedido->tipo_pagamento;
 
       // tabela itens_pedido
-      $itensAtualizados = collect($data["itens"])->map(function (
-        $itemData
-      ) use ($itensPedidos, $usuarioLongado) {
-        $item = $itensPedidos->firstWhere(
-          "produto_id",
-          $itemData["produto_id"]
-        );
+      $itensAtualizados = collect($data["itens"])->map(function ($itemData) use ($itensPedidos, $usuarioLongado) {
+        $item = $itensPedidos->firstWhere("produto_id", $itemData["produto_id"]);
 
         if ($item) {
           $item->quantidade = $itemData["quantidade"] ?? $item->quantidade;
           if ($usuarioLongado->cargo == "distribuidora") {
-            $item->preco_unitario =
-              $itemData["preco_unitario"] ?? $item->preco_unitario;
+            $item->preco_unitario = $itemData["preco_unitario"] ?? $item->preco_unitario;
           }
-          $calculador = new calcularSubtotal(
-            $item->quantidade,
-            $item->preco_unitario
-          );
+          
+          // Nota: Só funcionará se for uma Classe concreta importada.
+          $calculador = new calcularSubtotal($item->quantidade, $item->preco_unitario);
           $item->subtotal = $calculador->calcular();
           $item->save();
         }
 
         return $item;
       });
-      $subtotais = $itensAtualizados
-        ->map(function ($item) {
-          return $item->subtotal;
-        })
-        ->toArray();
+
+      $subtotais = $itensAtualizados->filter()->map(function ($item) {
+        return $item->subtotal;
+      })->toArray();
+
       $calculador = new calcularTotal($subtotais);
       $pedido->valor_total = $calculador->calcular();
-
       $pedido->save();
 
       LogService::registrarAcao(
@@ -99,10 +106,10 @@ class PedidosService
       ];
     }
   }
+
   public function listarPedidosPorEquipe($liderId)
-{
+  {
     return pedidos::with(['consultora', 'clientes', 'itensPedidos'])
-        // Filtra para NÃO trazer pedidos com status de cancelado (ID 7)
         ->where('status_id', '!=', 7) 
         ->whereHas('consultora', function ($query) use ($liderId) {
             $query->where('consultora_id', $liderId);
@@ -127,50 +134,26 @@ class PedidosService
                 })
             ];
         });
-}
+  }
 
-
-
-
-
-public function trazerPedidoPorId($id)
-{
+  public function trazerPedidoPorId($id)
+  {
     try {
         if (!Auth::check()) {
             throw new Exception("Acesso negado!");
         }
 
-        $resultado = pedidos::select(
-            "id", 
-            "usuario_id",
-            "cliente_id",
-            "link",
-            "valor_total",
-            "status_id",
-            "tipo_pagamento"
-        )
+        $resultado = pedidos::select("id", "usuario_id", "cliente_id", "link", "valor_total", "status_id", "tipo_pagamento")
         ->where("id", $id)
         ->with([
-            // Ajustado para 'consultora' conforme seu Model
-            'consultora' => function ($query) {
-                $query->select("id", "nome"); 
-            },
-            // Ajustado para 'clientes' conforme seu Model
-            'clientes' => function ($query) {
-                $query->select("id", "nome");
-            },
+            'consultora' => function ($query) { $query->select("id", "nome"); },
+            'clientes' => function ($query) { $query->select("id", "nome"); },
             'itensPedidos' => function ($query) {
                 $query->select("id", "pedido_id", "item_catalogo_id", "quantidade", "preco_unitario");
             },
-            'itensPedidos.itemCatalogo' => function ($query) {
-                $query->select("id", "produto_id");
-            },
-            'itensPedidos.itemCatalogo.produto' => function ($query) {
-                $query->select("id", "nome");
-            },
-            'status' => function ($query) {
-            	$query->select('id', 'nome');
-            }
+            'itensPedidos.itemCatalogo' => function ($query) { $query->select("id", "produto_id"); },
+            'itensPedidos.itemCatalogo.produto' => function ($query) { $query->select("id", "nome"); },
+            'status' => function ($query) { $query->select('id', 'nome'); }
         ])
         ->first();
 
@@ -182,18 +165,13 @@ public function trazerPedidoPorId($id)
             "status" => "success",
             "data" => $resultado,
         ];
-
     } catch (Exception $e) {
         return [
             "status" => "error",
             "mensagem" => "Erro encontrado: " . $e->getMessage(),
         ];
     }
-}
-
-
-
-
+  }
 
   protected function diasDesde(string $data)
   {
@@ -208,21 +186,37 @@ public function trazerPedidoPorId($id)
     DB::beginTransaction();
     try {
       $pedido = pedidos::find($id);
-      $pagamento = pagamentos::where("pedido_id", $pedido->id)->first();
-      if ($pedido->status_id !== 1) {
-        throw new Exception("pedido náo pode ser mais cancelado.");
-      } elseif ($pedido->status_id === 7) {
-        throw new Exception(
-          "o pedido ja foi cancelado á " .
-            $this->diasDesde($pedido->created_at) .
-            " dias."
-        );
+      if (!$pedido) {
+        throw new Exception("Pedido não encontrado.");
       }
 
+      $pagamento = pagamentos::where("pedido_id", $pedido->id)->first();
+
+      if ($pedido->status_id === 7) {
+        throw new Exception("o pedido ja foi cancelado á " . $this->diasDesde($pedido->created_at) . " dias.");
+      }
+
+      // Permite cancelar os status: 1 (Aguardando Pagamento), 2 (Pagamento Confirmado) e 3 (Separando Pedido)
+      $statusPermitidos = [1, 2, 3]; 
+
+      if (!in_array($pedido->status_id, $statusPermitidos)) {
+        throw new Exception("pedido não pode ser mais cancelado.");
+      }
+
+      // GATILHO INTERNO: Se o pedido cancelado já estiver pago (Status 2), executa a reversão completa
+      if ($pedido->status_id === 2) {
+        $this->estornarFluxoPagamento($pedido->id);
+      }
+
+      // Executa a alteração final para Cancelado (7)
       $pedido->status_id = 7;
-      $pagamento->status = "recusado";
+      
+      if ($pagamento && $pagamento->status !== 'estornado') {
+        $pagamento->status = "recusado";
+        $pagamento->save();
+      }
+      
       $pedido->save();
-      $pagamento->save();
 
       LogService::registrarAcao(
         "O pedido #$pedido->id foi cancelado",
@@ -245,7 +239,7 @@ public function trazerPedidoPorId($id)
     }
   }
 
-public function criarPedido($data)
+  public function criarPedido($data)
   {
     DB::beginTransaction();
     try {
@@ -254,23 +248,17 @@ public function criarPedido($data)
         throw new Exception("Usuário não autenticado");
       }
 
-      // 1. Criar a instância básica do pedido
       $pedido = new pedidos();
       $pedido->uuid = (string) Str::uuid();
       $pedido->usuario_id = $usuarioLogado->id;
       $pedido->cliente_id = $data["cliente_id"];
       $pedido->status_id = $data["status_id"] ?? 1;
       $pedido->tipo_pagamento = $data["tipo_pagamento"];
-
-      // PEGA O DOMÍNIO COMPLETO DINAMICAMENTE (HTTP ou HTTPS com base no ambiente)
-      // Ajuste o nome da rota ("cliente.pedido.montado") se necessário
       $pedido->link = route("pedido.rastreio", ["uuid" => $pedido->uuid]);
-
       $pedido->save();
 
       $subtotais = [];
 
-      // 2. Salvar os itens do pedido
       foreach ($data["itens"] as $itemData) {
         $item = new itens_pedido();
         $item->pedido_id = $pedido->id;
@@ -278,17 +266,13 @@ public function criarPedido($data)
         $item->quantidade = $itemData["quantidade"];
         $item->preco_unitario = $itemData["preco_unitario"];
 
-        $calculadorSubtotal = new calcularSubtotal(
-          $item->quantidade,
-          $item->preco_unitario
-        );
+        $calculadorSubtotal = new calcularSubtotal($item->quantidade, $item->preco_unitario);
         $item->subtotal = $calculadorSubtotal->calcular();
-
         $item->save();
+        
         $subtotais[] = $item->subtotal;
       }
 
-      // 3. Calcular o valor total final
       $calculadorTotal = new calcularTotal($subtotais);
       $pedido->valor_total = $calculadorTotal->calcular();
       $pedido->save();
@@ -301,7 +285,6 @@ public function criarPedido($data)
       );
 
       DB::commit();
-
       CancelarPedidoInativo::dispatch($pedido->id)->delay(now()->addMinutes(8));
 
       return [
@@ -322,21 +305,110 @@ public function criarPedido($data)
     }
   }
 
-  /**
-   * Busca o UUID de um pedido pelo ID e retorna a URL completa da rota.
-   * * @param int $id
-   * @return string
-   * @throws Exception
-   */
   public function obterLinkPorId($id)
   {
     $pedido = pedidos::select("uuid")->find($id);
-
     if (!$pedido) {
       throw new Exception("Pedido #{$id} não encontrado para geração de link.");
     }
-
-    // Retorna a URL completa baseada no UUID do banco
     return route("cliente.pedido.montado", ["uuid" => $pedido->uuid]);
+  }
+
+  public function estornarFluxoPagamento($pedidoId)
+  {
+    // Verifica se já existe uma transação ativa (por exemplo, vinda do método excluirPedido)
+    $hasTransaction = DB::transactionLevel() > 0;
+    if (!$hasTransaction) DB::beginTransaction();
+
+    try {
+      $pedido = pedidos::with(["itensPedidos", "consultora"])->find($pedidoId);
+      if (!$pedido) {
+        throw new Exception("Pedido não encontrado para estorno.");
+      }
+
+      $pagamento = pagamentos::where("pedido_id", $pedido->id)->first();
+      if (!$pagamento) {
+        throw new Exception("Nenhum registro de pagamento encontrado para este pedido.");
+      }
+      if ($pagamento->status === 'estornado') {
+        throw new Exception("O pagamento deste pedido já foi estornado anteriormente.");
+      }
+
+      // 1. Devolver os produtos para o estoque usando a instância injetada
+      $this->estoqueService->devolverEstoquePedido($pedido);
+
+      // 2. Reverter Comissões e Pontos distribuídos
+      $this->reverterRecompensas($pedido);
+
+      // 3. Atualizar o status do pagamento para estornado
+      $pagamento->status = "estornado";
+      $pagamento->save();
+
+      LogService::registrarAcao(
+        "Estorno completo de pagamento, comissões e estoque processado para o pedido #$pedido->id",
+        "Financeiro",
+        $pedido->id,
+        "Fluxo de reversão concluído com sucesso."
+      );
+
+      if (!$hasTransaction) DB::commit();
+      
+      return [
+        "status" => "success",
+        "mensagem" => "Pagamento e benefícios estornados com sucesso.",
+      ];
+    } catch (Exception $e) {
+      if (!$hasTransaction) DB::rollBack();
+      throw $e;
+    }
+  }
+
+  private function reverterRecompensas(pedidos $pedido)
+  {
+    $valorTotal = $pedido->valor_total;
+    $vendedor = $pedido->consultora;
+
+    if (!$vendedor) {
+      return;
+    }
+
+    $vendedor->decrement("pontos", (int) $valorTotal);
+
+    // Nível 1: Venda Direta (30%)
+    $this->debitarComissao($vendedor->id, $pedido->id, $valorTotal * 0.3, 1);
+
+    // Nível 2: Líder 1 (5%)
+    if ($vendedor->consultora_id) {
+      $liderNivel1 = usuarios::find($vendedor->consultora_id);
+      if ($liderNivel1) {
+        $this->debitarComissao($liderNivel1->id, $pedido->id, $valorTotal * 0.05, 2);
+
+        // Nível 3: Líder 2 (2%)
+        if ($liderNivel1->consultora_id) {
+          $liderNivel2 = usuarios::find($liderNivel1->consultora_id);
+          if ($liderNivel2) {
+            $this->debitarComissao($liderNivel2->id, $pedido->id, $valorTotal * 0.02, 3);
+          }
+        }
+      }
+    }
+  }
+
+  private function debitarComissao($usuarioId, $pedidoId, $valor, $tipoComissaoId)
+  {
+    $saldo = comissoes::where("consultora_id", $usuarioId)->first();
+    if ($saldo) {
+      $saldo->decrement("saldo_liquido", $valor);
+    }
+
+    historico_comissoes::create([
+      "consultora_id" => $usuarioId,
+      "pedido_id" => $pedidoId,
+      "tipo_comissao_id" => $tipoComissaoId,
+      "valor" => $valor,
+      "tipo_movimentacao_id" => 2, // 2 = Débito/Saída
+      "data_movimentacao" => now(),
+      "usuario_responsavel" => Auth::id(), 
+    ]);
   }
 }

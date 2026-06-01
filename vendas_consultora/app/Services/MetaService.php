@@ -17,7 +17,8 @@ class MetaService
 	// No UsuarioService.php ou MetasService.php
 
 /**
- * Retorna consultoras do líder que não possuem meta definida para o mês/ano atual
+ * Retorna todas as consultoras do líder, priorizando no topo as que 
+ * não possuem meta definida para o mês/ano atual.
  */
 public function consultorasSemMetaMesAtual(Request $request)
 {
@@ -27,20 +28,36 @@ public function consultorasSemMetaMesAtual(Request $request)
         $anoAtual = now()->year;
         $busca = $request->query('search');
 
-        $query = usuarios::where('consultora_id', $lider->id)
+        // Seleção explícita de campos evita problemas no mapeamento do Eloquent com selectSub
+        $query = usuarios::select('id', 'nome', 'consultora_id', 'cargo', 'status_id')
+            ->where('consultora_id', $lider->id)
             ->where('cargo', 'consultora')
-            ->where('status_id', 1)
-            ->whereDoesntHave('metasConsultora', function ($q) use ($mesAtual, $anoAtual) {
-                // CORREÇÃO AQUI: Usar whereMonth e whereYear na coluna correta
-                $q->whereMonth('data_referencia', $mesAtual)
-                  ->whereYear('data_referencia', $anoAtual);
-            });
+            ->where('status_id', 1);
 
-        if ($busca) {
-            $query->where('nome', 'like', "%{$busca}%");
-        }
+        // Subquery da contagem
+        // No seu Controller:
+		$query->selectSub(function ($q) use ($mesAtual, $anoAtual) {
+		    $q->from('metas') // <--- Alterado de 'metas_consultoras' para 'metas'
+		      ->whereColumn('metas.consultora_id', 'usuarios.id') // <-- Ajuste aqui também se a coluna for usuario_id
+		      ->whereMonth('data_referencia', $mesAtual)
+		      ->whereYear('data_referencia', $anoAtual)
+		      ->selectRaw('count(*)');
+		}, 'possui_meta_no_mes');
+
+
+        // Ordenação prioritária
+        $query->orderByRaw('(possui_meta_no_mes > 0) ASC')
+              ->orderBy('nome', 'ASC');
 
         $consultoras = $query->paginate(10);
+
+        // Mutação da Collection convertendo para Array seguro
+        $consultoras->getCollection()->transform(function ($consultora) {
+            // Convertendo para int para garantir a comparação segura
+            $totalMetas = (int) $consultora->possui_meta_no_mes;
+            $consultora->status_meta = $totalMetas === 0 ? 'Pendente' : 'Definida';
+            return $consultora;
+        });
 
         return [
             'status' => 'success',
@@ -54,6 +71,7 @@ public function consultorasSemMetaMesAtual(Request $request)
         ];
     }
 }
+
 
 
 
@@ -172,35 +190,46 @@ public function criarMeta($idConsultora, $dados)
      * Lista consultoras da rede com histórico de metas concluídas e progresso da meta atual.
      */
     public function pegarHistoricoMetaProgresso()
-    {
-        try {
-            $lider = Auth::user();
+{
+    try {
+        $lider = Auth::user();
 
-            if ($lider->cargo !== 'lider') {
-                throw new Exception('Acesso negado!');
-            }
-
-            $resultado = usuarios::where('consultora_id', $lider->id)
-                ->select('nome', 'id', 'status_id')
-                ->with(['metasConsultora' => function ($query) {
-                    $query->whereNot('status_id', 3)->orderBy('data_referencia', 'desc');
-                }])
-                ->get()
-                ->map(function ($consultora) {
-                    $consultora->metaAtual = $this->metaUsuario($consultora->id);
-                    $consultora->progressoMeta = $this->progressoMeta(true, $consultora->id);
-                    return $consultora;
-                });
-
-            return [
-                'status' => 'success',
-                'data'   => $resultado
-            ];
-        } catch (Exception $e) {
-            return [
-                'status'   => 'error',
-                'mensagem' => 'Erro ao consultar o sistema: ' . $e->getMessage()
-            ];
+        // Garante que o model se chama 'usuarios' de acordo com a estrutura do seu projeto
+        if ($lider->cargo !== 'lider') {
+            throw new Exception('Acesso negado!');
         }
+
+        $resultado = usuarios::where('consultora_id', $lider->id)
+            ->select('nome', 'id', 'status_id')
+            ->get()
+            ->map(function ($consultora) {
+                // Buscamos o valor real da meta atual usando o seu método interno existente
+                $metaAtualValor = $this->metaUsuario($consultora->id);
+
+                // Forçamos o retorno a ter exatamente a estrutura que o find() do Vue busca:
+                // metaInfo?.metas_consultora?.[0]?.valor_meta
+                $consultora->metas_consultora = [
+                    [
+                        'valor_meta' => $metaAtualValor ?? 0
+                    ]
+                ];
+
+                // Mantém os seus outros dados caso outras telas usem
+                $consultora->progressoMeta = $this->progressoMeta(true, $consultora->id);
+
+                return $consultora;
+            });
+
+        return [
+            'status' => 'success',
+            'data'   => $resultado
+        ];
+    } catch (Exception $e) {
+        return [
+            'status'   => 'error',
+            'mensagem' => 'Erro ao consultar o sistema: ' . $e->getMessage()
+        ];
     }
+}
+
 }

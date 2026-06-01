@@ -6,236 +6,262 @@
 
 @section('content')
 
+{{-- Fontes e estilos de simulação específicos para o visual do painel --}}
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+
+<style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+    }
+    /* Estilo para simulação de Tooltip elegante */
+    [data-tooltip] { position: relative; cursor: pointer; }
+    [data-tooltip]:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 4px 8px;
+        background: #1b1b1b;
+        color: white;
+        font-size: 10px;
+        font-family: 'JetBrains Mono', monospace;
+        border-radius: 4px;
+        white-space: nowrap;
+        z-index: 100;
+    }
+</style>
 
 <div
     x-data="produtoManager()"
     x-init="init()"
-    class="space-y-8"
+    class="space-y-6 font-['Hanken_Grotesk',sans-serif] text-[#0b1c30]"
 >
-    {{-- Cards de Resumo --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 11m8 4V5M4 11v10l8 4"/>
-                </svg>
-            </div>
-            <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total de Itens</p>
-                <h4 class="text-xl font-bold text-slate-900 tracking-tight" x-text="`${totalProdutos} Produtos`">0 Produtos</h4>
-            </div>
+    {{-- Seção de Cards KPI (Resolvido o problema de esticamento artificial) --}}
+    <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-[#cfc4c5]/20">
+            <p class="text-xs font-['JetBrains_Mono'] text-[#4c4546] mb-1">Total de Produtos</p>
+            <p class="text-2xl font-bold text-black" x-text="totalProdutos">0</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-[#cfc4c5]/20">
+            <p class="text-xs font-['JetBrains_Mono'] text-[#4c4546] mb-1">Produtos Ativos</p>
+            <p class="text-2xl font-bold text-black" x-text="totalProdutos">0</p> {{-- Mapeado dinamicamente para o seu counter --}}
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-[#cfc4c5]/20">
+            <p class="text-xs font-['JetBrains_Mono'] text-[#4c4546] mb-1">Em Promoção</p>
+            <p class="text-2xl font-bold text-emerald-600">1 <span class="text-xs font-normal text-[#4c4546]">Ativo</span></p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-[#cfc4c5]/20">
+            <p class="text-xs font-['JetBrains_Mono'] text-[#4c4546] mb-1">Avisos</p>
+            <p class="text-2xl font-bold text-black">0 <span class="text-xs font-normal text-[#4c4546]">críticos</span></p>
+        </div>
+    </section>
+
+    {{-- Barra de Ações (Filtros Avançados alinhados e Input Amplo) --}}
+    <section class="bg-white p-4 rounded-xl shadow-sm flex flex-wrap gap-4 items-center border border-[#cfc4c5]/20">
+        {{-- Busca --}}
+        <div class="flex-1 min-w-[300px] relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c4546]">search</span>
+            <input 
+                x-model="search" 
+                @input="currentPage = 1" 
+                type="text" 
+                placeholder="Buscar por nome, descrição ou SKU..."
+                class="w-full pl-12 pr-4 py-2 bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg text-sm focus:border-black focus:ring-0 transition-all outline-none"
+            />
         </div>
 
-        <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-            <div>
-                <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Em Promoção</p>
-                <h4 class="text-xl font-bold text-emerald-700 tracking-tight">1 Ativo</h4>
-            </div>
-        </div>
-    </div>
-
-    {{-- Filtros e Ações --}}
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-        <div class="flex flex-1 flex-col sm:flex-row gap-3">
-            <div class="relative flex-1 max-w-md">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                </span>
-                <input x-model="search" @input="currentPage = 1" type="text" placeholder="Buscar por nome, descrição ou SKU..."
-                       class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium placeholder-slate-400 focus:outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition-all shadow-sm">
-            </div>
-
-            <div class="relative" x-data="{ open: false, selected: 'all' }">
-                <button @click="open = !open" @click.outside="open = false" type="button" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-slate-400 shadow-sm flex items-center justify-between gap-2 min-w-[180px]">
-                    <span x-text="selected === 'all' ? 'Todas as Categorias' : selected"></span>
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-                <ul x-show="open" 
-                    x-transition:enter="transition ease-out duration-150"
-                    x-transition:enter-start="opacity-0 scale-95"
-                    x-transition:enter-end="opacity-100 scale-100"
-                    x-transition:leave="transition ease-in duration-100"
-                    x-transition:leave-start="opacity-100 scale-100"
-                    x-transition:leave-end="opacity-0 scale-95"
-                    class="absolute left-0 mt-2 w-full z-10 bg-white border border-slate-100 rounded-xl shadow-xl py-1 max-h-60 overflow-y-auto"
-                >
-                    <li @click="categoryFilter = 'all'; selected = 'all'; open = false; currentPage = 1" class="px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50">Todas as Categorias</li>
-                    
-                    <template x-for="categoria in categorias" :key="categoria.id">
-                        <li @click="categoryFilter = categoria.nome; selected = categoria.nome; open = false; currentPage = 1" 
-                            class="px-4 py-2.5 text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-50"
-                            x-text="categoria.nome"></li>
-                    </template>
-                </ul>
-            </div>
+        {{-- Dropdown customizado de Categorias reestruturado para o novo padrão --}}
+        <div class="relative" x-data="{ open: false, selected: 'all' }">
+            <button 
+                @click="open = !open" 
+                @click.outside="open = false" 
+                type="button" 
+                class="bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg px-4 py-2 text-sm focus:border-black focus:ring-0 outline-none min-w-[180px] flex items-center justify-between gap-2"
+            >
+                <span x-text="selected === 'all' ? 'Categoria' : selected"></span>
+                <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+            </button>
+            <ul 
+                x-show="open" 
+                x-transition
+                class="absolute left-0 mt-2 w-full z-10 bg-white border border-[#cfc4c5]/30 rounded-xl shadow-xl py-1 max-h-60 overflow-y-auto font-medium"
+                style="display: none;"
+            >
+                <li @click="categoryFilter = 'all'; selected = 'all'; open = false; currentPage = 1" class="px-4 py-2 text-sm text-[#4c4546] cursor-pointer hover:bg-[#f8f9ff]">Todas as Categorias</li>
+                <template x-for="categoria in categorias" :key="categoria.id">
+                    <li @click="categoryFilter = categoria.nome; selected = categoria.nome; open = false; currentPage = 1" 
+                        class="px-4 py-2 text-sm text-[#4c4546] cursor-pointer hover:bg-[#f8f9ff]"
+                        x-text="categoria.nome"></li>
+                </template>
+            </ul>
         </div>
 
-        <button @click="abrirCreateModal()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-            </svg>
-            Novo Produto
+        {{-- Botão de limpar filtros condicional --}}
+        <button 
+            x-show="search !== '' || categoryFilter !== 'all'"
+            @click="search = ''; categoryFilter = 'all'; currentPage = 1"
+            class="text-[#4c4546] hover:text-black font-['JetBrains_Mono'] text-xs transition-colors px-2"
+            style="display: none;"
+        >
+            Limpar Filtros
         </button>
-    </div>
 
-    {{-- Tabela de Produtos --}}
-    <div class="overflow-x-auto bg-white rounded-2xl border border-slate-200 shadow-sm mt-4">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-50/75 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-[0.1em]">
-                    <th class="py-4 px-6">Produto</th>
-                    <th class="py-4 px-4">Categoria</th>
-                    <th class="py-4 px-4 text-right">Preço Base</th>
-                    <th class="py-4 px-6 text-center">Ações</th>
-                </tr>
-            </thead>
+        {{-- Espaçador para alinhar o botão principal à direita em telas largas --}}
+        <div class="md:flex-1 md:text-right">
+            <button 
+                @click="abrirCreateModal()" 
+                class="w-full md:w-auto bg-black text-white px-6 py-2 rounded-lg flex items-center justify-center gap-2 font-['JetBrains_Mono'] text-xs hover:opacity-90 transition-all active:scale-95 shadow-sm uppercase tracking-wider"
+            >
+                + Novo Produto
+            </button>
+        </div>
+    </section>
 
-            <tbody class="text-xs divide-y divide-slate-100 font-medium text-slate-700">
-                <template x-for="produto in paginatedProdutos" :key="produto.id">
-                    <tr x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 transform -translate-y-2"
-                        x-transition:enter-end="opacity-100 transform translate-y-0"
-                        class="hover:bg-slate-50/50 transition-colors"
-                    >
-                        <td class="py-4 px-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
-                                    <template x-if="produto.imagem_url">
-                                        <img :src="resolveImageUrl(produto.imagem_url)" :alt="produto.nome" class="w-full h-full object-cover">
-                                    </template>
-                                    <template x-if="!produto.imagem_url">
-                                        <span class="font-bold text-[10px] text-slate-400 tracking-wider">GLOW</span>
-                                    </template>
+    {{-- Tabela de Produtos Moderna (Com Badges e Hierarquia Visual de Imagens) --}}
+    <section class="bg-white rounded-xl shadow-sm border border-[#cfc4c5]/20 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-[#eff4ff] border-b border-[#cfc4c5]/50">
+                    <tr>
+                        <th class="p-4 w-12 text-center">
+                            <input class="rounded border-[#cfc4c5] text-black focus:ring-0" type="checkbox"/>
+                        </th>
+                        <th class="p-4 text-xs font-['JetBrains_Mono'] text-[#4c4546] uppercase tracking-wider">Produto</th>
+                        <th class="p-4 text-xs font-['JetBrains_Mono'] text-[#4c4546] uppercase tracking-wider">Categoria</th>
+                        <th class="p-4 text-xs font-['JetBrains_Mono'] text-[#4c4546] uppercase tracking-wider text-right">Preço Base</th>
+                        <th class="p-4 text-xs font-['JetBrains_Mono'] text-[#4c4546] uppercase tracking-wider">Status</th>
+                        <th class="p-4 text-xs font-['JetBrains_Mono'] text-[#4c4546] uppercase tracking-wider text-right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#cfc4c5]/30 text-sm font-medium">
+                    <template x-for="produto in paginatedProdutos" :key="produto.id">
+                        <tr class="hover:bg-[#f8fafc] transition-colors">
+                            <td class="p-4 text-center">
+                                <input class="rounded border-[#cfc4c5] text-black focus:ring-0" type="checkbox"/>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-lg bg-[#e5eeff] border border-[#cfc4c5]/40 overflow-hidden flex items-center justify-center shrink-0">
+                                        <template x-if="produto.imagem_url">
+                                            <img :src="resolveImageUrl(produto.imagem_url)" :alt="produto.nome" class="w-full h-full object-cover">
+                                        </template>
+                                        <template x-if="!produto.imagem_url">
+                                            <span class="font-bold text-[10px] text-[#4c4546]/60 tracking-wider">GLOW</span>
+                                        </template>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-[#0b1c30]" x-text="produto.nome"></p>
+                                        <p class="text-xs font-['JetBrains_Mono'] text-[#4c4546]" x-text="`SKU: ${getSku(produto)}`"></p>
+                                    </div>
                                 </div>
-
-                                <div>
-                                    <p class="font-bold text-slate-900" x-text="produto.nome"></p>
-                                    <p class="text-[10px] text-slate-400" x-text="`SKU: ${getSku(produto)}`"></p>
+                            </td>
+                            <td class="p-4">
+                                <span class="px-3 py-1 bg-[#d3e4fe] text-[#004395] rounded-full text-xs font-['JetBrains_Mono']" x-text="getCategoriaNome(produto)"></span>
+                            </td>
+                            <td class="p-4 text-right font-['JetBrains_Mono'] text-black font-semibold" x-text="formatMoney(produto.preco)"></td>
+                            <td class="p-4">
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-['JetBrains_Mono'] inline-flex items-center">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-700 mr-1.5"></span>
+                                    Ativo
+                                </span>
+                            </td>
+                            <td class="p-4 text-right">
+                                <div class="flex justify-end gap-2">
+                                    <button @click="editarProduto(produto)" class="p-2 hover:bg-[#eff4ff] rounded-lg transition-colors text-[#4c4546] hover:text-black" data-tooltip="Editar">
+                                        <span class="material-symbols-outlined text-base">edit</span>
+                                    </button>
+                                    <button @click="excluirProduto(produto.id, produto.nome)" class="p-2 hover:bg-red-50 rounded-lg transition-colors text-[#4c4546] hover:text-red-600" data-tooltip="Excluir">
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                    </button>
                                 </div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-4 text-slate-500" x-text="getCategoriaNome(produto)"></td>
-                        <td class="py-4 px-4 text-right font-semibold text-slate-900" x-text="formatMoney(produto.preco)"></td>
-                        <td class="py-4 px-6 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <button @click="editarProduto(produto)" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-black transition-all" title="Editar">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                        <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                    </svg>
-                                </button>
+                            </td>
+                        </tr>
+                    </template>
 
-                                <button @click="excluirProduto(produto.id, produto.nome)" class="p-1.5 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-600 transition-all" title="Excluir">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                        <path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                                    </svg>
-                                </button>
-                            </div>
+                    {{-- Estado Vazio Tratado --}}
+                    <tr x-show="filteredProdutos.length === 0" style="display: none;">
+                        <td colspan="6" class="py-12 p-4 text-center text-[#4c4546] text-sm">
+                            Nenhum produto cadastrado ou encontrado nos filtros.
                         </td>
                     </tr>
-                </template>
+                </tbody>
+            </table>
+        </div>
 
-                <tr x-show="filteredProdutos.length === 0">
-                    <td colspan="4" class="py-12 px-6 text-center text-slate-400 text-sm">
-                        Nenhum produto encontrado.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        {{-- Paginação --}}
-        <div x-show="filteredProdutos.length > 0" class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px] font-semibold">
+        {{-- Rodapé de Paginação Redesenhado --}}
+        <footer x-show="filteredProdutos.length > 0" class="p-4 bg-[#eff4ff] flex flex-col sm:flex-row justify-between items-center border-t border-[#cfc4c5]/30 gap-4 text-xs font-['JetBrains_Mono'] text-[#4c4546]">
             <div>
-                Exibindo de <span class="text-slate-800" x-text="startRecord"></span> até <span class="text-slate-800" x-text="endRecord"></span> de <span class="text-slate-800" x-text="filteredProdutos.length"></span> resultados
+                Exibindo de <span class="text-black font-bold" x-text="startRecord"></span> até <span class="text-black font-bold" x-text="endRecord"></span> de <span class="text-black font-bold" x-text="filteredProdutos.length"></span> resultados
             </div>
             
-            <div class="flex items-center gap-1.5" x-show="totalPages > 1">
+            <div class="flex items-center gap-1" x-show="totalPages > 1" style="display: none;">
                 <button 
                     @click="currentPage > 1 ? currentPage-- : null" 
                     :disabled="currentPage === 1"
-                    class="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-all disabled:opacity-40 disabled:hover:bg-white"
+                    class="w-8 h-8 flex items-center justify-center rounded border border-[#cfc4c5] bg-white hover:bg-[#eff4ff] transition-colors disabled:opacity-40"
                 >
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                    <span class="material-symbols-outlined text-sm">chevron_left</span>
                 </button>
 
                 <template x-for="page in totalPages" :key="page">
                     <button 
                         @click="currentPage = page" 
                         x-text="page"
-                        class="min-w-[28px] h-7 rounded-lg text-center transition-all border"
-                        :class="currentPage === page 
-                            ? 'bg-slate-900 border-slate-900 text-white font-bold' 
-                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'"
+                        class="w-8 h-8 flex items-center justify-center rounded transition-all font-['JetBrains_Mono']"
+                        :class="currentPage === page ? 'bg-black text-white' : 'hover:bg-[#eff4ff] text-[#4c4546]'"
                     ></button>
                 </template>
 
                 <button 
                     @click="currentPage < totalPages ? currentPage++ : null" 
                     :disabled="currentPage === totalPages"
-                    class="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition-all disabled:opacity-40 disabled:hover:bg-white"
+                    class="w-8 h-8 flex items-center justify-center rounded border border-[#cfc4c5] bg-white hover:bg-[#eff4ff] transition-colors disabled:opacity-40"
                 >
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                    <span class="material-symbols-outlined text-sm">chevron_right</span>
                 </button>
             </div>
-        </div>
-    </div>
+        </footer>
+    </section>
+
+    {{-- ========================================== --}}
+    {{-- MODAIS (Mantive sua marcação de Crop intacta) --}}
+    {{-- ========================================== --}}
 
     {{-- Modal de Criação --}}
     <div x-show="openCreateModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" role="dialog">
         <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
-            <div x-show="openCreateModal" 
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
-                 @click="resetForm()" class="fixed inset-0 bg-black/40 backdrop-blur-sm shadow-inner"
-            ></div>
+            <div x-show="openCreateModal" x-transition.opacity @click="resetForm()" class="fixed inset-0 bg-black/40 backdrop-blur-sm shadow-inner"></div>
 
-            <div x-show="openCreateModal"
-                 x-transition:enter="transition ease-out duration-300 transform"
-                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                 x-transition:leave="transition ease-in duration-200 transform"
-                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-200"
+            <div x-show="openCreateModal" x-transition.scale
+                 class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-[#cfc4c5]/30"
             >
                 <div class="bg-white p-6 sm:p-8">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                    <div class="flex items-center justify-between border-b border-[#cfc4c5]/20 pb-4 mb-6">
                         <div>
-                            <h3 class="text-base font-bold text-slate-900 uppercase tracking-wide">Novo Cosmético</h3>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Cadastre o produto definindo nome, categoria, preço e imagem.</p>
+                            <h3 class="text-base font-bold text-black uppercase tracking-wide font-['JetBrains_Mono']">Novo Cosmético</h3>
+                            <p class="text-xs text-[#4c4546] mt-0.5">Cadastre o produto definindo nome, categoria, preço e imagem.</p>
                         </div>
-                        <button @click="resetForm()" class="text-slate-400 hover:text-black">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
+                        <button @click="resetForm()" class="text-[#4c4546] hover:text-black">
+                            <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
 
                     <form @submit.prevent="salvarProduto('create')" class="space-y-5">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="sm:col-span-2">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Nome do Produto</label>
+                                <label class="block text-xs font-bold text-[#4c4546] uppercase tracking-wider mb-2 font-['JetBrains_Mono']">Nome do Produto</label>
                                 <input type="text" required x-model="createData.nome" placeholder="Ex: Protetor Solar Fluido FPS 60"
-                                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all">
+                                       class="w-full px-4 py-2 bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg text-sm focus:border-black focus:ring-0 transition-all">
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Categoria</label>
+                                <label class="block text-xs font-bold text-[#4c4546] uppercase tracking-wider mb-2 font-['JetBrains_Mono']">Categoria</label>
                                 <select x-model="createData.categoria_id" required
-                                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all">
+                                        class="w-full px-4 py-2 bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg text-sm focus:border-black focus:ring-0 transition-all">
                                     <option value="">Selecione</option>
                                     <template x-for="categoria in categorias" :key="categoria.id">
                                         <option :value="categoria.id" x-text="categoria.nome"></option>
@@ -244,53 +270,51 @@
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Preço de Venda Base</label>
+                                <label class="block text-xs font-bold text-[#4c4546] uppercase tracking-wider mb-2 font-['JetBrains_Mono']">Preço de Venda Base</label>
                                 <input type="text" required x-model="createData.preco" placeholder="R$ 0,00"
-                                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all">
+                                       class="w-full px-4 py-2 bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg text-sm focus:border-black focus:ring-0 transition-all">
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Descrição</label>
+                                <label class="block text-xs font-bold text-[#4c4546] uppercase tracking-wider mb-2 font-['JetBrains_Mono']">Descrição</label>
                                 <textarea x-model="createData.descricao" rows="4" placeholder="Descrição do produto"
-                                          class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all"></textarea>
+                                          class="w-full px-4 py-2 bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg text-sm focus:border-black focus:ring-0 transition-all"></textarea>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Imagem do Produto</label>
+                                <label class="block text-xs font-bold text-[#4c4546] uppercase tracking-wider mb-2 font-['JetBrains_Mono']">Imagem do Produto</label>
                                 <input
                                     type="file"
                                     accept="image/*"
                                     required
                                     x-ref="createFileInput"
                                     @change="handleImageChange($event, 'create')"
-                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800"
+                                    class="w-full px-4 py-2 bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg text-sm focus:border-black focus:ring-0 transition-all file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-bold file:bg-black file:text-white hover:file:opacity-90"
                                 >
 
-                                <div class="mt-3 flex items-start gap-3">
-                                    <div class="w-32 h-32 rounded-2xl border border-dashed border-slate-200 bg-slate-50 overflow-hidden flex items-center justify-center">
+                                <div class="mt-3 flex items-start gap-4">
+                                    <div class="w-32 h-32 rounded-xl border border-dashed border-[#cfc4c5] bg-[#f8f9ff] overflow-hidden flex items-center justify-center shrink-0">
                                         <template x-if="createData.imagePreview">
                                             <img :src="createData.imagePreview" class="w-full h-full object-cover" alt="Prévia da imagem">
                                         </template>
                                         <template x-if="!createData.imagePreview">
                                             <div class="text-center px-3">
-                                                <svg class="w-6 h-6 mx-auto text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                                </svg>
-                                                <p class="mt-2 text-[10px] text-slate-400 leading-4">Prévia da imagem cortada</p>
+                                                <span class="material-symbols-outlined text-[#cfc4c5] text-2xl">image</span>
+                                                <p class="mt-1 text-[10px] text-[#4c4546] leading-4">Corte 1:1</p>
                                             </div>
                                         </template>
                                     </div>
-                                    <div class="text-[11px] text-slate-500 leading-5">
+                                    <div class="text-xs text-[#4c4546] leading-5">
                                         Selecione uma imagem e ajuste o recorte quadrado antes de enviar.
-                                        <div class="mt-2 text-slate-400">A imagem será enviada já no formato 1:1.</div>
+                                        <div class="mt-1 text-[#cfc4c5]">A imagem será enviada já no formato ideal.</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                            <button type="button" @click="resetForm()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold uppercase rounded-lg transition-all">Cancelar</button>
-                            <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wide rounded-lg transition-all shadow">
+                        <div class="flex justify-end gap-3 pt-4 border-t border-[#cfc4c5]/20">
+                            <button type="button" @click="resetForm()" class="px-4 py-2 bg-[#eff4ff] text-[#4c4546] text-xs font-bold uppercase font-['JetBrains_Mono'] rounded-lg transition-all">Cancelar</button>
+                            <button type="submit" class="px-5 py-2 bg-black text-white text-xs font-bold uppercase tracking-wide font-['JetBrains_Mono'] rounded-lg transition-all shadow">
                                 Salvar Produto
                             </button>
                         </div>
@@ -303,50 +327,34 @@
     {{-- Modal de Edição --}}
     <div x-show="openEditModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" role="dialog">
         <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
-            <div x-show="openEditModal" 
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
-                 @click="resetForm()" class="fixed inset-0 bg-black/40 backdrop-blur-sm"
-            ></div>
+            <div x-show="openEditModal" x-transition.opacity @click="resetForm()" class="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
 
-            <div x-show="openEditModal"
-                 x-transition:enter="transition ease-out duration-300 transform"
-                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                 x-transition:leave="transition ease-in duration-200 transform"
-                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-200"
+            <div x-show="openEditModal" x-transition.scale
+                 class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-[#cfc4c5]/30"
             >
                 <div class="bg-white p-6 sm:p-8">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                    <div class="flex items-center justify-between border-b border-[#cfc4c5]/20 pb-4 mb-6">
                         <div>
-                            <h3 class="text-base font-bold text-slate-900 uppercase tracking-wide">Editar Informações</h3>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Modifique os dados do produto selecionado.</p>
+                            <h3 class="text-base font-bold text-black uppercase tracking-wide font-['JetBrains_Mono']">Editar Informações</h3>
+                            <p class="text-xs text-[#4c4546] mt-0.5">Modifique os dados do produto selecionado.</p>
                         </div>
-                        <button @click="resetForm()" class="text-slate-400 hover:text-black">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
+                        <button @click="resetForm()" class="text-[#4c4546] hover:text-black">
+                            <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
 
                     <form @submit.prevent="salvarProduto('edit')" class="space-y-5">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="sm:col-span-2">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Nome do Produto</label>
+                                <label class="block text-xs font-bold text-[#4c4546] uppercase tracking-wider mb-2 font-['JetBrains_Mono']">Nome do Produto</label>
                                 <input type="text" required x-model="editData.nome"
-                                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all">
+                                       class="w-full px-4 py-2 bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg text-sm focus:border-black focus:ring-0 transition-all">
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Categoria</label>
+                                <label class="block text-xs font-bold text-[#4c4546] uppercase tracking-wider mb-2 font-['JetBrains_Mono']">Categoria</label>
                                 <select x-model="editData.categoria_id" required
-                                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all">
+                                        class="w-full px-4 py-2 bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg text-sm focus:border-black focus:ring-0 transition-all">
                                     <option value="">Selecione</option>
                                     <template x-for="categoria in categorias" :key="categoria.id">
                                         <option :value="categoria.id" x-text="categoria.nome"></option>
@@ -355,52 +363,50 @@
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Preço de Venda Base</label>
+                                <label class="block text-xs font-bold text-[#4c4546] uppercase tracking-wider mb-2 font-['JetBrains_Mono']">Preço de Venda Base</label>
                                 <input type="text" required x-model="editData.preco"
-                                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all">
+                                       class="w-full px-4 py-2 bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg text-sm focus:border-black focus:ring-0 transition-all">
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Descrição</label>
+                                <label class="block text-xs font-bold text-[#4c4546] uppercase tracking-wider mb-2 font-['JetBrains_Mono']">Descrição</label>
                                 <textarea x-model="editData.descricao" rows="4"
-                                          class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all"></textarea>
+                                          class="w-full px-4 py-2 bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg text-sm focus:border-black focus:ring-0 transition-all"></textarea>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Imagem do Produto</label>
+                                <label class="block text-xs font-bold text-[#4c4546] uppercase tracking-wider mb-2 font-['JetBrains_Mono']">Imagem do Produto</label>
                                 <input
                                     type="file"
                                     accept="image/*"
                                     x-ref="editFileInput"
                                     @change="handleImageChange($event, 'edit')"
-                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:bg-white focus:border-slate-400 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800"
+                                    class="w-full px-4 py-2 bg-[#f8f9ff] border border-[#cfc4c5] rounded-lg text-sm focus:border-black focus:ring-0 transition-all file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-bold file:bg-black file:text-white hover:file:opacity-90"
                                 >
 
-                                <div class="mt-3 flex items-start gap-3">
-                                    <div class="w-32 h-32 rounded-2xl border border-dashed border-slate-200 bg-slate-50 overflow-hidden flex items-center justify-center">
+                                <div class="mt-3 flex items-start gap-4">
+                                    <div class="w-32 h-32 rounded-xl border border-dashed border-[#cfc4c5] bg-[#f8f9ff] overflow-hidden flex items-center justify-center shrink-0">
                                         <template x-if="editData.imagePreview || editData.currentImageUrl">
                                             <img :src="editData.imagePreview || editData.currentImageUrl" class="w-full h-full object-cover" alt="Prévia da imagem">
                                         </template>
                                         <template x-if="!editData.imagePreview && !editData.currentImageUrl">
                                             <div class="text-center px-3">
-                                                <svg class="w-6 h-6 mx-auto text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                                </svg>
-                                                <p class="mt-2 text-[10px] text-slate-400 leading-4">Prévia da imagem cortada</p>
+                                                <span class="material-symbols-outlined text-[#cfc4c5] text-2xl">image</span>
+                                                <p class="mt-1 text-[10px] text-[#4c4546] leading-4">Sem Imagem</p>
                                             </div>
                                         </template>
                                     </div>
-                                    <div class="text-[11px] text-slate-500 leading-5">
+                                    <div class="text-xs text-[#4c4546] leading-5">
                                         Se quiser alterar a imagem, selecione um novo arquivo e ajuste o corte quadrado.
-                                        <div class="mt-2 text-slate-400">Se não selecionar outra imagem, a atual será mantida.</div>
+                                        <div class="mt-1 text-[#cfc4c5]">Se não selecionar outra imagem, a atual será mantida.</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
-                            <button type="button" @click="resetForm()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold uppercase rounded-lg transition-all">Cancelar</button>
-                            <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wide rounded-lg transition-all shadow">
+                        <div class="flex justify-end gap-3 pt-4 border-t border-[#cfc4c5]/20">
+                            <button type="button" @click="resetForm()" class="px-4 py-2 bg-[#eff4ff] text-[#4c4546] text-xs font-bold uppercase font-['JetBrains_Mono'] rounded-lg transition-all">Cancelar</button>
+                            <button type="submit" class="px-5 py-2 bg-black text-white text-xs font-bold uppercase tracking-wide font-['JetBrains_Mono'] rounded-lg transition-all shadow">
                                 Salvar Alterações
                             </button>
                         </div>
@@ -413,54 +419,29 @@
     {{-- Modal de Crop --}}
     <div x-show="openCropModal" x-cloak class="fixed inset-0 z-[60] overflow-y-auto" role="dialog">
         <div class="flex items-center justify-center min-h-screen p-4 text-center sm:p-0">
-            <div x-show="openCropModal" 
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
-                 @click="cancelCrop()" class="fixed inset-0 bg-black/50 backdrop-blur-sm"
-            ></div>
+            <div x-show="openCropModal" x-transition.opacity @click="cancelCrop()" class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
 
-            <div x-show="openCropModal"
-                 x-transition:enter="transition ease-out duration-300 transform"
-                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                 x-transition:leave="transition ease-in duration-200 transform"
-                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full border border-slate-200"
+            <div x-show="openCropModal" x-transition.scale
+                 class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full border border-[#cfc4c5]/30"
             >
                 <div class="bg-white p-6 sm:p-8 space-y-5">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div class="flex items-center justify-between border-b border-[#cfc4c5]/20 pb-4">
                         <div>
-                            <h3 class="text-base font-bold text-slate-900 uppercase tracking-wide">Ajustar Imagem</h3>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Arraste e ajuste o corte em formato quadrado antes de confirmar.</p>
+                            <h3 class="text-base font-bold text-black uppercase tracking-wide font-['JetBrains_Mono']">Ajustar Imagem</h3>
+                            <p class="text-xs text-[#4c4546] mt-0.5">Arraste e ajuste o corte em formato quadrado antes de confirmar.</p>
                         </div>
-                        <button type="button" @click="cancelCrop()" class="text-slate-400 hover:text-black">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
+                        <button type="button" @click="cancelCrop()" class="text-[#4c4546] hover:text-black">
+                            <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
 
-                    <div
-                        class="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden flex items-center justify-center min-h-[320px] min-w-[320px]"
-                        style="min-width:320px; min-height:320px;"
-                    >
-                        <img
-                            x-ref="cropImage"
-                            :src="cropSource"
-                            class="max-w-full max-h-[70vh] block"
-                            style="min-width:200px; min-height:200px;"
-                            alt="Imagem para recorte"
-                        >
+                    <div class="bg-[#f8f9ff] border border-[#cfc4c5] rounded-2xl overflow-hidden flex items-center justify-center min-h-[320px] min-w-[320px]">
+                        <img x-ref="cropImage" :src="cropSource" class="max-w-full max-h-[70vh] block" style="min-width:200px; min-height:200px;" alt="Imagem para recorte">
                     </div>
 
                     <div class="flex justify-end gap-3 pt-2">
-                        <button type="button" @click="cancelCrop()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold uppercase rounded-lg transition-all">Cancelar</button>
-                        <button type="button" @click="confirmCrop()" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold uppercase tracking-wide rounded-lg transition-all shadow">
+                        <button type="button" @click="cancelCrop()" class="px-4 py-2 bg-[#eff4ff] text-[#4c4546] text-xs font-bold uppercase font-['JetBrains_Mono'] rounded-lg transition-all">Cancelar</button>
+                        <button type="button" @click="confirmCrop()" class="px-5 py-2 bg-black text-white text-xs font-bold uppercase tracking-wide font-['JetBrains_Mono'] rounded-lg transition-all shadow">
                             Aplicar Corte
                         </button>
                     </div>
@@ -469,7 +450,6 @@
         </div>
     </div>
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 
 <script>

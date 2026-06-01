@@ -228,7 +228,13 @@ public function __construct(HistoricoComissaoService $service) {
     $usuarioAutenticado = Auth::user();
 
     try {
-      $ehPreCadastro = $usuarioAutenticado->cargo === "consultora";
+      // se não for distribuidora vai apenas criar um pre cadastro
+      if ($usuarioAutenticado->cargo !== 'distribuidora') {
+        $ehPreCadastro = true;
+      } else {
+        $ehPreCadastro = false;
+      }
+
       $statusId = $ehPreCadastro ? 3 : $dados->status ?? 1;
 
       $usr = usuarios::create([

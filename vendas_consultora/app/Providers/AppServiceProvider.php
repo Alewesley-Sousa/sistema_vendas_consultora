@@ -18,18 +18,15 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        // Força HTTPS se não estiver em ambiente local (localhost)
-        // Isso corrige o erro de "Servidor não respondeu" no Railway
-        if (config('app.env') !== 'local') {
-            URL::forceScheme('https');
-        }
-
-        Vite::prefetch(concurrency: 3);
-        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+public function boot(): void
+{
+    // Se o acesso está vindo pelo túnel do Cloudflare ou se não for local, força HTTPS
+    if (config('app.env') !== 'local' || str_contains(request()->getHost(), 'trycloudflare.com')) {
+        URL::forceScheme('https');
     }
+
+    Vite::prefetch(concurrency: 3);
+    Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+    \Inertia\Inertia::setRootView('layouts.inertia');
+} 
 }

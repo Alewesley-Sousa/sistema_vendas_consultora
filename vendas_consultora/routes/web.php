@@ -13,6 +13,7 @@ use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\PromocoesController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 // Redirecionamento Inicial conforme o Cargo
 Route::get('/', function () {
@@ -53,17 +54,17 @@ Route::post('/login/token', [AutenticacaoController::class, 'geraToken']);
 Route::post('/logout', [AutenticacaoController::class, 'logout'])->name('logout');
 
 // =========================================================================
-//  DASHBOARDS PROTEGIDOS
+//  DASHBOARDS PROTEGIDOS (MIGRADOS PARA INERTIA/VUE)
 // =========================================================================
-Route::get('/distribuidora/dashboard', fn() => view('distribuidora.dashboard'))
+Route::get('/distribuidora/dashboard', fn() => Inertia::render('Distribuidora/Dashboard'))
    ->middleware(['auth', 'cargo:distribuidora'])
    ->name('distribuidora.dashboard');
 
-Route::get('/lider/dashboard', fn() => view('lider.dashboard'))
+Route::get('/lider/dashboard', fn() => Inertia::render('Consultora/Dashboard'))
     ->middleware(['auth', 'cargo:lider'])
     ->name('lider.dashboard');
 
-Route::get('/consultora/dashboard', fn() => view('consultora.dashboard'))
+Route::get('/consultora/dashboard', fn() => Inertia::render('Consultora/Dashboard'))
     ->middleware(['auth', 'cargo:consultora'])
     ->name('consultora.dashboard');
 
@@ -100,8 +101,8 @@ Route::get('/pedidos/equipe', [PedidosController::class, 'index'])->middleware('
 //  PAINEL DA DISTRIBUIDORA
 // =========================================================================
 Route::prefix('distribuidora')->name('distribuidora.')->group(function () {
-    Route::get('/produtos', function () { return view('distribuidora.produtos'); })->name('produtos');
-    Route::get('/catalogos', function () { return view('distribuidora.catalogos'); })->name('catalogos');
+    Route::get('/produtos', function () { return Inertia::render('Distribuidora/GerenciamentoProdutos'); })->name('produtos');
+    Route::get('/catalogos', function () { return Inertia::render('Distribuidora/Catalogo'); })->name('catalogos');
     Route::get('/estoques', function () { return view('distribuidora.estoques'); })->name('estoques');
     Route::get('/promocoes', [PromocoesController::class, 'index'])->name('promocoes');
     Route::get('/solicitacoes', fn() => view('distribuidora.solicitacoes'))->name('solicitacoes');

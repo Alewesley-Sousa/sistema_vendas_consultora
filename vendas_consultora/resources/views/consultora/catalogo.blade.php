@@ -353,3 +353,4 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #FF7665; border-radius: 10px; }
 </style>
 @endsection
+

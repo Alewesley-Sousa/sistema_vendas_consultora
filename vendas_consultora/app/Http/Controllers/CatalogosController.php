@@ -6,6 +6,7 @@ use App\Http\Requests\CatalogosRequest;
 use App\Services\CatalogoService;
 use Illuminate\Http\JsonResponse;
 use Exception;
+use Inertia\Inertia;
 
 class CatalogosController extends Controller
 {
@@ -17,7 +18,7 @@ class CatalogosController extends Controller
     }
 
     public function index() {
-        return view('consultora.catalogo');
+        return Inertia::render('Consultora/Catalogo');
     }
 
     public function listar(): JsonResponse

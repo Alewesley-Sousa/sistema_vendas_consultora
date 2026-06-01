@@ -178,4 +178,42 @@ public function getProdutosSemEstoque()
     }
 }
 
+
+/**
+     * Realiza a devolução (estorno) de múltiplos itens ao estoque a partir de um pedido cancelado.
+     */
+    public function devolverEstoquePedido($pedido)
+    {
+        // Carrega as relações necessárias
+        $itens = $pedido->itensPedidos()->with('itemCatalogo')->get(); 
+
+        foreach ($itens as $item) {
+            $produtoId = $item->itemCatalogo->produto_id ?? null;
+
+            if (!$produtoId) {
+                throw new \Exception("Não foi possível rastrear o produto_id para o item do catálogo ID: {$item->item_catalogo_id}");
+            }
+
+            // Busca o registro de estoque do produto
+            $estoque = estoques::where('produto_id', $produtoId)->first();
+
+            // Se por acaso o registro sumiu, recria ou lança exception. Vamos buscar o existente:
+            if (!$estoque) {
+                throw new \Exception("Estoque não encontrado para o produto ID: {$produtoId} para realizar a devolução.");
+            }
+
+            // Soma a quantidade de volta ao estoque
+            $estoque->quantidade += $item->quantidade;
+            $estoque->save();
+
+            LogService::registrarAcao(
+                'UPDATE_ESTOQUE_DEVOLUCAO',
+                'estoques',
+                $estoque->id,
+                "Devolução automática: Pedido #{$pedido->id} devolveu {$item->quantidade} unidades ao estoque."
+            );
+        }
+    }
+
+    
 }

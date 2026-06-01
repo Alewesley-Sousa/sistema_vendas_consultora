@@ -12,7 +12,7 @@
         <div class="bg-slate-50 border border-slate-200/60 rounded-2xl p-6 flex items-center justify-between transition-all hover:shadow-sm">
             <div>
                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ciclos Ativos</span>
-                <h4 class="text-2xl font-bold text-slate-900 mt-1" x-text="catalogos.filter(c => c.status === 'Ativo').length + ' Ativo(s)'"></h4>
+                <h4 class= "text-2xl font-bold text-slate-900 mt-1" x-text="catalogos.filter(c => c.status === 'Ativo').length + ' Ativo(s)'"></h4>
                 <p class="text-[11px] text-emerald-600 font-medium mt-0.5 flex items-center gap-1">
                     <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Campanhas em execução
                 </p>

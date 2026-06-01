@@ -7,26 +7,47 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View; // <--- O CORRETO É ESTE
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class RelatorioController extends Controller
 {
- /**
+    /**
      * Exibe a página de análise de desempenho da equipe.
      */
-    public function desempenho(): View
+    public function desempenho()
     {
         // Aqui você pode passar dados iniciais via compact() se necessário,
         // mas como você usa AlpineJS, a página carregará os dados via fetch.
-        return view('lider/desempenho');
+        return Inertia::render('Lider/DesempenhoEquipe');
     }
-public function viewArvore() {
-	$usuario = Auth::user();
-	if ($usuario->cargo === "consultora") {
-    return view('rede');
-	} else {
-		return view('redeLider');
-	}
-}
+    public function viewArvore()
+    {
+        /** @var \App\Models\usuarios $usuario */
+        $usuario = Auth::user();
+
+        // 1. Buscar os dados da rede (ajuste de acordo com a sua lógica/Service atual)
+        // Exemplo hipotético se os dados vierem de um Service:
+        // $dadosRede = $this->redeService->obterEstruturaRede($usuario->id);
+
+        // Simulação da estrutura que o seu antigo JSON da API entregava:
+        $estruturaArvore = []; // $dadosRede['estrutura_arvore'] ?? []
+        $totalNaRede = 0;      // $dadosRede['resumo']['total_na_rede'] ?? 0
+
+        // 2. Verificar o cargo e renderizar o componente correspondente no Inertia
+        if ($usuario->cargo === "consultora") {
+            return Inertia::render('Consultora/Rede', [
+                'estruturaArvore' => $estruturaArvore,
+                'totalNaRede' => $totalNaRede
+            ]);
+        } else {
+            // Caso a líder use a mesma página com mais recursos ou uma página separada
+            // resources/js/Pages/Lider/Rede.vue (ou o caminho que você preferir)
+            return Inertia::render('Consultora/Rede', [
+                'estruturaArvore' => $estruturaArvore,
+                'totalNaRede' => $totalNaRede
+            ]);
+        }
+    }
     public function vendasPessoais(Request $request, RelatorioService $service): JsonResponse
     {
         $dados = $service->vendasPessoais(
@@ -35,7 +56,7 @@ public function viewArvore() {
         );
         $dataInicio = $request->query('data_inicio');
         $dataFim = $request->query('data_fim');
-        
+
         $dados = $service->vendasPessoais($dataInicio, $dataFim);
 
         return response()->json([
@@ -63,7 +84,7 @@ public function viewArvore() {
         // O Laravel resolve o $service automaticamente para você
         $dataInicio = $request->query('data_inicio');
         $dataFim = $request->query('data_fim');
-        
+
         try {
             // Chamando o novo método refatorado
             $dados = $service->analisarDesempenhoRede($dataInicio, $dataFim);
@@ -89,7 +110,7 @@ public function viewArvore() {
         $dataFim = $request->query('data_fim');
         $criterio = $request->query('criterio', 'vendas');
         $limit = (int) $request->query('limit', 10);
-        
+
         try {
             $dados = $service->rankingConsultoras($dataInicio, $dataFim, $criterio, $limit);
 
@@ -118,7 +139,7 @@ public function viewArvore() {
         $dataFim = $request->query('data_fim');
         $thresholdEstoque = (int) $request->query('threshold_estoque', 10);
         $ordem = $request->query('ordem', 'mais_vendidos');
-        
+
         try {
             $dados = $service->analiseProdutos($dataInicio, $dataFim, $thresholdEstoque, $ordem);
 
@@ -141,7 +162,7 @@ public function viewArvore() {
     {
         $dataInicio = $request->query('data_inicio');
         $dataFim = $request->query('data_fim');
-        
+
         try {
             $dados = $service->metasBonificacoes($dataInicio, $dataFim);
 
@@ -157,73 +178,69 @@ public function viewArvore() {
         }
     }
 
-/**
- * Retenção de Clientes (Evolução Mensal)
- */
-public function retencaoClientes(Request $request, RelatorioService $service): JsonResponse
-{
-    $meses = $request->query('meses', 12);
-    $consultoraId = $request->query('consultora_id'); // Opcional
+    /**
+     * Retenção de Clientes (Evolução Mensal)
+     */
+    public function retencaoClientes(Request $request, RelatorioService $service): JsonResponse
+    {
+        $meses = $request->query('meses', 12);
+        $consultoraId = $request->query('consultora_id'); // Opcional
 
-    try {
-        $resultado = $service->relatorioRetencaoMensal((int) $meses, $consultoraId ? (int) $consultoraId : null);
-        return response()->json($resultado);
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'mensagem' => $e->getMessage()], 500);
+        try {
+            $resultado = $service->relatorioRetencaoMensal((int) $meses, $consultoraId ? (int) $consultoraId : null);
+            return response()->json($resultado);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'mensagem' => $e->getMessage()], 500);
+        }
     }
-}
 
-/**
- * Crescimento da Rede (Visão Dinâmica)
- */
-public function crescimentoRede(Request $request, RelatorioService $service): JsonResponse
-{
-    $dataInicio = $request->query('data_inicio');
-    $dataFim = $request->query('data_fim');
-    
-    try {
-        // O Service já resolve a lógica de Distribuidora vs Consultora
-        // e já retorna o array no formato ['status' => ..., 'dados' => ...]
-        $resultado = $service->crescimentoRede($dataInicio, $dataFim);
+    /**
+     * Crescimento da Rede (Visão Dinâmica)
+     */
+    public function crescimentoRede(Request $request, RelatorioService $service): JsonResponse
+    {
+        $dataInicio = $request->query('data_inicio');
+        $dataFim = $request->query('data_fim');
 
-        // Retornamos o resultado diretamente. 
-        // Se o service der erro interno capturado pelo try/catch de lá,
-        // ele já virá com 'status' => 'error'.
-        return response()->json($resultado);
+        try {
+            // O Service já resolve a lógica de Distribuidora vs Consultora
+            // e já retorna o array no formato ['status' => ..., 'dados' => ...]
+            $resultado = $service->crescimentoRede($dataInicio, $dataFim);
 
-    } catch (\Exception $e) {
-        // Erro inesperado (ex: banco fora do ar no Termux)
-        return response()->json([
-            'status' => 'error',
-            'mensagem' => 'Erro crítico ao gerar relatório: ' . $e->getMessage()
-        ], 500);
+            // Retornamos o resultado diretamente. 
+            // Se o service der erro interno capturado pelo try/catch de lá,
+            // ele já virá com 'status' => 'error'.
+            return response()->json($resultado);
+        } catch (\Exception $e) {
+            // Erro inesperado (ex: banco fora do ar no Termux)
+            return response()->json([
+                'status' => 'error',
+                'mensagem' => 'Erro crítico ao gerar relatório: ' . $e->getMessage()
+            ], 500);
+        }
     }
-}
 
-/**
- * Financeiro Consolidado: Fluxo de caixa detalhado.
- */
-public function financeiroConsolidado(Request $request, RelatorioService $service): JsonResponse
-{
-    $dataInicio = $request->query('data_inicio');
-    $dataFim = $request->query('data_fim');
-    
-    try {
-        // O Service já lida com a lógica de cargo (distribuidora vs consultora)
-        // e retorna o array formatado com ['status' => 'success', 'dados' => [...]]
-        $resultado = $service->financeiroConsolidado($dataInicio, $dataFim);
+    /**
+     * Financeiro Consolidado: Fluxo de caixa detalhado.
+     */
+    public function financeiroConsolidado(Request $request, RelatorioService $service): JsonResponse
+    {
+        $dataInicio = $request->query('data_inicio');
+        $dataFim = $request->query('data_fim');
 
-        // Retornamos o array do service diretamente
-        return response()->json($resultado);
+        try {
+            // O Service já lida com a lógica de cargo (distribuidora vs consultora)
+            // e retorna o array formatado com ['status' => 'success', 'dados' => [...]]
+            $resultado = $service->financeiroConsolidado($dataInicio, $dataFim);
 
-    } catch (\Exception $e) {
-        // Captura falhas críticas (ex: erro de conexão com SQLite no Termux)
-        return response()->json([
-            'status' => 'error',
-            'mensagem' => 'Erro crítico ao processar financeiro: ' . $e->getMessage()
-        ], 500);
+            // Retornamos o array do service diretamente
+            return response()->json($resultado);
+        } catch (\Exception $e) {
+            // Captura falhas críticas (ex: erro de conexão com SQLite no Termux)
+            return response()->json([
+                'status' => 'error',
+                'mensagem' => 'Erro crítico ao processar financeiro: ' . $e->getMessage()
+            ], 500);
+        }
     }
-}
-
-
 }

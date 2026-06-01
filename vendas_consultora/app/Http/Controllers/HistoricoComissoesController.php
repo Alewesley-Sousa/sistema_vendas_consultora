@@ -7,6 +7,7 @@ use App\Services\HistoricoComissaoService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class HistoricoComissoesController extends Controller
 {
@@ -17,9 +18,11 @@ class HistoricoComissoesController extends Controller
         $this->historicoComissaoService = $historicoComissao;
     }
 
-    public function historicoComissao() {
-        return view('consultora.historico-comissao');
-    }
+public function historicoComissao() 
+{
+    // Retorna o componente Vue localizado em resources/js/Pages/Consultora/HistoricoComissao.vue
+    return Inertia::render('Consultora/HistoricoComissao');
+}
 
     public function visualizarHistorico(Request $request): JsonResponse
     {

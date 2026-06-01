@@ -9,7 +9,7 @@ use App\Services\FinanceiroService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use inertia\inertia;
 class PedidosController extends Controller
 {
     protected $pedidosService;
@@ -26,7 +26,7 @@ class PedidosController extends Controller
      */
     public function index() 
     {
-        return view("lider.pedidos-equipe");
+        return Inertia::render('Lider/PedidosEquipe');
     }
 
     /**

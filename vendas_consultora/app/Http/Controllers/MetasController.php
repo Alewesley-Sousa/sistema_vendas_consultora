@@ -7,6 +7,7 @@ use App\Models\metas;
 use App\Services\MetaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class MetasController extends Controller
 {
@@ -33,7 +34,7 @@ public function listarPendentesConfiguracao(Request $request)
         // Aqui você pode carregar dados iniciais se precisar, 
         // como a lista de membros da equipe para o Alpine.js consumir.
         
-        return view('lider.configuracaoMeta'); 
+        return Inertia::render('Lider/ConfiguracaoMetas');
         // Certifique-se que o arquivo está em: resources/views/metas/configuracao.blade.php
     }
     public function metaAtual() {
